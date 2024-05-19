@@ -1,0 +1,36 @@
+spring:
+#  kafka:
+#    consumer:
+#      #bootstrap-servers: localhost:9092
+#      #group-id: groupA
+#      auto-offset-reset: earliest
+#      #key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+#      properties:
+#        '[spring.json.trusted.packages]': '*'
+#    producer:
+#      bootstrap-servers: localhost:9092
+#      #key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#      acks: -1
+#      retries: 1
+#      properties:
+#        '[enable.idempotence]': true
+#        '[max.in.flight.requests.per.connection]': 5
+#        '[spring.json.type.mapping]': book:com.java.bookstore.dtos.BookDTO
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+ 
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+      web:
+        base-path: /api/v1/actuator
+        exposure:
+          include: "health, info"
+ 

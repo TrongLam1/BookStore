@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Email Template</title>
+	<style>
+		/* Thêm CSS tại đây để tạo giao diện email đẹp hơn */
+		@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			background-color: #e8e8e8;
+			font-family: 'Roboto', sans-serif;
+			color: #222;
+		}
+
+		p {
+			line-height: 28px;
+		}
+
+		.container {
+			width: 600px;
+			margin: 20px auto auto;
+			background-color: #fff;
+		}
+
+		header h2 {
+			text-align: center;
+			margin-bottom: 16px;
+			background-color: aquamarine;
+			padding: 10px 0;
+		}
+
+		section {
+			padding: 10px 40px;
+		}
+
+		section span {
+			font-weight: bold;
+		}
+
+		section p {
+			margin-bottom: 20px;
+		}
+
+		section .table {
+			width: 100%;
+		}
+
+		section .table tr {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 10px;
+		}
+
+		section .table tr td {
+			object-fit: contain;
+		}
+
+		section .table tr td img {
+			width: 100px;
+			height: 100px;
+		}
+
+		footer {
+			margin-top: 20px;
+			padding: 10px 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<header>
+			<h2>Thông Báo</h2>
+		</header>
+		<section>
+			<p>Đơn hàng <span th:with="formattedId='#' + ${id}" th:text="${formattedId}"></span> đã được đặt thành công.
+			</p>
+			<table class="table">
+				<tr th:each="item : ${items}">
+					<td><img th:src="${item.book.image_url}" alt="" style="margin-right: 30px;"></td>
+					<td th:text="${item.book.name}" style="margin-right: 30px; width: 200px;"></td>
+					<td th:with="quantity='x ' + ${item.quantity}" th:text="${quantity}" style="margin-right: 30px;">
+					</td>
+					<td th:with="totalPrice=${item.totalPrice} + 'đ'" th:text="${totalPrice}"
+						style="margin-right: 30px;"></td>
+				</tr>
+			</table>
+		</section>
+		<footer>
+			<h3 style="margin-right: 30px;">Tổng:</h3>
+			<h3 th:with="pricesOrder=${totalPricesOrder} + 'đ'" th:text="${pricesOrder}"></h3>
+		</footer>
+	</div>
+</body>
+
+</html>
