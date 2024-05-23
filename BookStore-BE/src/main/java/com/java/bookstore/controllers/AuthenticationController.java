@@ -43,11 +43,12 @@ public class AuthenticationController {
 			log.info("Sign up email: {}", request.getEmail());
 			request.setEmail(HtmlUtils.htmlEscape(request.getEmail()));
 			request.setPassword(HtmlUtils.htmlEscape(request.getPassword()));
+			request.setUsername(HtmlUtils.htmlEscape(request.getUsername()));
 			return new ResponseData<>(HttpStatus.CREATED.value(), "Đăng kí thành công.",
 					authenticationService.signUp(request));
 		} catch (Exception e) {
 			log.error("errorMessage={}", e.getMessage(), e.getCause());
-			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), "Đăng kí thất bại.");
+			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 		}
 	}
 

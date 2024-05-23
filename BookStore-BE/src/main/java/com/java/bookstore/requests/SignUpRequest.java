@@ -20,6 +20,9 @@ public class SignUpRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = -5744268003014495529L;
 
+	@NotBlank(message = "Username is mandatory.")
+	private String username;
+	
 	@Email
 	@NotBlank(message = "Email is mandatory.")
 	private String email;

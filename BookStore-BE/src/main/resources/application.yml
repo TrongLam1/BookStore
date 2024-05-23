@@ -23,6 +23,17 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-secret: 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
+            client-id: 609207249940-bo6pbcbpcp1nvbpol84n14bb6c2e603b.apps.googleusercontent.com
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
  
 management:
   endpoint:

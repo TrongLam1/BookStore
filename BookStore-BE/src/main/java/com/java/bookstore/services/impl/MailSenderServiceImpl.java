@@ -66,7 +66,7 @@ public class MailSenderServiceImpl implements IMailSenderService {
 
 			mailSender.send(mimeMessage);
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e.toString());
 		}
 	}
 
@@ -90,7 +90,6 @@ public class MailSenderServiceImpl implements IMailSenderService {
 
 			mailSender.send(mimeMessage);
 		} catch (MessagingException e) {
-			e.printStackTrace();
 			throw new RuntimeException(e.toString());
 		}
 	}

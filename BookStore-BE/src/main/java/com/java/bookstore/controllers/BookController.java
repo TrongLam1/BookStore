@@ -45,7 +45,6 @@ public class BookController {
 			log.info("Find book id: {}", id);
 			return new ResponseData<>(HttpStatus.OK.value(), "Book id " + id, bookService.findById(id));
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("errorMessage={}", e.getMessage(), e.getCause());
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 		}

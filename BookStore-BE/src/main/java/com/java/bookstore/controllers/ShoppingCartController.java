@@ -37,7 +37,6 @@ public class ShoppingCartController {
 			log.error("errorMessage={}", e.getMessage(), e.getCause());
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 		}
-
 	}
 
 	@PutMapping("/update-quantity/{productId}/{quantity}")
@@ -47,12 +46,11 @@ public class ShoppingCartController {
 			log.info("Update quantity {} book {}", quantity, productId);
 			String jwtToken = token.substring(7);
 			return new ResponseData<>(HttpStatus.OK.value(), "Quantity " + quantity,
-					shoppingCartService.updateQuanityProduct(productId, jwtToken, quantity));
+					shoppingCartService.updateQuantityProduct(productId, jwtToken, quantity));
 		} catch (Exception e) {
 			log.error("errorMessage={}", e.getMessage(), e.getCause());
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 		}
-
 	}
 
 	@GetMapping("/get-cart")

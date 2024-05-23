@@ -15,6 +15,7 @@ import com.java.bookstore.dtos.CartItemDTO;
 import com.java.bookstore.dtos.ShoppingCartDTO;
 import com.java.bookstore.entities.AccountEntity;
 import com.java.bookstore.entities.BookEntity;
+import com.java.bookstore.entities.BookStatus;
 import com.java.bookstore.entities.CartItemEntity;
 import com.java.bookstore.entities.ShoppingCartEntity;
 import com.java.bookstore.exceptions.NotFoundException;
@@ -41,14 +42,67 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 
 	@Autowired
 	private CartItemRepository cartItemRepo;
-	
+
 	@Autowired
 	private JwtServiceImpl jwtService;
 
 	@Autowired
 	private ModelMapper mapper;
-	
+
 	private final static String DATA_TYPE = "shopping_cart";
+
+	private BookEntity checkValidBook(Long productId) {
+		try {
+			BookEntity book = bookRepo.findById(productId).orElseThrow(() -> new NotFoundException("Not found book."));
+			if (book.getInventory_quantity() < 1 || !book.getStatus().equals(BookStatus.Availabled)) {
+				throw new RuntimeException("Not valid book.");
+			}
+			return book;
+		} catch (Exception e) {
+			throw new RuntimeException(e.toString());
+		}
+	}
+
+	private void addBook(ShoppingCartEntity shoppingCart, CartItemEntity cartItem, 
+			AccountEntity account, BookEntity book, int quantity) {
+		if (shoppingCart == null) {
+			shoppingCart = new ShoppingCartEntity();
+			shoppingCart.setUser(account.getUser());
+			shoppingCart.setTotalItems(0);
+			shoppingCart.setTotalPrice(0);
+			shoppingCartRepo.save(shoppingCart);
+
+			cartItem.setBook(book);
+			cartItem.setQuantity(quantity);
+			cartItem.setTotalPrice(book.getSalePrice() * quantity);
+			cartItem.setShoppingCart(shoppingCart);
+			shoppingCart.getCartItems().add(cartItem);
+
+			cartItemRepo.save(cartItem);
+			updateCartTotal(shoppingCart);
+			shoppingCartRepo.save(shoppingCart);
+		} else {
+			Optional<CartItemEntity> existingCartItem = shoppingCart.getCartItems().stream()
+					.filter(item -> item.getBook().getId().equals(book.getId())).findFirst();
+
+			if (existingCartItem.isPresent()) {
+				cartItem = existingCartItem.get();
+				cartItem.setQuantity(cartItem.getQuantity() + quantity);
+				cartItem.setTotalPrice(book.getSalePrice() * cartItem.getQuantity());
+				shoppingCart.getCartItems().add(cartItem);
+			} else {
+				cartItem.setBook(book);
+				cartItem.setQuantity(quantity);
+				cartItem.setTotalPrice(book.getSalePrice() * quantity);
+				cartItem.setShoppingCart(shoppingCart);
+				shoppingCart.getCartItems().add(cartItem);
+			}
+
+			cartItemRepo.save(cartItem);
+			updateCartTotal(shoppingCart);
+			shoppingCartRepo.save(shoppingCart);
+		}
+	}
 
 	@Override
 	public String addProductToCart(Long productId, int quantity, String token) {
@@ -56,56 +110,20 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 			String email = jwtService.extractUsername(token);
 			AccountEntity account = accountRepo.findByEmail(email)
 					.orElseThrow(() -> new NotFoundException("Not found user"));
-			
-			BookEntity book = bookRepo.findById(productId).orElseThrow(() -> new NotFoundException("Not found book."));
+
+			BookEntity book = checkValidBook(productId);
 
 			ShoppingCartEntity shoppingCart = account.getUser().getShoppingCart();
-			
+
 			CartItemEntity cartItem = new CartItemEntity();
-			
-			if (shoppingCart == null) {
-				ShoppingCartEntity newShoppingCart = new ShoppingCartEntity();
-				newShoppingCart.setUser(account.getUser());
-				newShoppingCart.setTotalItems(0);
-				newShoppingCart.setTotalPrice(0);
-				shoppingCartRepo.save(newShoppingCart);
-				
-				cartItem.setBook(book);
-				cartItem.setQuantity(quantity);
-				cartItem.setTotalPrice(book.getSalePrice() * quantity);
-				cartItem.setShoppingCart(newShoppingCart);
-				newShoppingCart.getCartItems().add(cartItem);
-				
-				cartItemRepo.save(cartItem);
-				updateCartTotal(newShoppingCart);
-				shoppingCartRepo.save(newShoppingCart);
-			} else {
-				Optional<CartItemEntity> existingCartItem = shoppingCart.getCartItems().stream()
-						.filter(item -> item.getBook().getId().equals(productId)).findFirst();
 
-				if (existingCartItem.isPresent()) {
-					cartItem = existingCartItem.get();
-					cartItem.setQuantity(cartItem.getQuantity() + quantity);
-					cartItem.setTotalPrice(book.getSalePrice() * cartItem.getQuantity());
-					shoppingCart.getCartItems().add(cartItem);
-				} else {
-					cartItem.setBook(book);
-					cartItem.setQuantity(quantity);
-					cartItem.setTotalPrice(book.getSalePrice() * quantity);
-					cartItem.setShoppingCart(shoppingCart);
-					shoppingCart.getCartItems().add(cartItem);
-				}
+			addBook(shoppingCart, cartItem, account, book, quantity);
 
-				cartItemRepo.save(cartItem);
-				updateCartTotal(shoppingCart);
-				shoppingCartRepo.save(shoppingCart);
-			}
-			
 			if (isRedisAvailable()) {
 				String prefix = DATA_TYPE + ":" + account.getEmail();
 				clearCacheWithPrefix(prefix);
 			}
-			
+
 			return "Add book successfully.";
 		} catch (Exception e) {
 			throw new RuntimeException("Error: " + e.toString());
@@ -124,7 +142,7 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 		cart.setTotalItems(totalItems);
 		cart.setTotalPrice(totalPrice);
 	}
-	
+
 	private void checkInventoryBook(ShoppingCartEntity cart) {
 		for (CartItemEntity cartItem : cart.getCartItems()) {
 			BookEntity book = bookRepo.findById(cartItem.getBook().getId()).get();
@@ -141,33 +159,33 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 			String email = jwtService.extractUsername(token);
 			AccountEntity account = accountRepo.findByEmail(email)
 					.orElseThrow(() -> new NotFoundException("Not found user."));
-	        ShoppingCartEntity shoppingCart = account.getUser().getShoppingCart();
-	        Set<CartItemEntity> cartItems = shoppingCart.getCartItems();
-	        Set<CartItemEntity> itemsToRemove = new HashSet<>();
+			ShoppingCartEntity shoppingCart = account.getUser().getShoppingCart();
+			Set<CartItemEntity> cartItems = shoppingCart.getCartItems();
+			Set<CartItemEntity> itemsToRemove = new HashSet<>();
 
-	        for (CartItemEntity cartItem : cartItems) {
-	            if (cartItem.getBook().getId().equals(productId)) {
-	                itemsToRemove.add(cartItem);
-	            }
-	        }
+			for (CartItemEntity cartItem : cartItems) {
+				if (cartItem.getBook().getId().equals(productId)) {
+					itemsToRemove.add(cartItem);
+				}
+			}
 
-	        for (CartItemEntity cartItem : itemsToRemove) {
-	            cartItemRepo.delete(cartItem);
-	            shoppingCart.getCartItems().remove(cartItem);
-	        }
+			for (CartItemEntity cartItem : itemsToRemove) {
+				cartItemRepo.delete(cartItem);
+				shoppingCart.getCartItems().remove(cartItem);
+			}
 
-	        updateCartTotal(shoppingCart);
-	        shoppingCartRepo.save(shoppingCart);
-	        
-	        if (isRedisAvailable()) {
-	        	String prefix = DATA_TYPE + ":" + account.getEmail();
+			updateCartTotal(shoppingCart);
+			shoppingCartRepo.save(shoppingCart);
+
+			if (isRedisAvailable()) {
+				String prefix = DATA_TYPE + ":" + account.getEmail();
 				clearCacheWithPrefix(prefix);
-	        }
+			}
 
-	        return "Remove book successfully.";
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error: " + e.toString());
-	    }
+			return "Remove book successfully.";
+		} catch (Exception e) {
+			throw new RuntimeException("Error: " + e.toString());
+		}
 	}
 
 	@Override
@@ -190,12 +208,12 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 			String email = jwtService.extractUsername(token);
 			AccountEntity account = accountRepo.findByEmail(email)
 					.orElseThrow(() -> new NotFoundException("Not found user."));
-			
+
 			List<CartItemDTO> results = new ArrayList<>();
 			if (isRedisAvailable()) {
 				String key = getKeyFromOne(DATA_TYPE, account.getEmail(), account.getId());
 				results = readListData(key, CartItemDTO.class);
-				
+
 				if (results == null) {
 					results = new ArrayList<>();
 					ShoppingCartEntity shoppingCart = account.getUser().getShoppingCart();
@@ -209,7 +227,7 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 				results = new HashSet<>(shoppingCart.getCartItems()).stream()
 						.map(cartItem -> mapper.map(cartItem, CartItemDTO.class)).collect(Collectors.toList());
 			}
-			
+
 			return results;
 		} catch (Exception e) {
 			throw new RuntimeException("Error: " + e.toString());
@@ -217,7 +235,7 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 	}
 
 	@Override
-	public String updateQuanityProduct(Long productId, String token, int quantity) {
+	public String updateQuantityProduct(Long productId, String token, int quantity) {
 		try {
 			String email = jwtService.extractUsername(token);
 			AccountEntity account = accountRepo.findByEmail(email)
@@ -225,7 +243,7 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 
 			ShoppingCartEntity shoppingCart = account.getUser().getShoppingCart();
 
-			BookEntity book = bookRepo.findById(productId).orElseThrow(() -> new NotFoundException("Not found book."));
+			BookEntity book = checkValidBook(productId);
 
 			Optional<CartItemEntity> existingCartItem = shoppingCart.getCartItems().stream()
 					.filter(cartItem -> cartItem.getBook().getId().equals(productId)).findFirst();
@@ -240,7 +258,7 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 			cartItemRepo.save(cartItem);
 			updateCartTotal(shoppingCart);
 			shoppingCartRepo.save(shoppingCart);
-			
+
 			if (isRedisAvailable()) {
 				String prefix = DATA_TYPE + ":" + account.getEmail();
 				clearCacheWithPrefix(prefix);
@@ -248,7 +266,7 @@ public class ShoppingCartServiceImpl extends BaseRedisServiceImpl implements ISh
 
 			return "Update successfully.";
 		} catch (Exception e) {
-			throw new RuntimeException("Error: " + e.toString());
+			throw new RuntimeException(e.toString());
 		}
 	}
 }

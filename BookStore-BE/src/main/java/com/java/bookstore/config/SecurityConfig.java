@@ -1,7 +1,6 @@
 package com.java.bookstore.config;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,16 +36,18 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain secutiryFilterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
-                            .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
-                            .requestMatchers("/api/v1/book/**", "/api/v1/authen/**", "/csrf/token",
-                                    "/api/v1/payment/**", "/api/v1/socket/**", "/api/v1/actuator/**")
-                            .permitAll().anyRequest().authenticated();
-                })
-                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(authorize -> {
+					authorize
+							.requestMatchers("/api/v1/user/**", "/api/v1/shopping-cart/**")
+							.hasAnyAuthority(Role.USER.name(), Role.ADMIN.name()).requestMatchers("/api/v1/admin/**")
+							.hasAuthority(Role.ADMIN.name())
+							.requestMatchers("/api/v1/book/**", "/api/v1/authen/**", "/csrf/token",
+									"/api/v1/payment/**", "/api/v1/socket/**", "/api/v1/actuator/**",
+									"/api/v1/cookie/**")
+							.permitAll().anyRequest().authenticated();
+				}).sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
@@ -72,10 +73,9 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(
-				Arrays.asList("http://localhost:3000/", "http://127.0.0.1:3000/", "http://127.0.0.1:5500/"));
-		configuration.setAllowedMethods(Arrays.asList("*"));
-		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000/"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "XSRF-TOKEN", "X-XSRF-TOKEN"));
 		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/api/v1/**", configuration);

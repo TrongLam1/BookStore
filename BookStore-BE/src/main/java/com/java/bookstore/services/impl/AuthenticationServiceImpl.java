@@ -64,6 +64,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 				UserEntity user = new UserEntity();
 				user.setEmail(request.getEmail());
 				user.setRole(Role.USER);
+				user.setUserName(request.getUsername());
 				user.setListCouponsUsed(new HashSet<String>());
 
 				account.setUser(user);
@@ -74,12 +75,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 				
 				mailSender.mailSenderSignUp(account);
 
-				return "Sign up successfully with email: " + request.getEmail();
+				return "Đăng kí tài khoản thành công: " + request.getEmail();
 			} else {
-				return "Email đã được sử dụng.";
+				throw new RuntimeException("Email đã được sử dụng.");
 			}
 		} catch (Exception e) {
-			return "Error: " + e.toString();
+			throw new RuntimeException(e.toString());
 		}
 	}
 

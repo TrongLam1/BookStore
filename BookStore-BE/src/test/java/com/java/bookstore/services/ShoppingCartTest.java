@@ -108,7 +108,7 @@ public class ShoppingCartTest {
 		when(accountRepo.findByEmail(email)).thenReturn(Optional.of(accountEntity));
 		when(bookRepo.findById(1L)).thenReturn(Optional.of(bookEntity));
 
-		String result = shoppingCartService.updateQuanityProduct(1L, token, 1);
+		String result = shoppingCartService.updateQuantityProduct(1L, token, 1);
 
 		assertEquals("Update successfully.", result);
 	}
@@ -118,7 +118,7 @@ public class ShoppingCartTest {
 		String token = "validToken";
 		String email = "test@gmail.com";
 		when(accountRepo.findByEmail(email)).thenReturn(Optional.empty());
-		assertThrows(RuntimeException.class, () -> shoppingCartService.updateQuanityProduct(1L, token, 1));
+		assertThrows(RuntimeException.class, () -> shoppingCartService.updateQuantityProduct(1L, token, 1));
 	}
 
 	@Test
@@ -133,7 +133,7 @@ public class ShoppingCartTest {
 		when(accountRepo.findByEmail(email)).thenReturn(Optional.of(accountEntity));
 		when(bookRepo.findById(1L)).thenReturn(Optional.empty());
 
-		assertThrows(RuntimeException.class, () -> shoppingCartService.updateQuanityProduct(1L, token, 1));
+		assertThrows(RuntimeException.class, () -> shoppingCartService.updateQuantityProduct(1L, token, 1));
 	}
 
 	@Test
