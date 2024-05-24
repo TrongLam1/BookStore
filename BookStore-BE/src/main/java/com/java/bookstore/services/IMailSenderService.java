@@ -1,5 +1,7 @@
 package com.java.bookstore.services;
 
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.java.bookstore.dtos.MailDTO;
@@ -14,4 +16,5 @@ public interface IMailSenderService {
 	void mailSenderResetPassword(String mail, MailDTO mailDTO) throws MessagingException;
 	void mailSenderSignUp(AccountEntity account);
 	void mailSenderPlaceOrder(OrderDTO order, String email);
+	void mailSenderVerifyAccount(AccountEntity account, String otp) throws UnsupportedEncodingException;
 }

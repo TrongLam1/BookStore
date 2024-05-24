@@ -11,7 +11,7 @@ import com.java.bookstore.responses.PaginationResult;
 public interface IOrderService {
 
 	OrderDTO findById(Long id);
-	Long placeOrder(String token, PlaceOrderRequest request, String coupon, int valueCoupon);
+	Long placeOrder(String token, PlaceOrderRequest request, int valueCoupon);
 	String changeOrderStatus(Long orderId, String status);
 	PaginationResult<OrderDTO> getOrders(String token, int pageNo, int pageSize);
 	PaginationResult<OrderDTO> getAllOrders(int pageNo, int pageSize);

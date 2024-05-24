@@ -63,6 +63,8 @@ public class CommentServiceImpl extends BaseRedisServiceImpl implements IComment
 			
 			commentRepo.save(comment);
 			
+			double ratingBook = averageRatingProduct(productId);
+			book.setRating(ratingBook);
 			book.getListComments().add(comment);
 			
 			bookRepo.save(book);

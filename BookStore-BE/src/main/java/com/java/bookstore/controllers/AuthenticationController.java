@@ -58,10 +58,28 @@ public class AuthenticationController {
 			log.info("Sign in email: {}", request.getEmail());
 			request.setEmail(HtmlUtils.htmlEscape(request.getEmail()));
 			request.setPassword(HtmlUtils.htmlEscape(request.getPassword()));
-			return new ResponseData<>(HttpStatus.OK.value(), "Đăng nhập thành công.", authenticationService.signIn(request));
+			return new ResponseData<>(HttpStatus.OK.value(), "Đăng nhập thành công.",
+					authenticationService.signIn(request));
 		} catch (Exception e) {
 			log.error("errorMessage={}", e.getMessage(), e.getCause());
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+		}
+	}
+
+	@GetMapping("/verify-account")
+	public String verifyAccount(@RequestParam("email") String email, 
+			@RequestParam("code") String otp) {
+		try {
+			log.info("{} is verified account.", email);
+			boolean isVerified = authenticationService.verifyAccount(email, otp);
+			if (isVerified) {
+				return "Xác thực tài khoản thành công.";
+			} else {
+				return "Xác thực tài khoản thất bại.";
+			}
+		} catch (Exception e) {
+			log.error("errorMessage={}", e.getMessage(), e.getCause());
+			return "Xác thực tài khoản thất bại.";
 		}
 	}
 
@@ -81,7 +99,7 @@ public class AuthenticationController {
 	public ResponseData<?> sendMail(@RequestParam("email") String email) {
 		try {
 			log.info("Send otp reset pass: {}", email);
-			
+
 			String escapeEmail = HtmlUtils.htmlEscape(email);
 			String otp = authenticationService.generateOtp(escapeEmail);
 			MailDTO mailDTO = new MailDTO();
@@ -105,7 +123,7 @@ public class AuthenticationController {
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), "Reset pass failed.");
 		}
 	}
-	
+
 	@GetMapping("/log-out")
 	public ResponseData<?> logOut(@RequestHeader("Authorization") String token) {
 		try {
@@ -117,14 +135,13 @@ public class AuthenticationController {
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), "Reset pass failed.");
 		}
 	}
-	
+
 	@PostMapping("/change-pass")
-	public ResponseData<?> changePassword(
-			@Valid @RequestBody ChangePasswordRequest request,
-			Principal connectedUser) {
+	public ResponseData<?> changePassword(@Valid @RequestBody ChangePasswordRequest request, Principal connectedUser) {
 		try {
 			log.info("Change password.");
-			return new ResponseData<>(HttpStatus.OK.value(), authenticationService.changePassword(request, connectedUser));
+			return new ResponseData<>(HttpStatus.OK.value(),
+					authenticationService.changePassword(request, connectedUser));
 		} catch (Exception e) {
 			log.error("errorMessage={}", e.getMessage(), e.getCause());
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), "Change pass failed.");

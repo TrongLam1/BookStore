@@ -15,6 +15,7 @@ public interface IAuthenticationService {
 	String changePassword(ChangePasswordRequest request, Principal connectedUser);
 	JwtAuthenticationResponse signIn(AuthenRequest request);
 	JwtAuthenticationResponse refreshToken(String token);
+	boolean verifyAccount(String email, String otp);
 	String generateOtp(String email);
 	String resetPassword(ResetPasswordRequest request);
 	String logOut(String token);

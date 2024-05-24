@@ -38,17 +38,15 @@ public class SecurityConfig {
 	public SecurityFilterChain secutiryFilterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(authorize -> {
-					authorize
-							.requestMatchers("/api/v1/user/**", "/api/v1/shopping-cart/**")
-							.hasAnyAuthority(Role.USER.name(), Role.ADMIN.name()).requestMatchers("/api/v1/admin/**")
-							.hasAuthority(Role.ADMIN.name())
-							.requestMatchers("/api/v1/book/**", "/api/v1/authen/**", "/csrf/token",
-									"/api/v1/payment/**", "/api/v1/socket/**", "/api/v1/actuator/**",
-									"/api/v1/cookie/**")
-							.permitAll().anyRequest().authenticated();
-				}).sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+					authorize.requestMatchers("/api/v1/user/**", "/api/v1/shopping-cart/**")
+					.hasAnyAuthority(Role.USER.name(), Role.ADMIN.name()).requestMatchers("/api/v1/admin/**")
+					.hasAuthority(Role.ADMIN.name())
+					.requestMatchers("/api/v1/book/**", "/api/v1/authen/**", "/csrf/token",
+							"/api/v1/payment/**", "/api/v1/socket/**", "/api/v1/actuator/**",
+							"/api/v1/cookie/**")
+					.permitAll().anyRequest().authenticated();})
+				.sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
 		return http.build();
 	}
 
@@ -75,7 +73,8 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000/"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "XSRF-TOKEN", "X-XSRF-TOKEN"));
+		configuration.setAllowedHeaders(
+				Arrays.asList("Authorization", "Cache-Control", "Content-Type", "XSRF-TOKEN", "X-XSRF-TOKEN"));
 		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/api/v1/**", configuration);

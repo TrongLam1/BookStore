@@ -1,5 +1,8 @@
 package com.java.bookstore.services.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -56,7 +59,7 @@ public class MailSenderServiceImpl implements IMailSenderService {
 			
 			Map<String, Object> model = new HashMap<>();
 			model.put("name", account.getEmail());
-			model.put("content", "Bạn đã đăng kí tài khoản thành công!");
+			model.put("content", "Bạn đã xác thực tài khoản thành công!");
 			String content = templateEngine.process("mail", new Context(Locale.getDefault(), model));
 			
 			helper.setFrom(fromMail);
@@ -89,6 +92,38 @@ public class MailSenderServiceImpl implements IMailSenderService {
 			helper.setTo(email);
 
 			mailSender.send(mimeMessage);
+		} catch (MessagingException e) {
+			throw new RuntimeException(e.toString());
+		}
+	}
+
+	@Override
+	public void mailSenderVerifyAccount(AccountEntity account, String otp) throws UnsupportedEncodingException {
+		try {
+			MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+            // Ensure URL parameters are properly URL encoded
+            String email = URLEncoder.encode(account.getEmail(), StandardCharsets.UTF_8.toString());
+            String code = URLEncoder.encode(otp, StandardCharsets.UTF_8.toString());
+            
+            // Construct the URL
+            String url = "http://localhost:8080/api/v1/authen/verify-account?email=" + email + "&code=" + code;
+
+            // Prepare the email content using Thymeleaf template
+            Map<String, Object> model = new HashMap<>();
+            model.put("verificationUrl", url);  // Add URL to model if needed in the template
+
+            String content = templateEngine.process("verify-account", new Context(Locale.getDefault(), model));
+
+            // Set email properties
+            helper.setFrom(fromMail);
+            helper.setSubject("Xác thực tài khoản");
+            helper.setText(content, true);
+            helper.setTo(account.getEmail());
+
+            // Send the email
+            mailSender.send(mimeMessage);
 		} catch (MessagingException e) {
 			throw new RuntimeException(e.toString());
 		}

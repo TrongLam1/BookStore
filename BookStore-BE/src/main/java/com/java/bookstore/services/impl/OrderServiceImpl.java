@@ -78,7 +78,7 @@ public class OrderServiceImpl extends BaseRedisServiceImpl implements IOrderServ
 
 	@Lock(LockModeType.PESSIMISTIC_FORCE_INCREMENT)
 	@Override
-	public Long placeOrder(String token, PlaceOrderRequest request, String coupon, int valueCoupon) {
+	public Long placeOrder(String token, PlaceOrderRequest request, int valueCoupon) {
 		try {
 			String email = jwtService.extractUsername(token);
 			UserEntity user = userRepo.findByEmail(email)
@@ -125,7 +125,6 @@ public class OrderServiceImpl extends BaseRedisServiceImpl implements IOrderServ
 			newOrder.setOrderItems(orderItems);
 			newOrder.setOrderAmt(shoppingCart.getTotalItems());
 			newOrder.setTotalPricesOrder(shoppingCart.getTotalPrice() - valueCoupon);
-			newOrder.setCoupon(coupon);
 			newOrder.setValueCoupon(valueCoupon);
 			orderRepo.save(newOrder);
 

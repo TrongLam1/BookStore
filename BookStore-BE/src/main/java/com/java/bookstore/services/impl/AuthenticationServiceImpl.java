@@ -73,7 +73,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 				accountRepo.save(account);
 				userRepo.save(user);
 				
-				mailSender.mailSenderSignUp(account);
+				String otp = generateOtp(request.getEmail());
+				
+				mailSender.mailSenderVerifyAccount(account, otp);
 
 				return "Đăng kí tài khoản thành công: " + request.getEmail();
 			} else {
@@ -92,6 +94,10 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 			AccountEntity account = accountRepo.findByEmail(request.getEmail())
 					.orElseThrow(() -> new NotFoundException("Không tìm thấy tài khoản."));
+			
+			if (!account.isVerified()) {
+				throw new RuntimeException("Tài khoản chưa được xác thực.");
+			}
 
 			var jwtToken = jwtService.generateToken(account);
 			var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), account);
@@ -127,6 +133,28 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 			accountRepo.save(user);
 			
 			return "Success.";
+		} catch (Exception e) {
+			throw new RuntimeException(e.toString());
+		}
+	}
+	
+	@Override
+	public boolean verifyAccount(String email, String otp) {
+		try {
+			AccountEntity customer = accountRepo.findByEmail(email)
+					.orElseThrow(() -> new NotFoundException("Thông tin khách hàng không tồn tại."));
+			if (customer.getOtp().equals(otp) && customer.isOtpValid()) {
+				customer.setVerified(true);
+				customer.setOtp(null);
+				customer.setOtpExpirationTime(null);
+				accountRepo.save(customer);
+				
+				mailSender.mailSenderSignUp(customer);
+				
+				return true;
+			}
+			
+			return false;
 		} catch (Exception e) {
 			throw new RuntimeException(e.toString());
 		}
@@ -260,6 +288,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 			admin.setEmail("admin@gmail.com");
 			admin.setPassword(passwordEncoder.encode("12345678"));
 			admin.setRole(Role.ADMIN);
+			admin.setVerified(true);
 
 			UserEntity admin1 = new UserEntity();
 			admin1.setAccount(admin);

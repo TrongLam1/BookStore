@@ -30,8 +30,7 @@ public class OrderController {
 
 	@PostMapping("/place-order")
 	public ResponseData<?> placeOrder(@RequestHeader("Authorization") String token,
-			@RequestBody PlaceOrderRequest request, 
-			@RequestParam(value = "coupon", defaultValue = "") String coupon,
+			@RequestBody PlaceOrderRequest request,
 			@RequestParam(value = "valueCoupon", defaultValue = "0") int valueCoupon) {
 		try {
 			log.info("New order");
@@ -41,7 +40,7 @@ public class OrderController {
 			request.setAddress(HtmlUtils.htmlEscape(request.getAddress()));
 			request.setPaymentMethod(HtmlUtils.htmlEscape(request.getPaymentMethod()));
 			return new ResponseData<>(HttpStatus.CREATED.value(), "Place order success",
-					orderService.placeOrder(jwtToken, request, coupon, valueCoupon));
+					orderService.placeOrder(jwtToken, request, valueCoupon));
 		} catch (Exception e) {
 			log.error("errorMessage={}", e.getMessage(), e.getCause());
 			return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), e.getMessage());

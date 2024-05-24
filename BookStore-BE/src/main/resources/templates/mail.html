@@ -6,42 +6,6 @@
 	<style>
 		/* Thêm CSS tại đây để tạo giao diện email đẹp hơn */
 		@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
-
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
-
-		body {
-			background-color: #e8e8e8;
-			font-family: 'Roboto', sans-serif;
-			color: #222;
-		}
-
-		p {
-			line-height: 28px;
-		}
-
-		.container {
-			width: 600px;
-			margin: 20px auto auto;
-			background-color: #fff;
-		}
-
-		header h2 {
-			text-align: center;
-			margin-bottom: 16px;
-			background-color: aquamarine;
-		}
-
-		section {
-			padding: 10px 20px;
-		}
-
-		section span {
-			font-weight: bold;
-		}
 	</style>
 </head>
 
@@ -51,8 +15,9 @@
 			<h2>Thông Báo</h2>
 		</header>
 		<section>
-			<p>Xin chào <span th:text="${name}"></span>,</p>
+			<p>Chúc mừng,</p>
 			<p th:utext="${content}"></p>
+			<p><span th:text="${name}"></span></p>
 		</section>
 	</div>
 </body>

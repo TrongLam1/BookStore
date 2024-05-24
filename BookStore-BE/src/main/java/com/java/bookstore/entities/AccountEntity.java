@@ -82,6 +82,9 @@ public class AccountEntity implements UserDetails {
 	@Builder.Default
 	private boolean isAccountLocked = false;
 	
+	@Builder.Default
+	private boolean isVerified = false;
+	
 	public boolean isOtpValid() {
         if (otpExpirationTime == null) {
             return true;
@@ -128,7 +131,6 @@ public class AccountEntity implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 }
