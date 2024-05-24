@@ -15,50 +15,28 @@ export default class CartView extends Abstract {
 
     handlePayment() {
         const btnPayment = document.querySelector(".payment-process");
-        const coupon = document.querySelector(".coupon-apply");
         btnPayment.addEventListener("click", () => {
-            if (coupon.value === "") {
-                localStorage.removeItem("sale-coupon");
+            if (localStorage.getItem("user") === null) {
+                toast.showErrorToast("Vui lòng đăng nhập để đặt hàng.");
+                return;
             }
             window.location.href = "/check-out";
         });
     }
 
-    checkCoupon() {
-        let btn = document.querySelector(".btn-apply-coupon");
-        let couponValue = document.querySelector(".coupon-apply");
-        let totalPrice = document.querySelector(".cart-payment-total strong").textContent;
-        btn.addEventListener("click", async () => {
-            if (couponValue.value !== "") {
-                totalPrice = totalPrice.replace(/,|đ/g, "");
-                let num = parseFloat(totalPrice);
-                const response = await coupon.checkUseCoupon(couponValue.value, num);
-                if (response.status === 200) {
-                    let sale = response.data;
-                    document.querySelector("#sale-coupon").innerHTML = `${sale.toLocaleString()}đ`;
-                    toast.showSuccessToast("Áp dụng thành công.");
-
-                    let infoCoupon = {
-                        "coupon": couponValue.value,
-                        "value": sale
-                    };
-
-                    localStorage.setItem("sale-coupon", JSON.stringify(infoCoupon));
-                } else {
-                    let err = response.message;
-                    let parts = err.split(":");
-                    let mess = parts[2].trim();
-                    toast.showErrorToast(mess);
-                }
-            }
-        });
-    }
-
     async getHtml() {
-        const list = await shoppingCart.renderShoppingCartItemsList();
-        const getShoppingCart = await shoppingCart.getShoppingCart().then(response => {
-            return response.status === 200 ? response.data : response.message;
-        });
+        let list = await shoppingCart.renderShoppingCartItemsList();
+        let getShoppingCart;
+        if (localStorage.getItem("user") !== null) {
+            getShoppingCart = await shoppingCart.getShoppingCart().then(response => {
+                return response.status === 200 ? response.data : response.message;
+            });
+        } else {
+            getShoppingCart = await shoppingCart.getShoppingCartFromCookie().then(response => {
+                return response.status === 200 ? response.data : response.message;
+            });
+        }
+
         let result;
         if (getShoppingCart.totalItems > 0) {
             result = `
@@ -89,13 +67,6 @@ export default class CartView extends Abstract {
                             <div class="cart-payment-body">
                                 <div class="cart-payment-total">
                                     Tổng: <strong>${getShoppingCart.totalPrice.toLocaleString()}đ</strong>
-                                </div>
-                                <div class="cart-payment-total">
-                                    Giảm: <strong id="sale-coupon"></strong>
-                                </div>
-                                <div class="cart-payment-coupon">
-                                    <input type="text" class="coupon-apply" placeholder="Nhập Coupon">
-                                    <button class="btn-apply-coupon" type="button">Áp dụng</button>
                                 </div>
                                 <div class="cart-payment-btn">
                                     <button type="button" class="payment-process">
@@ -159,7 +130,6 @@ export default class CartView extends Abstract {
 
     async funcForPage() {
         this.handlePayment();
-        this.checkCoupon();
         let btnsRemove = document.querySelectorAll(".cart-item-remove button");
         shoppingCart.btnRemoveProduct(btnsRemove);
     }

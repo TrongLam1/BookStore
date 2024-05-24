@@ -100,7 +100,6 @@ export default class Coupon {
                 <input type="text" class="coupon-name" disabled value="${item.name}">
             </div>
             <div class="coupon-body d-flex flex-column">
-                <span>- ${item.description}</span>
                 <span>- Mã giảm tối đa ${item.valueCoupon.toLocaleString()}đ</span>
                 <span>- Có hiệu lực đến ngày ${item.expiredDate}</span>
             </div>

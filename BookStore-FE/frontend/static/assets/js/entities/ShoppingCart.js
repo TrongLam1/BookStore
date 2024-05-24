@@ -1,4 +1,100 @@
 export default class ShoppingCart {
+    async checkExistedCookie() {
+        const url = `http://localhost:8080/api/v1/cookie/check-existed-cookie`;
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error adding book to cart:", error);
+            throw error;
+        }
+    }
+    
+    async addBookToCartToCookie(productId, quantity) {
+        const url = `http://localhost:8080/api/v1/cookie/add-product?productId=${productId}&quantity=${quantity}`;
+        try {
+            const response = await axios.post(url, {}, {
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error adding book to cart:", error);
+            throw error;
+        }
+    };
+
+    async updateQuantityBookToCookie(productId, quantity) {
+        const url = `http://localhost:8080/api/v1/cookie/update-quantity/${productId}/${quantity}`;
+        try {
+            const response = await axios.put(url, {}, {
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error adding book to cart:", error);
+            throw error;
+        }
+    };
+
+    async removeCartItemFromCookie(productId) {
+        const url = `http://localhost:8080/api/v1/cookie/remove-product?productId=${productId}`;
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error adding book to cart:", error);
+            throw error;
+        }
+    };
+
+    async getCartFromCookie() {
+        const url = "http://localhost:8080/api/v1/cookie/get-cart";
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    };
+
+    async getShoppingCartFromCookie() {
+        const url = "http://localhost:8080/api/v1/cookie/get-shopping-cart";
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    };
+
     async addBookToCart(productId, quantity) {
         const url = `http://localhost:8080/api/v1/shopping-cart/add-book/${productId}/${quantity}`;
         const token = JSON.parse(localStorage.getItem('user')).token;
@@ -16,6 +112,23 @@ export default class ShoppingCart {
         }
     };
 
+    async moveBookFromCookieToCarts() {
+        const url = `http://localhost:8080/api/v1/cookie/move-book-from-cookie-to-carts`;
+        const token = JSON.parse(localStorage.getItem('user')).token;
+        try {
+            const response = await axios.post(url, {}, {
+                headers: {
+                    'Content-type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     async getShoppingCart() {
         const url = "http://localhost:8080/api/v1/shopping-cart/get-cart";
         const token = JSON.parse(localStorage.getItem('user')).token;
@@ -28,7 +141,7 @@ export default class ShoppingCart {
             });
             return response.data;
         } catch (error) {
-            console.error("Error adding book to cart:", error);
+            console.error(error);
             throw error;
         }
     };
@@ -45,7 +158,7 @@ export default class ShoppingCart {
             });
             return response.data;
         } catch (error) {
-            console.error("Error adding book to cart:", error);
+            console.error(error);
             throw error;
         }
     };
@@ -123,11 +236,19 @@ export default class ShoppingCart {
     };
 
     async renderCartItemsListHeader() {
-        const responseCartItems = await this.getCartItems();
-        const shoppingCart = await this.getShoppingCart().then(response => {
-            let shoppingCart = response.status === 200 ? response.data : [];
-            return shoppingCart;
-        });
+        let responseCartItems;
+        let shoppingCart;
+        if (localStorage.getItem('user') !== null) {
+            responseCartItems = await this.getCartItems();
+            shoppingCart = await this.getShoppingCart().then(response => {
+                return shoppingCart = response.status === 200 ? response.data : [];
+            });
+        } else {
+            responseCartItems = await this.getCartFromCookie();
+            shoppingCart = await this.getShoppingCartFromCookie()
+                .then(response => { return response.data });
+        }
+
         let results = "";
         if (shoppingCart.totalItems === 0 || shoppingCart.length === 0) {
             results = `
@@ -209,9 +330,17 @@ export default class ShoppingCart {
     }
 
     async renderShoppingCartItemsList() {
-        const data = await this.getCartItems().then(response => {
-            return response.status === 200 ? response.data : response.message;
-        });
+        let data;
+        if (localStorage.getItem('user') !== null) {
+            data = await this.getCartItems().then(response => {
+                return response.status === 200 ? response.data : [];
+            });
+        } else {
+            data = await this.getCartFromCookie().then(response => {
+                return response.status === 200 ? response.data : [];
+            });
+        }
+
         const itemsList = data.map(item => this.renderShoppingCartItem(item)).join('');
         return itemsList;
     }
@@ -239,9 +368,29 @@ export default class ShoppingCart {
     async removeProductFromCart(item) {
         try {
             const id = item.getAttribute("data-id");
-            await this.removeCartItem(id);
+            if (localStorage.getItem('user') !== null) {
+                await this.removeCartItem(id);
+            } else {
+                await this.removeCartItemFromCookie(id);
+            }
         } catch (e) {
             throw new Error(e);
         }
+    }
+
+    getValueCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
     }
 }

@@ -30,7 +30,14 @@ export default class extends AbstractView {
                         })
                         .catch(() => { toast.showErrorToast("Thêm sản phẩm thất bại.") })
                 } else {
-                    toast.showErrorToast("Bạn chưa đăng nhập tài khoản.");
+                    await shoppingCart.addBookToCartToCookie(item.getAttribute("data-id"), 1)
+                        .then(async () => {
+                            var cart = document.querySelector(".shopping-cart");
+                            const cartItems = await shoppingCart.renderCartItemsListHeader();
+                            cart.innerHTML = cartItems;
+                            toast.showSuccessToast("Đã thêm sản phẩm vào giỏ hàng.");
+                        })
+                        .catch(() => { toast.showErrorToast("Thêm sản phẩm thất bại.") })
                 }
             });
         });

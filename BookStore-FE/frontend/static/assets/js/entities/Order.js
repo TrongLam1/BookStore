@@ -15,9 +15,10 @@ export default class Order {
         }
     }
 
-    async placeOrder(request, coupon, valueCoupon) {
+    async placeOrder(request, valueCoupon) {
         try {
-            let url = `http://localhost:8080/api/v1/user/place-order?coupon=${coupon.toUpperCase()}&valueCoupon=${valueCoupon}`;
+            valueCoupon = parseInt(valueCoupon);
+            let url = `http://localhost:8080/api/v1/user/place-order?valueCoupon=${valueCoupon}`;
             const token = JSON.parse(localStorage.getItem('user')).token;
             const response = await axios.post(url, request, {
                 headers: {

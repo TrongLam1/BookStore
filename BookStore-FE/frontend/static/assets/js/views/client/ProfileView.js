@@ -148,7 +148,7 @@ export default class ProfileView extends AbstractView {
                 </div>
             </div>
             <div class="profile-update-btn">
-                <button type="submit" id="update-info" class="btn btn-primary">
+                <button type="button" id="update-info" class="btn btn-primary">
                     Cập nhật thông tin
                 </button>
             </div>
@@ -173,6 +173,8 @@ export default class ProfileView extends AbstractView {
     btnUpdateInfo(btn) {
         let container = document.querySelector(".profile-body-container");
         let input = container.querySelectorAll(".content");
+        let btnCancelUpdate = document.querySelector("#cancel-update-info");
+        btnCancelUpdate.style.display = "block";
 
         btn.innerHTML = "Lưu thông tin";
         for (const item of input) {
@@ -195,10 +197,11 @@ export default class ProfileView extends AbstractView {
     }
 
     maskPhoneNumber(phoneNumber) {
-        // Check if the input is valid
-        if (typeof phoneNumber !== 'string' || phoneNumber.length !== 10) {
-            return "Invalid phone number format";
-        }
+        if (phoneNumber !== null) {
+            if (typeof phoneNumber !== 'string' || phoneNumber.length !== 10) {
+                return "Invalid phone number format";
+            }
+        } else { return ""; }
 
         // Extract the first 3 characters
         var firstPart = phoneNumber.substring(0, 2);

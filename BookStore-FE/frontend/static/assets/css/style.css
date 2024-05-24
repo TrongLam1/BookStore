@@ -35,7 +35,7 @@
 }
 
 .modal-content {
-    width: 70%;
+    width: 90%;
     margin: 0 auto;
 }
 
@@ -973,9 +973,13 @@ main .banner {
 }
 
 .profile-update-btn {
-    display: block;
+    display: flex;
     float: right;
     margin: 20px 0;
+}
+
+.profile-update-btn button {
+    margin-right: 4px;
 }
 
 .profile-update-btn.hidden {
@@ -1016,7 +1020,8 @@ main .banner {
     border-bottom: 1px solid red;
 }
 
-.change-pass-input .error-message {
+.change-pass-input .error-message,
+.error-message {
     color: red;
     font-size: .9rem;
 }
@@ -1107,7 +1112,8 @@ main .banner {
     color: orange;
 }
 
-.order-info-user-body .info-user .cancel-order button {
+.order-info-user-body .info-user .cancel-order button,
+.order-info-user-body .info-user .payment-order button {
     display: flex;
     background-color: #ff3939;
     border-radius: 8px;
@@ -1117,6 +1123,14 @@ main .banner {
 
 .order-info-user-body .info-user .cancel-order button:hover {
     background-color: red;
+}
+
+.order-info-user-body .info-user .payment-order button {
+    background-color: #34f234;
+}
+
+.order-info-user-body .info-user .payment-order button:hover {
+    background-color: green;
 }
 
 /* ----------------------------------- Shopping Cart ---------------------------------- */
@@ -1345,10 +1359,14 @@ main .banner {
     font-weight: bold;
     margin-bottom: 5px;
     overflow: hidden;
-    height: 3.5rem;
+    height: 3.7rem;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+}
+
+.product-info-wrap .product-info-heading .product-name .rating {
+    color: orange;
 }
 
 .product-info-wrap .product-info-heading .product-branch {
@@ -1714,6 +1732,48 @@ main .banner {
     color: red;
 }
 
+/* ----------------------------------- Checkout Page ---------------------------------- */
+.page-custom .check-out-page {
+    justify-content: space-between;
+}
+
+.page-custom .check-out-page .info-order {
+    background-color: white;
+}
+
+.cart-order-details .order-review-container {
+    padding: 15px;
+    background-color: white;
+}
+
+.cart-order-details .order-review .shop_table {
+    width: 100%;
+}
+
+.shop_table .cart_item td {
+    margin: 4px 0;
+}
+
+.shop_table .cart_item .product-name {
+    display: flex;
+    flex-direction: column;
+}
+
+.shop_table .cart_item .product-quantity {
+    text-align: center;
+}
+
+.order-review .shop_table tfoot {
+    border-top: 1px solid #ccc;
+    height: 100px;
+}
+
+
+
+.order-review .shop_table tfoot tr {
+    margin: 5px 0;
+}
+
 /* ----------------------------------- Payment Page ---------------------------------- */
 .payment-success-container {
     position: absolute;
@@ -1819,7 +1879,7 @@ main .banner {
 }
 
 .noti-new-orders div:hover,
-.noti-new-orders div:hover > #quantity-new-orders {
+.noti-new-orders div:hover>#quantity-new-orders {
     text-decoration: underline;
 }
 

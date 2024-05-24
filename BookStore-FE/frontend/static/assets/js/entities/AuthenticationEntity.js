@@ -1,13 +1,14 @@
 export default class AuthenticationEntity {
-    async postSignUp(email, password) {
+    async postSignUp(username, email, password) {
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/authen/sign-up', {
-                email: email,
-                password: password
-            }, { headers: { 'Content-Type': 'application/json' } });
-            return response;
+            const response = await axios.post('http://localhost:8080/api/v1/authen/sign-up',
+                { username, email, password},
+                {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            return response.data;
         } catch (error) {
-            throw new Error;
+            throw new Error(error);
         }
     }
 

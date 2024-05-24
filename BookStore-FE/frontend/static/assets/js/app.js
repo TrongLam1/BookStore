@@ -228,24 +228,27 @@ btnResetPassword.addEventListener("click", () => {
 });
 // ------------------------------------------------------------------------------------------------
 
-var btnSignUp = modalSignUp.querySelector(".btn.mt-3");
+var btnSignUp = modalSignUp.querySelector(".btn-sign-up");
 var btnSignIn = modalSignIn.querySelector(".btn.mt-3");
 
 btnSignUp.addEventListener("click", async (e) => {
     e.preventDefault();
-    await authen.funcSignUp(btnSignUp)
-        .then(() => {
+    const response = await authen.funcSignUp(btnSignUp)
+        .then(data => {
+        if (data.status === 201) {
             toast.showSuccessToast("Đăng kí thành công.");
             modalSignUp.querySelector(".btn-close").click();
-        })
-        .catch(err => toast.showErrorToast(err));
+        } else {
+            toast.showErrorToast(data.message);
+        }
+    }).catch(err => console.log(err));
 });
 
 btnSignIn.addEventListener("click", async (e) => {
     e.preventDefault();
     await authen.funcSignIn(btnSignIn).then(res => {
-        modalSignIn.querySelector(".btn-close").click();
-    }).catch(err => toast.showErrorToast(err));
+        if (res) { modalSignIn.querySelector(".btn-close").click(); }
+    }).catch(err => toast.showErrorToast("Tài khoản hoặc mật khẩu không đúng."));
 });
 
 // ------------------------------------------------------------------------------------------------
@@ -256,8 +259,14 @@ function updateQuantity(element) {
             if (item.value < 1) {
                 item.value = 1;
             }
-            await shoppingCart.updateQuantityBook(item.getAttribute("data-id"), item.value)
-                .then(() => window.location.reload());
+            if (localStorage.getItem('user') !== null) {
+                await shoppingCart.updateQuantityBook(item.getAttribute("data-id"), item.value)
+                    .then(() => window.location.reload());
+            } else {
+                await shoppingCart.updateQuantityBookToCookie(item.getAttribute("data-id"), item.value)
+                    .then(() => window.location.reload());
+            }
+            
         });
     });
 }
@@ -273,3 +282,8 @@ closeSidebar.addEventListener("click", () => {
     let layout = document.querySelector(".over-layout");
     layout.style.display = "none";
 });
+
+// ---------------------------------------------------------------------------------------
+var cart = document.querySelector(".shopping-cart");
+const cartItems = await shoppingCart.renderCartItemsListHeader();
+cart.innerHTML = cartItems;

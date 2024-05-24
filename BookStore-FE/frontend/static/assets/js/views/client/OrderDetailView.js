@@ -9,7 +9,9 @@ const vietnamese = new Map([
     ["Cancelled", "Đã hủy"],
     ["Shipping", "Đang giao"],
     ["Delivered", "Đã hoàn thành"],
-    ["Pending", "Đang xử lí"]
+    ["Pending", "Đang xử lí"],
+    ["Paid", "Đã thanh toán"],
+    ["Unpaid", "Chưa thanh toán"]
 ]);
 
 export default class CartView extends Abstract {
@@ -40,7 +42,9 @@ export default class CartView extends Abstract {
     }
 
     renderOrderInfoUser(data) {
+        console.log(data);
         let btnCancelOrder = "";
+        let btnPayment = "";
         let coupon = "";
         if (data.status !== "Delivered" && data.status !== "Cancelled") {
             btnCancelOrder = `
@@ -49,12 +53,17 @@ export default class CartView extends Abstract {
             </div>
             `;
         }
-        if (data.coupon !== null) {
+        if (data.paymentMethod === "vnpay" && data.paymentStatus === "Unpaid") {
+            btnPayment = `
+            <div class="payment-order d-flex justify-content-end" data-id="${data.id}">
+                <button type="button">Thanh toán</button>
+            </div>
+            `;
+        }
+        if (data.valueCoupon !== null) {
             coupon = `
             <div class="info-user-coupon">
-                Coupon:
-                <span id="coupon">${data.coupon}</span>
-                - Giảm:
+                Giảm:
                 <span id="coupon">${data.valueCoupon.toLocaleString()}đ</span>
             </div>
             `;
@@ -83,7 +92,11 @@ export default class CartView extends Abstract {
                         </div>
                         <div class="info-user-payment">
                             Thanh toán:
-                            <span id="payment">${data.paymentMethod}</span>
+                            <span id="payment">${data.paymentMethod.toUpperCase()}</span>
+                        </div>
+                        <div class="info-user-payment">
+                            Trạng thái thanh toán:
+                            <span id="payment">${vietnamese.get(data.paymentStatus)}</span>
                         </div>
                         <div class="info-user-address">
                             Địa chỉ:
@@ -94,7 +107,10 @@ export default class CartView extends Abstract {
                             Tổng:
                             <span id="subtotal">${data.totalPricesOrder.toLocaleString()}đ</span>
                         </div>
-                        ${btnCancelOrder}
+                        <div class="d-flex justify-content-between">
+                            ${btnPayment}
+                            ${btnCancelOrder}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,6 +129,20 @@ export default class CartView extends Abstract {
                 }
             })
         })
+    }
+
+    btnPaymentOrder() {
+        let btn = document.querySelector(".payment-order");
+        btn.addEventListener("click", async () => {
+            let orderId = btn.getAttribute("data-id");
+            await order.createPaymentVnPay(orderId)
+                .then(paymentData => {
+                    console.log(paymentData);
+                })
+                .catch(error => {
+                    console.error('An error occurred:', error);
+                });
+        });
     }
 
     showConfirmationPopup(callback) {
@@ -159,5 +189,6 @@ export default class CartView extends Abstract {
 
     funcForPage() {
         this.btnCancelOrder();
+        this.btnPaymentOrder();
     }
 }

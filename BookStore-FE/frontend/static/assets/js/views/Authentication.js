@@ -20,6 +20,11 @@ export default class Authentication {
                         </div>
                         <form>
                             <div class="mb-3 mt-4">
+                                <label for="usernameSignUp" class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control" id="usernameSignUp">
+                                <div class="error-mess"></div>
+                            </div>
+                            <div class="mb-3 mt-4">
                                 <label for="emailSignUp" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="emailSignUp"
                                     aria-describedby="emailHelp">
@@ -35,7 +40,7 @@ export default class Authentication {
                                 <input type="password" class="form-control" id="confirmPassword">
                                 <div class="error-mess"></div>
                             </div>
-                            <button type="submit" class="btn mt-3">ĐĂNG KÍ</button>
+                            <button type="button" class="btn btn-sign-up mt-3">ĐĂNG KÍ</button>
                             <p>Bạn đã có tài khoản? <button class="modal-btn" type="button"
                                 data-bs-toggle="modal" data-bs-target="#ModalFormSignIn">Đăng nhập</button>
                             </p>
@@ -124,7 +129,7 @@ export default class Authentication {
             validForm = true;
         }
 
-        return {validForm: validForm, email: email.value};
+        return { validForm: validForm, email: email.value };
     }
 
     resetPasswordModal() {
@@ -196,9 +201,10 @@ export default class Authentication {
         return { validForm: validForm, otp: otp.value, newPass: newPass.value };
     }
 
-    funcSignUp(item) {
+    checkValidFormSignUp(item) {
         let countErr = 0;
         let modal = item.parentNode;
+        let usernameInput = modal.querySelector("#usernameSignUp");
         let emailInput = modal.querySelector("#emailSignUp");
         let password = modal.querySelector("#passwordSignUp");
         let confirmPassword = modal.querySelector("#confirmPassword");
@@ -211,36 +217,59 @@ export default class Authentication {
             );
         };
 
-        if (!validateEmail(emailInput.value)) {
-            errorMessage[0].innerHTML = "Email không hợp lệ.";
+        if (usernameInput.value.length === 0) {
+            errorMessage[0].innerHTML = "Vui lòng không để trống.";
             countErr++;
         } else {
             errorMessage[0].innerHTML = "";
         }
 
-        if (password.value.length < 8) {
-            errorMessage[1].innerHTML = "Mật khẩu phải có từ 8 kí tự.";
+        if (!validateEmail(emailInput.value)) {
+            errorMessage[1].innerHTML = "Email không hợp lệ.";
             countErr++;
         } else {
             errorMessage[1].innerHTML = "";
         }
 
-        if (password.value !== confirmPassword.value) {
-            errorMessage[2].innerHTML = "Nhập lại mật khẩu không đúng.";
+        if (password.value.length < 8) {
+            errorMessage[2].innerHTML = "Mật khẩu phải có từ 8 kí tự.";
             countErr++;
         } else {
             errorMessage[2].innerHTML = "";
         }
 
+        if (password.value !== confirmPassword.value) {
+            errorMessage[3].innerHTML = "Nhập lại mật khẩu không đúng.";
+            countErr++;
+        } else {
+            errorMessage[3].innerHTML = "";
+        }
+
         if (countErr > 0) validForm = false;
 
         if (validForm) {
-            const response = authentication.postSignUp(emailInput.value, password.value);
-            const data = response.data;
+            let request = { checked: true, username: usernameInput.value, email: emailInput.value, password: password.value }
+
+            usernameInput.value = '';
             emailInput.value = '';
             password.value = '';
             confirmPassword.value = '';
-            return data;
+            console.log(request);
+            return request;
+        } else {
+            let request = { checked: false };
+            return request;
+        }
+    }
+
+    async funcSignUp(item) {
+        let form = this.checkValidFormSignUp(item);
+        if (form.checked) {
+            const response = await authentication
+                .postSignUp(form.username, form.email, form.password);
+            return response;
+        } else {
+            return;
         }
     }
 
@@ -286,9 +315,12 @@ export default class Authentication {
                 if (data.role === "ADMIN") {
                     window.location.href = "http://localhost:3000/dashboard";
                 }
+
+                return true;
             } else {
                 let parts = response.message.split(":");
                 toast.showErrorToast(parts[parts.length - 1]);
+                return false;
             }
         }
     }
@@ -348,6 +380,16 @@ export default class Authentication {
             `;
         }
 
+        let checkCookie = await shoppingCart.checkExistedCookie().then(res => {
+            return res.status === 200 ? res.data : false;
+        })
+        if (checkCookie) {
+            await shoppingCart.moveBookFromCookieToCarts().then(() => {
+                toast.showSuccessToast("Đã thêm sản phẩm vào giỏ hàng.");
+                setTimeout(() => { window.location.reload() }, 1500);
+            });
+        }
+
         var cart = document.querySelector(".shopping-cart");
         const cartItems = await shoppingCart.renderCartItemsListHeader();
         cart.innerHTML = cartItems;
@@ -392,7 +434,7 @@ export default class Authentication {
         </ul>
         `;
 
-        window.location.href = "http://localhost";
+        window.location.href = "http://localhost:3000";
     }
 
     async refreshToken() {
@@ -407,5 +449,12 @@ export default class Authentication {
         } catch (e) {
             console.log(e.message);
         }
+    }
+
+    getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
     }
 }

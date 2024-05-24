@@ -81,6 +81,12 @@ export default class BookDetail extends Abstract {
                             <div class="product-info-heading">
                                 <div class="product-name">
                                     <h4>${item.name}</h4>
+                                    (
+                                    <div class="rating">
+                                        <i class="fa-solid fa-star"></i>
+                                        ${item.rating}
+                                    </div>
+                                    )
                                 </div>
                                 <div class="product-branch">
                                     Thương hiệu:
@@ -204,18 +210,20 @@ export default class BookDetail extends Abstract {
 
     async renderListComments() {
         try {
-            const dataListComments = await comment.getListCommentsFromBook(this.params.id, this.params.page)
-                .then(response => {
-                    if (response.status === 200) {
-                        localStorage.setItem("totalPagesComments", response.data.totalPages);
-                        return response.data.data;
-                    }
-                });
-            //const averageRating = await comment.getAverageRating(this.params.id);
-            let listComments = dataListComments.map(item => this.renderComment(item)).join('');
+            const dataListComments =
+                await comment.getListCommentsFromBook(this.params.id, this.params.page)
+                    .then(response => {
+                        if (response.status === 200) {
+                            localStorage.setItem("totalPagesComments", response.totalPages);
+                            return response.data;
+                        }
+                    });
+            
+            let listComments = dataListComments.data.map(item => this.renderComment(item)).join('');
             if (listComments.length === 0) {
                 listComments = `<span>Chưa có đánh giá sản phẩm.</span>`;
             }
+
             const body = `
             <div class="product-comment-container col-lg-9">
                 <div class="product-comment-heading d-flex justify-content-between align-items-center">
@@ -343,7 +351,13 @@ export default class BookDetail extends Abstract {
                 })
                 .catch(() => { toast.showErrorToast("Thêm sản phẩm thất bại.") })
         } else {
-            toast.showErrorToast("Bạn chưa đăng nhập tài khoản.");
+            await shoppingCart.addBookToCartToCookie(id, quantity)
+                .then(async () => {
+                    let cart = document.querySelector(".shopping-cart");
+                    cart.innerHTML = await shoppingCart.renderCartItemsListHeader();
+                    toast.showSuccessToast("Đã thêm sản phẩm vào giỏ hàng.");
+                })
+                .catch(() => { toast.showErrorToast("Thêm sản phẩm thất bại.") });
         }
     }
 
@@ -461,7 +475,10 @@ export default class BookDetail extends Abstract {
         addBookBtn.forEach(btn => {
             btn.addEventListener("click", async () => {
                 if (localStorage.getItem("user") === null) {
-                    toast.showErrorToast("Vui lòng đăng nhập.");
+                    await shoppingCart.addBookToCartToCookie(id, 1)
+                        .then(data => console.log(data))
+                        .catch(err => console.error(err));
+                    // toast.showErrorToast("Vui lòng đăng nhập.");
                 } else {
                     let id = btn.getAttribute("data-id");
                     await shoppingCart.addBookToCart(id, 1)
