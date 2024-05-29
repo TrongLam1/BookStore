@@ -21,8 +21,10 @@ spring:
 
   data:
     redis:
+      use-redis-cache: false
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+    
  
 management:
   endpoint:

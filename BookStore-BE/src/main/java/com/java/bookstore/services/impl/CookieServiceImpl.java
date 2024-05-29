@@ -77,44 +77,52 @@ public class CookieServiceImpl implements ICookieService {
 		cart.setTotalPrice(totalPrice);
 	}
 
-	private void addBook(ShoppingCartEntity shoppingCart, CartItemEntity cartItem, 
+	private void addBook(ShoppingCartEntity shoppingCart, 
 			AccountEntity account, BookEntity book, int quantity) {
-		if (shoppingCart == null) {
-			shoppingCart = new ShoppingCartEntity();
-			shoppingCart.setUser(account.getUser());
-			shoppingCart.setTotalItems(0);
-			shoppingCart.setTotalPrice(0);
-			shoppingCartRepo.save(shoppingCart);
+		try {
+			CartItemEntity cartItem = new CartItemEntity();
+			
+			if (shoppingCart == null) {
+				shoppingCart = new ShoppingCartEntity();
+				shoppingCart.setUser(account.getUser());
+				shoppingCart.setTotalItems(0);
+				shoppingCart.setTotalPrice(0);
+				shoppingCartRepo.save(shoppingCart);
 
-			cartItem.setBook(book);
-			cartItem.setQuantity(quantity);
-			cartItem.setTotalPrice(book.getSalePrice() * quantity);
-			cartItem.setShoppingCart(shoppingCart);
-			shoppingCart.getCartItems().add(cartItem);
-
-			cartItemRepo.save(cartItem);
-			updateCartTotal(shoppingCart);
-			shoppingCartRepo.save(shoppingCart);
-		} else {
-			Optional<CartItemEntity> existingCartItem = shoppingCart.getCartItems().stream()
-					.filter(item -> item.getBook().getId().equals(book.getId())).findFirst();
-
-			if (existingCartItem.isPresent()) {
-				cartItem = existingCartItem.get();
-				cartItem.setQuantity(cartItem.getQuantity() + quantity);
-				cartItem.setTotalPrice(book.getSalePrice() * cartItem.getQuantity());
-				shoppingCart.getCartItems().add(cartItem);
-			} else {
 				cartItem.setBook(book);
 				cartItem.setQuantity(quantity);
 				cartItem.setTotalPrice(book.getSalePrice() * quantity);
 				cartItem.setShoppingCart(shoppingCart);
 				shoppingCart.getCartItems().add(cartItem);
-			}
 
-			cartItemRepo.save(cartItem);
-			updateCartTotal(shoppingCart);
-			shoppingCartRepo.save(shoppingCart);
+				cartItemRepo.save(cartItem);
+				updateCartTotal(shoppingCart);
+				shoppingCartRepo.save(shoppingCart);
+			} else {
+				Optional<CartItemEntity> existingCartItem = shoppingCart.getCartItems().stream()
+						.filter(item -> item.getBook().getId().equals(book.getId())).findFirst();
+
+				if (existingCartItem.isPresent()) {
+					cartItem = existingCartItem.get();
+					cartItem.setQuantity(cartItem.getQuantity() + quantity);
+					cartItem.setTotalPrice(book.getSalePrice() * cartItem.getQuantity());
+					shoppingCart.getCartItems().add(cartItem);
+				} else {
+					cartItem.setBook(book);
+					cartItem.setQuantity(quantity);
+					cartItem.setTotalPrice(book.getSalePrice() * quantity);
+					cartItem.setShoppingCart(shoppingCart);
+					shoppingCart.getCartItems().add(cartItem);
+				}
+
+				cartItemRepo.save(cartItem);
+				updateCartTotal(shoppingCart);
+				shoppingCartRepo.save(shoppingCart);
+				
+				System.out.println("120: "+cartItem.toString());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e.toString());
 		}
 	}
 	
@@ -131,18 +139,16 @@ public class CookieServiceImpl implements ICookieService {
 			Set<CartItemEntity> cartItemsCookie = shoppingCartCookie.getCartItems();
 
 			ShoppingCartEntity shoppingCart = account.getUser().getShoppingCart();
-
-			CartItemEntity cartItem = new CartItemEntity();
-
+			
 			if (cartItemsCookie.size() > 0) {
 				for (CartItemEntity cartItemCookie : cartItemsCookie) {
-					addBook(shoppingCart, cartItem, account, cartItemCookie.getBook(), cartItemCookie.getQuantity());
+					addBook(shoppingCart, account, cartItemCookie.getBook(), cartItemCookie.getQuantity());
 				}
 			} else {
 				return "No book from cookie.";
 			}
 
-			return "Add book from cookie successfully.";
+			return "Add book to cart successfully.";
 		} catch (Exception e) {
 			throw new RuntimeException("Error: " + e.toString());
 		}

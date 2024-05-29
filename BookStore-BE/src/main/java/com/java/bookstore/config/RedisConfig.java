@@ -20,11 +20,11 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 @Configuration
 public class RedisConfig {
-	
-	@Value("127.0.0.1")
+
+    @Value("${spring.data.redis.host}")
     private String redisHost;
 
-    @Value("6379")
+    @Value("${spring.data.redis.port}")
     private int redisPort;
 
     @Value("6000")
@@ -32,35 +32,35 @@ public class RedisConfig {
 
     @Value("5")
     private int maxPool;
-	
+
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-    	RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHost, redisPort);
-    	return new LettuceConnectionFactory(configuration);
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHost, redisPort);
+        return new LettuceConnectionFactory(configuration);
     }
-	
-	@Bean
+
+    @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-        
+
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-        
+
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
-	
-	@Bean
-	public ObjectMapper redisObjectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		SimpleModule module = new SimpleModule();
-		module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME));
-		module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ISO_DATE_TIME));
-		objectMapper.registerModule(module);
-		return objectMapper;
-	}
+
+    @Bean
+    public ObjectMapper redisObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME));
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ISO_DATE_TIME));
+        objectMapper.registerModule(module);
+        return objectMapper;
+    }
 }

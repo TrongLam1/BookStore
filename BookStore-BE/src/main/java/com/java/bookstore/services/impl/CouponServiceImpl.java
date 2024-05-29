@@ -133,7 +133,8 @@ public class CouponServiceImpl implements ICouponService {
 			
 			Set<String> listCouponsUsed = user.getListCouponsUsed();
 			boolean checkedUsed = listCouponsUsed.contains(coupon);
-
+			System.out.println(couponEntity.getConditionCoupon());
+			System.out.println("AA: " + totalPriceOrder);
 			if (couponEntity.isValidCoupon()) {
 				if (couponEntity.getQuantity() != 0) {
 					if (checkedUsed) {
