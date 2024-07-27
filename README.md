@@ -4,7 +4,7 @@
 This project is a bookstore application built using Java Spring Boot for the backend and plain frontend technologies. It includes functionalities for customers (both logged in and not logged in) and admin.
 
 ## Technologies Used
-- **Backend:** Spring Boot, Spring Security, JWT Authentication, MailSender, Cloudinary, Redis, MySQL,
+- **Backend:** Spring Boot, Spring Security, JWT Authentication, MailSender, Cloudinary, Redis, MySQL, VNPay
 - **Frontend:** Plain HTML, CSS, JavaScript
 
 ## Features
