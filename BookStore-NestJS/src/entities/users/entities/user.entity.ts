@@ -1,6 +1,6 @@
+import { Role } from '@/entities/role/entities/role.entity';
 import { Comment } from 'src/entities/comments/entities/comment.entity';
 import { Order } from 'src/entities/orders/entities/order.entity';
-import { Role } from 'src/entities/role/entities/role.entity';
 import { ShoppingCart } from 'src/entities/shopping-cart/entities/shopping-cart.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 
@@ -18,7 +18,7 @@ export class User {
     @Column()
     password: string;
 
-    @Column()
+    @Column({ nullable: true })
     phone: string;
 
     @CreateDateColumn()
@@ -30,13 +30,13 @@ export class User {
     @Column({ default: false })
     isActive: boolean;
 
-    @Column()
+    @Column({ nullable: true })
     code: string;
 
-    @Column()
+    @Column({ nullable: true })
     codeExpired: Date;
 
-    @Column()
+    @Column({ nullable: true })
     refreshToken: string;
 
     @OneToOne(() => ShoppingCart)
@@ -50,6 +50,6 @@ export class User {
     comments: Comment[];
 
     @ManyToMany(() => Role, (role) => role.users)
-    @JoinTable()  // This creates the user_roles table
+    @JoinTable()
     roles: Role[];
 }
