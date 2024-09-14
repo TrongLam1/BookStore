@@ -1,34 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
+import { RolesGuard } from '@/auth/guard/roles.guard';
+import { Public, Roles } from '@/decorator/decorator';
+import { Body, Controller, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { TypeDto } from './dto/type.dto';
 import { TypeService } from './type.service';
-import { CreateTypeDto } from './dto/create-type.dto';
-import { UpdateTypeDto } from './dto/update-type.dto';
 
 @Controller('type')
 export class TypeController {
-  constructor(private readonly typeService: TypeService) {}
+  constructor(private readonly typeService: TypeService) { }
 
   @Post()
-  create(@Body() createTypeDto: CreateTypeDto) {
-    return this.typeService.create(createTypeDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  createType(@Body() createTypeDto: TypeDto) {
+    return this.typeService.createNewType(createTypeDto);
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  updateType(@Body() updateTypeDto: TypeDto) {
+    return this.typeService.updateType(updateTypeDto);
   }
 
   @Get()
-  findAll() {
-    return this.typeService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.typeService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTypeDto: UpdateTypeDto) {
-    return this.typeService.update(+id, updateTypeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.typeService.remove(+id);
+  @Public()
+  findAllTypes(
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string,
+    @Query('sort') sort: string
+  ) {
+    return this.typeService.findAllTypes(+current, +pageSize, sort);
   }
 }

@@ -1,9 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
 import { hashPasswordHelper } from 'src/helpers/utils';
+import { Like, Repository } from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
+
+const selectField: any = ['id', 'username', 'email', 'phone', 'createdAt', 'updateAt', 'isActive'];
 
 @Injectable()
 export class UsersService {
@@ -25,20 +28,26 @@ export class UsersService {
     if (checkEmail) throw new BadRequestException(`Email ${email} đã được sử dụng.`);
 
     const hashPassword = await hashPasswordHelper(password);
-    const user = await this.usersRepository.save({
+    return await this.usersRepository.save({
       username, email, password: hashPassword,
       isActive: false
     });
-
-    return { id: user.id };
   }
 
   async findOneByEmail(email: string) {
-    const user = await this.usersRepository.findOne({
+    return await this.usersRepository.findOne({
       where: { email },
       relations: ['roles'],
     });
-    return user;
+  }
+
+  async getProfile(req: any) {
+    return await this.usersRepository.find(
+      {
+        where: { id: req.user.userId },
+        select: selectField
+      }
+    );
   }
 
   async generateRefreshToken(user: User, refreshToken: string) {
@@ -47,5 +56,72 @@ export class UsersService {
       refreshToken: refreshToken
     });
     return user.refreshToken;
+  }
+
+  async findAllUsers(current: number, pageSize: number, sort: string) {
+
+    if (!current) current = 1;
+    if (!pageSize) pageSize = 10;
+
+    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
+
+    const [result, totalItems] = await this.usersRepository.findAndCount(
+      {
+        order: { id: sortOrder },
+        take: pageSize,
+        skip: (current - 1) * pageSize,
+        select: selectField
+      }
+    );
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return { result, totalItems, totalPages };
+  }
+
+  async findUsersByNameContains(current: number, pageSize: number, sort: string, name: string) {
+    if (!current) current = 1;
+    if (!pageSize) pageSize = 10;
+
+    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
+
+    const [result, totalItems] = await this.usersRepository.findAndCount(
+      {
+        where: { username: Like('%' + name + '%') },
+        order: { username: sortOrder },
+        take: pageSize,
+        skip: (current - 1) * pageSize
+      }
+    );
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return { result, totalItems, totalPages };
+  }
+
+  async updateUser(req: any, updateUserDTO: UpdateUserDto) {
+    let user = await this.usersRepository.findOneBy({ id: req.user.userId });
+    if (!user) { throw new NotFoundException("Not found user") };
+
+    let newPassword = null;
+    if (updateUserDTO.password) {
+      newPassword = await hashPasswordHelper(updateUserDTO?.password);
+    }
+
+    user = {
+      ...user,
+      username: updateUserDTO.username ? updateUserDTO.username : user.username,
+      phone: updateUserDTO.phone ? updateUserDTO.phone : user.phone,
+      password: updateUserDTO.password ? newPassword : user.password
+    };
+
+    user = await this.usersRepository.save(user);
+
+    return {
+      id: user.id,
+      username: user.username,
+      phone: user.phone,
+      email: user.email
+    };
   }
 }

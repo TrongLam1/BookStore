@@ -6,8 +6,11 @@ export class Type {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     typeName: string;
+
+    @Column()
+    isAvailable: boolean;
 
     @OneToMany(() => Book, book => book.type)
     books: Book[];

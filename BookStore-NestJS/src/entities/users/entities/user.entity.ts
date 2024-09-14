@@ -2,7 +2,7 @@ import { Role } from '@/entities/role/entities/role.entity';
 import { Comment } from 'src/entities/comments/entities/comment.entity';
 import { Order } from 'src/entities/orders/entities/order.entity';
 import { ShoppingCart } from 'src/entities/shopping-cart/entities/shopping-cart.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {

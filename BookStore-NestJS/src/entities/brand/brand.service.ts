@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Brand } from './entities/brand.entity';
+import { BrandDto } from './dto/brand.dto';
 
 @Injectable()
 export class BrandService {
-  create(createBrandDto: CreateBrandDto) {
-    return 'This action adds a new brand';
+  constructor(
+    @InjectRepository(Brand)
+    private brandRepository: Repository<Brand>
+  ) { }
+
+  async createNewBrand(createBrandDto: BrandDto) {
+    return await this.brandRepository.save({ brandName: createBrandDto.name });
   }
 
-  findAll() {
-    return `This action returns all brand`;
+  async updateBrand(updateBrandDto: BrandDto) {
+    const brand = await this.brandRepository.findOneBy({ brandName: updateBrandDto.name });
+    return await this.brandRepository.save({
+      ...brand,
+      brandName: updateBrandDto.name,
+      isAvailable: updateBrandDto.isAvailable ? updateBrandDto.isAvailable : brand.isAvailable
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} brand`;
-  }
+  async findAllBrands(current: number, pageSize: number, sort: string) {
+    if (!current) current = 1;
+    if (!pageSize) pageSize = 10;
 
-  update(id: number, updateBrandDto: UpdateBrandDto) {
-    return `This action updates a #${id} brand`;
-  }
+    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
 
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+    const [brands, totalItems] = await this.brandRepository.findAndCount(
+      {
+        order: { id: sortOrder },
+        take: pageSize,
+        skip: (current - 1) * pageSize
+      }
+    );
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return { brands, totalItems, totalPages };
   }
 }

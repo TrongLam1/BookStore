@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTypeDto } from './dto/create-type.dto';
-import { UpdateTypeDto } from './dto/update-type.dto';
+import { Type } from './entities/type.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TypeDto } from './dto/type.dto';
 
 @Injectable()
 export class TypeService {
-  create(createTypeDto: CreateTypeDto) {
-    return 'This action adds a new type';
+  constructor(
+    @InjectRepository(Type)
+    private typeRepository: Repository<Type>
+  ) { }
+
+  async createNewType(typeDto: TypeDto) {
+    return await this.typeRepository.save({ typeName: typeDto.typeName });
   }
 
-  findAll() {
-    return `This action returns all type`;
+  async updateType(typeDto: TypeDto) {
+    const type = await this.typeRepository.findOneBy({ typeName: typeDto.typeName });
+    return await this.typeRepository.save({
+      ...type,
+      typeName: typeDto.typeName,
+      isAvailable: typeDto.isAvailable ? typeDto.isAvailable : type.isAvailable
+    })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} type`;
-  }
+  async findAllTypes(current: number, pageSize: number, sort: string) {
+    if (!current) current = 1;
+    if (!pageSize) pageSize = 10;
 
-  update(id: number, updateTypeDto: UpdateTypeDto) {
-    return `This action updates a #${id} type`;
-  }
+    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
 
-  remove(id: number) {
-    return `This action removes a #${id} type`;
+    const [types, totalItems] = await this.typeRepository.findAndCount(
+      {
+        order: { id: sortOrder },
+        take: pageSize,
+        skip: (current - 1) * pageSize
+      }
+    );
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return { types, totalItems, totalPages };
   }
 }
