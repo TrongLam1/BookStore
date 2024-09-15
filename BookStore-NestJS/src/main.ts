@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './interceptor/response';
+import { TypeOrmExceptionFilter } from './exceptions/typeorm-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1', { exclude: [''] });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalFilters(new TypeOrmExceptionFilter());
 
   app.enableCors(
     {

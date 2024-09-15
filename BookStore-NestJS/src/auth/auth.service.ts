@@ -22,7 +22,11 @@ export class AuthService {
 
   async signIn(user: User): Promise<any> {
     const payload = { username: user.email, id: user.id, roles: user.roles.map(role => role.name), hasRefreshToken: true };
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' })
+    const refreshToken = this.jwtService.sign(payload,
+      {
+        secret: process.env.REFRESH_JWT_SECRET_KEY,
+        expiresIn: '30d'
+      })
     await this.usersService.generateRefreshToken(user, refreshToken);
 
     return {
@@ -34,5 +38,9 @@ export class AuthService {
       access_token: this.jwtService.sign(payload, { expiresIn: '1d' }),
       refreshToken
     };
+  }
+
+  async logout(user: User) {
+    return await this.usersService.logout(user);
   }
 }

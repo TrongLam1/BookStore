@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCategoryDto } from './create-category.dto';
+import { IsNotEmpty } from "class-validator";
 
-export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}
+export class UpdateCategoryDto {
+    @IsNotEmpty()
+    id: number;
+
+    @IsNotEmpty({ message: "Vui lòng nhập tên danh mục." })
+    categoryName: string;
+}

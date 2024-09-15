@@ -24,9 +24,13 @@ export class TypeService {
     })
   }
 
+  async findByName(name: string) {
+    return await this.typeRepository.findOneBy({ typeName: name });
+  }
+
   async findAllTypes(current: number, pageSize: number, sort: string) {
-    if (!current) current = 1;
-    if (!pageSize) pageSize = 10;
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
 
     const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
 

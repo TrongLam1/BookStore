@@ -21,34 +21,37 @@ export class Book {
     @Column('float', { precision: 10, scale: 2 })
     currentPrice: number;
 
-    @Column()
+    @Column({ unique: true })
     name: string;
 
     @ManyToOne(() => Type, type => type.books)
     type: Type;
 
-    @ManyToOne(() => Brand)
+    @ManyToOne(() => Brand, brand => brand.books)
     brand: Brand;
 
-    @ManyToOne(() => Category)
+    @ManyToOne(() => Category, category => category.books)
     category: Category;
 
     @Column('text')
     description: string;
 
-    @Column()
+    @Column({ default: 0 })
     sale: number;
 
-    @Column()
+    @Column({ default: 0 })
     inventory: number;
 
-    @Column()
+    @Column({ default: true })
+    isAvailable: boolean;
+
+    @Column({ nullable: true })
     imageId: string;
 
-    @Column()
+    @Column({ nullable: true })
     imageUrl: string;
 
-    @Column('float')
+    @Column('float', { default: 0 })
     rating: number;
 
     @OneToMany(() => Comment, comment => comment.book)

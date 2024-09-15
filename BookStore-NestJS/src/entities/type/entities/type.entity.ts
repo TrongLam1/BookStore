@@ -9,7 +9,7 @@ export class Type {
     @Column({ unique: true })
     typeName: string;
 
-    @Column()
+    @Column({ default: true })
     isAvailable: boolean;
 
     @OneToMany(() => Book, book => book.type)

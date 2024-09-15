@@ -1,26 +1,58 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>
+  ) { }
+
+  async createNewCategory(createCategoryDto: CreateCategoryDto) {
+    const { categoryName } = createCategoryDto;
+    return await this.categoryRepository.save({ categoryName });
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAllCategories(current: number, pageSize: number, sort: string) {
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
+
+    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
+
+    const [categories, totalItems] = await this.categoryRepository.findAndCount(
+      {
+        where: { isAvailable: true },
+        order: { id: sortOrder },
+        take: pageSize,
+        skip: (current - 1) * pageSize
+      }
+    );
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return { categories, totalItems, totalPages };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findByName(name: string) {
+    return await this.categoryRepository.findOneBy({ categoryName: name });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async updateCategory(updateCategoryDto: UpdateCategoryDto) {
+    const category = await this.categoryRepository.findOneBy({ id: updateCategoryDto.id });
+    return await this.categoryRepository.save({
+      ...category,
+      categoryName: updateCategoryDto.categoryName
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async removeCategory(name: string) {
+    const category = await this.findByName(name);
+    return await this.categoryRepository.save({
+      ...category, isAvailable: false
+    });
   }
 }

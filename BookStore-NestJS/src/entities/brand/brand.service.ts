@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { BrandDto } from './dto/brand.dto';
 
+const selectFields: any = ['id', 'brandName'];
+
 @Injectable()
 export class BrandService {
   constructor(
@@ -12,7 +14,10 @@ export class BrandService {
   ) { }
 
   async createNewBrand(createBrandDto: BrandDto) {
-    return await this.brandRepository.save({ brandName: createBrandDto.name });
+    return await this.brandRepository.save({
+      brandName: createBrandDto.name,
+      isAvailable: true
+    });
   }
 
   async updateBrand(updateBrandDto: BrandDto) {
@@ -24,22 +29,41 @@ export class BrandService {
     });
   }
 
+  async findByName(name: string) {
+    return await this.brandRepository.findOne({
+      where: {
+        brandName: name,
+        isAvailable: true
+      },
+      select: selectFields
+    });
+  }
+
   async findAllBrands(current: number, pageSize: number, sort: string) {
-    if (!current) current = 1;
-    if (!pageSize) pageSize = 10;
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
 
     const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
 
     const [brands, totalItems] = await this.brandRepository.findAndCount(
       {
+        where: { isAvailable: true },
         order: { id: sortOrder },
         take: pageSize,
-        skip: (current - 1) * pageSize
+        skip: (current - 1) * pageSize,
+        select: selectFields
       }
     );
 
     const totalPages = Math.ceil(totalItems / pageSize);
 
     return { brands, totalItems, totalPages };
+  }
+
+  async removeBrand(name: string) {
+    const brand = await this.brandRepository.findOneBy({ brandName: name });
+    return await this.brandRepository.save({
+      ...brand, isAvailable: false
+    });
   }
 }

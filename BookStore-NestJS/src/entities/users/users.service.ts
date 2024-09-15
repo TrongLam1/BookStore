@@ -34,6 +34,13 @@ export class UsersService {
     });
   }
 
+  async logout(user: User) {
+    user = await this.usersRepository.save({
+      ...user, refreshToken: null
+    });
+    return { id: user.id, username: user.username, refreshToken: user.refreshToken };
+  }
+
   async findOneByEmail(email: string) {
     return await this.usersRepository.findOne({
       where: { email },
@@ -60,8 +67,8 @@ export class UsersService {
 
   async findAllUsers(current: number, pageSize: number, sort: string) {
 
-    if (!current) current = 1;
-    if (!pageSize) pageSize = 10;
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
 
     const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
 
@@ -80,8 +87,8 @@ export class UsersService {
   }
 
   async findUsersByNameContains(current: number, pageSize: number, sort: string, name: string) {
-    if (!current) current = 1;
-    if (!pageSize) pageSize = 10;
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
 
     const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
 
