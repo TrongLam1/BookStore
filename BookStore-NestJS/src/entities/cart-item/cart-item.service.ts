@@ -13,28 +13,37 @@ export class CartItemService {
   ) { }
 
   async addCartItem(quantity: number, book: Book, shoppingCart: ShoppingCart) {
-    const cartItem = await this.cartItemRepository.findOne({
-      where: { book: book, shoppingCart: shoppingCart }
+    let cartItem = await this.cartItemRepository.findOne({
+      where: {
+        book: { id: book.id },
+        shoppingCart: { id: shoppingCart.id }
+      }
     });
-    if (!cartItem) {
+    if (cartItem === null) {
+      cartItem = new CartItem();
       cartItem.book = book;
       cartItem.shoppingCart = shoppingCart;
       cartItem.totalPrice = book.currentPrice * quantity;
       cartItem.quantity = quantity;
       return await this.cartItemRepository.save(cartItem);
     }
-    this.updateQuantityCartItem(quantity, cartItem);
+    this.updateQuantityCartItem(quantity, cartItem, book);
   }
 
-  async updateQuantityCartItem(quantity: number, cartItem: CartItem) {
+  async updateQuantityCartItem(quantityAdd: number, cartItem: CartItem, book: Book) {
     return await this.cartItemRepository.save({
-      ...cartItem, quantity: quantity
-    })
+      ...cartItem,
+      quantity: cartItem.quantity + quantityAdd,
+      totalPrice: book.currentPrice * cartItem.quantity
+    });
   }
 
   async removeCartItem(book: Book, shoppingCart: ShoppingCart) {
     const cartItem = await this.cartItemRepository.findOne({
-      where: { book: book, shoppingCart: shoppingCart }
+      where: {
+        book: { id: book.id },
+        shoppingCart: { id: shoppingCart.id }
+      }
     });
     await this.cartItemRepository.remove(cartItem);
   }

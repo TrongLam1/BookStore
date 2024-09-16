@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
@@ -19,6 +19,17 @@ export class ShoppingCartController {
   ) {
     return await this.shoppingCartService
       .addProductToCart(req, addToCartDto.bookId, addToCartDto.quantity);
+  }
+
+  @Delete('remove-product/:bookId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async removeProductFromCart(
+    @Request() req,
+    @Param('bookId') bookId: number
+  ) {
+    return await this.shoppingCartService
+      .removeCartItemInCart(req, bookId);
   }
 
   @Get()

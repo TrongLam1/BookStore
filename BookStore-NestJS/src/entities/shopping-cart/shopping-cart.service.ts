@@ -31,7 +31,10 @@ export class ShoppingCartService {
   }
 
   async addProductToCart(req, bookId: number, quantity: number) {
-    let user = await this.userRepository.findOneBy({ id: req.user.userId });
+    let user = await this.userRepository.findOne({
+      where: { id: req.user.userId },
+      relations: ['shoppingCart']
+    });
     if (!user) throw new NotFoundException("No user");
 
     const book = await this.bookService.findById(bookId);
@@ -44,11 +47,12 @@ export class ShoppingCartService {
       user = await this.userRepository.save({ ...user, shoppingCart });
     }
 
-    const cartItem = await this.cartItemService.addCartItem(quantity, book, shoppingCart);
+    await this.cartItemService.addCartItem(quantity, book, shoppingCart);
+
     return await this.shoppingCartRepository.save({
       ...shoppingCart,
-      totalItems: shoppingCart.totalItems + cartItem.quantity,
-      totalPrices: shoppingCart.totalPrices + cartItem.totalPrice
+      totalItems: shoppingCart.totalItems + quantity,
+      totalPrices: shoppingCart.totalPrices + book.currentPrice * quantity
     });
   }
 
