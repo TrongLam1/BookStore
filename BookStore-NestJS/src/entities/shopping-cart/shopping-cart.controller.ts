@@ -1,34 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
-import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
+import { RolesGuard } from '@/auth/guard/roles.guard';
+import { Roles } from '@/decorator/decorator';
+import { USER } from '@/role.environment';
+import { AddToCartDto } from './dto/add-to-cart.dto';
 
 @Controller('shopping-cart')
 export class ShoppingCartController {
-  constructor(private readonly shoppingCartService: ShoppingCartService) {}
+  constructor(private readonly shoppingCartService: ShoppingCartService) { }
 
   @Post()
-  create(@Body() createShoppingCartDto: CreateShoppingCartDto) {
-    return this.shoppingCartService.create(createShoppingCartDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async addProductToCart(
+    @Request() req,
+    @Body() addToCartDto: AddToCartDto
+  ) {
+    return await this.shoppingCartService
+      .addProductToCart(req, addToCartDto.bookId, addToCartDto.quantity);
   }
 
   @Get()
-  findAll() {
-    return this.shoppingCartService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.shoppingCartService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShoppingCartDto: UpdateShoppingCartDto) {
-    return this.shoppingCartService.update(+id, updateShoppingCartDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.shoppingCartService.remove(+id);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async getShoppingCart(@Request() req) {
+    return await this.shoppingCartService.getShoppingCartFromUser(req);
   }
 }

@@ -4,6 +4,7 @@ import { Public, Roles } from '@/decorator/decorator';
 import { Body, Controller, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { BrandDto } from './dto/brand.dto';
+import { ADMIN } from '@/role.environment';
 
 @Controller('brand')
 export class BrandController {
@@ -11,14 +12,14 @@ export class BrandController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles(ADMIN)
   createBrand(@Body() createBrandDto: BrandDto) {
     return this.brandService.createNewBrand(createBrandDto);
   }
 
   @Put()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles(ADMIN)
   updateBrand(@Body() updateBrandDto: BrandDto) {
     return this.brandService.updateBrand(updateBrandDto);
   }

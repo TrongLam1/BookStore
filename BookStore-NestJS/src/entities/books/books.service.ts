@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Book } from './entities/book.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, MoreThan, Repository } from 'typeorm';
 import { CreateBookDto } from './dto/create-book.dto';
 import { TypeService } from '../type/type.service';
 import { BrandService } from '../brand/brand.service';
 import { CategoryService } from '../category/category.service';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { UpdateImgBookDto } from './dto/update-img-book.dto';
+import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 
 const selectFields: any = ['id', 'createdAt', 'updatedAt', 'name', 'brand', 'type', 'category', 'price', 'currentPrice', 'sale', 'description', 'inventory', 'imageUrl'];
 
@@ -18,26 +20,33 @@ export class BooksService {
     private readonly typeService: TypeService,
     private readonly brandService: BrandService,
     private readonly categoryService: CategoryService,
+    private readonly cloudinaryService: CloudinaryService
   ) { }
 
-  async createNewBook(createBookDto: CreateBookDto) {
-    const { name, price, currentPrice, typeName, brandName, categoryName,
-      description, sale, inventory, imageId, imageUrl } = createBookDto;
+  async createNewBook(createBookDto: CreateBookDto, file: Express.Multer.File) {
+    const { name, price, typeName, brandName, categoryName,
+      description, sale, inventory } = createBookDto;
+
+    const files = await this.cloudinaryService.uploadFile(file);
 
     const type = await this.typeService.findByName(typeName);
     const brand = await this.brandService.findByName(brandName);
     const category = await this.categoryService.findByName(categoryName);
 
+    const currentPrice = +price - (+price * +sale / 100);
+
     return await this.bookRepository.save({
-      name, price, currentPrice,
+      name, price: +price, currentPrice: currentPrice,
       type, brand, category,
-      description, sale, inventory, imageId, imageUrl
+      description, sale, inventory,
+      imageId: files.public_id,
+      imageUrl: files.url
     });
   }
 
   async updateBook(updateBookDto: UpdateBookDto) {
     const { id, name, price, currentPrice, typeName, brandName, categoryName,
-      description, sale, inventory, imageId, imageUrl } = updateBookDto;
+      description, sale, inventory } = updateBookDto;
 
     const oldBook = await this.bookRepository.findOneBy({ id });
 
@@ -52,7 +61,28 @@ export class BooksService {
     return await this.bookRepository.save({
       id: oldBook.id,
       name, price, currentPrice, type, brand, category,
-      description, sale, inventory, imageId, imageUrl
+      description, sale, inventory
+    });
+  }
+
+  async updateImageBook(updImgDto: UpdateImgBookDto, file: Express.Multer.File) {
+    const book = await this.bookRepository.findOneBy({ id: updImgDto.id });
+
+    await this.cloudinaryService.deleteFile(book.imageId);
+    const files = await this.cloudinaryService.uploadFile(file);
+
+    return await this.bookRepository.save({
+      ...book, imageId: files.imageId, imageUrl: files.imageUrl
+    });
+  }
+
+  async findById(id: number) {
+    return await this.bookRepository.findOne({
+      where: {
+        id: id,
+        isAvailable: true,
+        inventory: MoreThan(0)
+      }
     });
   }
 
@@ -64,7 +94,7 @@ export class BooksService {
 
     const [books, totalItems] = await this.bookRepository.findAndCount(
       {
-        where: { isAvailable: true },
+        where: { isAvailable: true, inventory: MoreThan(0) },
         order: { id: sortOrder },
         take: pageSize,
         skip: (current - 1) * pageSize,
@@ -87,7 +117,8 @@ export class BooksService {
       {
         where: {
           name: Like('%' + name + '%'),
-          isAvailable: true
+          isAvailable: true,
+          inventory: MoreThan(0)
         },
         order: { id: sortOrder },
         take: pageSize,
@@ -116,6 +147,7 @@ export class BooksService {
 
     const whereConditions: any = {
       isAvailable: true,
+      inventory: MoreThan(0)
     };
 
     if (type) whereConditions.type = type;

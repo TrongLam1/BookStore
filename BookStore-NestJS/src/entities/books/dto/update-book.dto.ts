@@ -30,10 +30,4 @@ export class UpdateBookDto {
 
     @IsNotEmpty({ message: "Vui lòng nhập số lượng sách." })
     inventory: number;
-
-    @IsOptional({})
-    imageId: string;
-
-    @IsOptional({})
-    imageUrl: string;
 }

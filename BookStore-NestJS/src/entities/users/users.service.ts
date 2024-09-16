@@ -5,6 +5,8 @@ import { Like, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { RoleService } from '../role/role.service';
+import { USER } from '@/role.environment';
 
 const selectField: any = ['id', 'username', 'email', 'phone', 'createdAt', 'updateAt', 'isActive'];
 
@@ -12,7 +14,8 @@ const selectField: any = ['id', 'username', 'email', 'phone', 'createdAt', 'upda
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
+    private readonly roleService: RoleService
   ) { }
 
   isEmailExist = async (email: string) => {
@@ -27,10 +30,12 @@ export class UsersService {
     const checkEmail = await this.isEmailExist(email);
     if (checkEmail) throw new BadRequestException(`Email ${email} đã được sử dụng.`);
 
+    const roleUser = await this.roleService.findRoleByName(USER);
+
     const hashPassword = await hashPasswordHelper(password);
     return await this.usersRepository.save({
       username, email, password: hashPassword,
-      isActive: false
+      isActive: false, roles: [roleUser]
     });
   }
 

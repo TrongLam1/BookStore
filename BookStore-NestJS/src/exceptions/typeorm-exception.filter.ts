@@ -7,8 +7,7 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
 
-        const errorMessage = exception.message;
-        let customMessage = 'Unique constraint violation';
+        let errorMessage = exception.message;
 
         // Handle MySQL unique constraint violation (ER_DUP_ENTRY)
         if (errorMessage.includes('Duplicate entry')) {
@@ -21,14 +20,14 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
                 const duplicateValue = valueMatch[1]; // The duplicated value (e.g., 'music')
 
                 // Create a more meaningful message
-                customMessage = `The value '${duplicateValue}' already exists.`;
+                errorMessage = `The value '${duplicateValue}' already exists.`;
             }
         }
 
         response.status(HttpStatus.BAD_REQUEST).json({
             statusCode: HttpStatus.BAD_REQUEST,
             timestamp: new Date().toISOString(),
-            message: customMessage
+            message: errorMessage
         });
     }
 }

@@ -28,7 +28,7 @@ export class Order {
     @Column()
     username: string;
 
-    @Column()
+    @Column({ default: 0 })
     valueCoupon: number;
 
     @Column()

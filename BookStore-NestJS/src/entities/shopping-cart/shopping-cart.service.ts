@@ -1,26 +1,94 @@
-import { Injectable } from '@nestjs/common';
-import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
-import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { BooksService } from '../books/books.service';
+import { CartItemService } from '../cart-item/cart-item.service';
+import { User } from '../users/entities/user.entity';
+import { ShoppingCart } from './entities/shopping-cart.entity';
 
 @Injectable()
 export class ShoppingCartService {
-  create(createShoppingCartDto: CreateShoppingCartDto) {
-    return 'This action adds a new shoppingCart';
+  constructor(
+    @InjectRepository(ShoppingCart)
+    private shoppingCartRepository: Repository<ShoppingCart>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    private readonly cartItemService: CartItemService,
+    private readonly bookService: BooksService
+  ) { }
+
+  updateCartTotal(shoppingCart: ShoppingCart, cartItems: any) {
+    let totalItems = 0;
+    let totalPrices = 0.0;
+
+    cartItems.forEach(item => {
+      totalItems += item.quantity;
+      totalPrices += item.totalPrice;
+    });
+
+    shoppingCart.totalPrices = totalPrices;
+    shoppingCart.totalItems = totalItems;
   }
 
-  findAll() {
-    return `This action returns all shoppingCart`;
+  async addProductToCart(req, bookId: number, quantity: number) {
+    let user = await this.userRepository.findOneBy({ id: req.user.userId });
+    if (!user) throw new NotFoundException("No user");
+
+    const book = await this.bookService.findById(bookId);
+    if (!book) throw new NotFoundException("No book");
+
+    const shoppingCart = user.shoppingCart;
+
+    if (shoppingCart === undefined) {
+      const shoppingCart = await this.shoppingCartRepository.save({});
+      user = await this.userRepository.save({ ...user, shoppingCart });
+    }
+
+    const cartItem = await this.cartItemService.addCartItem(quantity, book, shoppingCart);
+    return await this.shoppingCartRepository.save({
+      ...shoppingCart,
+      totalItems: shoppingCart.totalItems + cartItem.quantity,
+      totalPrices: shoppingCart.totalPrices + cartItem.totalPrice
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} shoppingCart`;
+  async updateShoppingCart(req: any) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: req.user.userId },
+      relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
+    });
+    const shoppingCart = user.shoppingCart;
+    const cartItems = user.shoppingCart.cartItems;
+
+    this.updateCartTotal(shoppingCart, cartItems);
+
+    return await this.shoppingCartRepository.save(shoppingCart);
   }
 
-  update(id: number, updateShoppingCartDto: UpdateShoppingCartDto) {
-    return `This action updates a #${id} shoppingCart`;
+  async removeCartItemInCart(req: any, bookId: number) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: req.user.userId },
+      relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
+    });
+    const shoppingCart = user.shoppingCart;
+    const cartItems = user.shoppingCart.cartItems;
+
+    const bookRemove = await this.bookService.findById(bookId);
+
+    await this.cartItemService.removeCartItem(bookRemove, shoppingCart);
+
+    const updatedCartItems = cartItems.filter(item => item.book.id !== bookRemove.id);
+
+    this.updateCartTotal(shoppingCart, updatedCartItems);
+
+    return await this.shoppingCartRepository.save(shoppingCart);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} shoppingCart`;
+  async getShoppingCartFromUser(req) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: req.user.userId },
+      relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
+    });
+    return user.shoppingCart.cartItems;
   }
 }

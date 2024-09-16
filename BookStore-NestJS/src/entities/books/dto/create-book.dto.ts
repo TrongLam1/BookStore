@@ -7,9 +7,6 @@ export class CreateBookDto {
     @IsNotEmpty({ message: "Vui lòng nhập giá sách." })
     price: number;
 
-    @IsOptional({})
-    currentPrice: number;
-
     @IsNotEmpty({ message: "Vui lòng nhập thể loại sách." })
     typeName: string;
 
@@ -20,17 +17,11 @@ export class CreateBookDto {
     categoryName: string;
 
     @IsOptional({})
-    description: string;
+    description: string = "";
 
     @IsOptional({})
-    sale: number;
+    sale: number = 0;
 
     @IsNotEmpty({ message: "Vui lòng nhập số lượng sách." })
     inventory: number;
-
-    @IsOptional({})
-    imageId: string;
-
-    @IsOptional({})
-    imageUrl: string;
 }

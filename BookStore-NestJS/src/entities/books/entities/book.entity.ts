@@ -33,7 +33,7 @@ export class Book {
     @ManyToOne(() => Category, category => category.books)
     category: Category;
 
-    @Column('text')
+    @Column('text', { nullable: true })
     description: string;
 
     @Column({ default: 0 })

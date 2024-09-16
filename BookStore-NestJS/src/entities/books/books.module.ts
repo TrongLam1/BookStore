@@ -1,3 +1,4 @@
+import { CloudinaryModule } from '@/cloudinary/cloudinary.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BrandModule } from '../brand/brand.module';
@@ -12,8 +13,11 @@ import { Book } from './entities/book.entity';
     TypeOrmModule.forFeature([Book]),
     TypeModule,
     BrandModule,
-    CategoryModule],
+    CategoryModule,
+    CloudinaryModule
+  ],
   controllers: [BooksController],
   providers: [BooksService],
+  exports: [BooksService]
 })
 export class BooksModule { }
