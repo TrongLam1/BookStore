@@ -5,6 +5,8 @@ import { BooksService } from '../books/books.service';
 import { CartItemService } from '../cart-item/cart-item.service';
 import { User } from '../users/entities/user.entity';
 import { ShoppingCart } from './entities/shopping-cart.entity';
+import { CartItem } from '../cart-item/entities/cart-item.entity';
+import { NotEnoughBookException } from '../books/exception/CustomizeExceptionBook';
 
 @Injectable()
 export class ShoppingCartService {
@@ -39,6 +41,7 @@ export class ShoppingCartService {
 
     const book = await this.bookService.findById(bookId);
     if (!book) throw new NotFoundException("No book");
+    if (book.inventory < quantity) throw new NotEnoughBookException();
 
     const shoppingCart = user.shoppingCart;
 
@@ -88,11 +91,26 @@ export class ShoppingCartService {
     return await this.shoppingCartRepository.save(shoppingCart);
   }
 
+  async getShoppingCartFromUserInternal(req) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: req.user.userId },
+      relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
+    });
+    return user;
+  }
+
   async getShoppingCartFromUser(req) {
     const user = await this.userRepository.findOneOrFail({
       where: { id: req.user.userId },
       relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
     });
-    return user.shoppingCart.cartItems;
+    return user.shoppingCart;
+  }
+
+  async clearShoppingCart(cartItems: CartItem[], shoppingCart: ShoppingCart) {
+    await this.cartItemService.clearCartItems(cartItems);
+    return await this.shoppingCartRepository.save({
+      ...shoppingCart, totalItems: 0, totalPrices: 0,
+    });
   }
 }

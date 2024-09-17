@@ -2,6 +2,18 @@ import { OrderItem } from "src/entities/order-item/entities/order-item.entity";
 import { User } from "src/entities/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+export enum OrderStatus {
+    CANCELED = "Đã hủy",
+    PENDING = "Đang xử lí",
+    SHIPPING = "Đang giao hàng",
+    COMPLETED = "Đã hoàn thành",
+}
+
+export enum PaymentMethod {
+    SHIP_COD = "SHIP COD",
+    BANKING = "BANKING",
+}
+
 @Entity()
 export class Order {
     @PrimaryGeneratedColumn()
@@ -31,21 +43,31 @@ export class Order {
     @Column({ default: 0 })
     valueCoupon: number;
 
+    @Column({
+        type: 'enum',
+        enum: OrderStatus,
+        default: OrderStatus.PENDING
+    })
+    orderStatus: OrderStatus;
+
     @Column()
     totalItemsOrder: number;
 
     @Column('float')
     totalPriceOrder: number;
 
-    @Column('date')
+    @Column('date', { nullable: true })
     paymentDate: Date;
 
-    @Column()
+    @Column({ nullable: true })
     paymentStatus: string;
 
-    @Column()
-    paymentMethod: string;
+    @Column({
+        type: 'enum',
+        enum: PaymentMethod
+    })
+    paymentMethod: PaymentMethod;
 
-    @Column()
+    @Column({ nullable: true })
     codeBill: string;
 }

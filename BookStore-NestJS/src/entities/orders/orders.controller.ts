@@ -1,34 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderRequestDto } from './dto/order-request.dto';
+import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
+import { RolesGuard } from '@/auth/guard/roles.guard';
+import { Roles } from '@/decorator/decorator';
+import { USER } from '@/role.environment';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
-  @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  @Post('place-order')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async placeOrder(
+    @Request() request: any,
+    @Body() placeOrderRequest: OrderRequestDto
+  ) {
+    return await this.ordersService.placeOrder(request, placeOrderRequest);
   }
 
-  @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  @Get('history-order')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async getHistoryOrdersFromUser(
+    @Request() req: any,
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string
+  ) {
+    return await this.ordersService.getHistoryOrdersFromUser(req, +current, +pageSize);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
+  @Put('cancel/:orderId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async cancelOrder(
+    @Request() req: any,
+    @Param('orderId') orderId: number
+  ) {
+    return await this.ordersService.cancelOrder(req, orderId);
   }
 }

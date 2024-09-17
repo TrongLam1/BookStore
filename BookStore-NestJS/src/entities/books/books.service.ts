@@ -1,14 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Book } from './entities/book.entity';
+import { CloudinaryService } from '@/cloudinary/cloudinary.service';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, MoreThan, Repository } from 'typeorm';
-import { CreateBookDto } from './dto/create-book.dto';
-import { TypeService } from '../type/type.service';
 import { BrandService } from '../brand/brand.service';
 import { CategoryService } from '../category/category.service';
+import { TypeService } from '../type/type.service';
+import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
-import { CloudinaryService } from '@/cloudinary/cloudinary.service';
+import { Book } from './entities/book.entity';
+import { NotFoundBookException } from './exception/CustomizeExceptionBook';
 
 const selectFields: any = ['id', 'createdAt', 'updatedAt', 'name', 'brand', 'type', 'category', 'price', 'currentPrice', 'sale', 'description', 'inventory', 'imageUrl'];
 
@@ -50,7 +51,7 @@ export class BooksService {
 
     const oldBook = await this.bookRepository.findOneBy({ id });
 
-    if (oldBook) throw new NotFoundException("Không tìm thấy sách.");
+    if (oldBook) throw new NotFoundBookException();
 
     const type = typeName ? await this.typeService.findByName(typeName) : oldBook.type;
     const brand = brandName ? await this.brandService.findByName(brandName) : oldBook.brand;
@@ -76,14 +77,20 @@ export class BooksService {
     });
   }
 
+  async updateListBooks(listBooks: Book[]) {
+    await this.bookRepository.save(listBooks);
+  }
+
   async findById(id: number) {
-    return await this.bookRepository.findOne({
+    const book = await this.bookRepository.findOne({
       where: {
         id: id,
         isAvailable: true,
         inventory: MoreThan(0)
       }
-    });
+    })
+    if (book) return book;
+    throw new NotFoundBookException();
   }
 
   async findAllBooks(current: number, pageSize: number, sort: string) {

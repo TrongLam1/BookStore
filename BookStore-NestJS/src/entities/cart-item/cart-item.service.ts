@@ -47,4 +47,8 @@ export class CartItemService {
     });
     await this.cartItemRepository.remove(cartItem);
   }
+
+  async clearCartItems(items: CartItem[]) {
+    await this.cartItemRepository.remove(items);
+  }
 }
