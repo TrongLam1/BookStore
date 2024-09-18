@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderItemService } from '../order-item/order-item.service';
@@ -42,6 +42,17 @@ export class OrdersService {
     return newOrder;
   }
 
+  async findOrderById(req: any, orderId: number) {
+    const order = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        user: { id: req.user.userId }
+      },
+    });
+    if (!order) throw new NotFoundException("Not found order");
+    return order;
+  }
+
   async getHistoryOrdersFromUser(req: any, current: number, pageSize: number) {
     if (!current || current == 0) current = 1;
     if (!pageSize || current == 0) pageSize = 10;
@@ -76,15 +87,29 @@ export class OrdersService {
     return { listOrders, totalItems, totalPages: Math.ceil(totalItems / pageSize) };
   };
 
-  async cancelOrder(req: any, orderId: number) {
-    const order = await this.orderRepository.findOne({
-      where: {
-        id: orderId,
-        user: { id: req.user.userId }
-      },
-    });
-    if (!order) throw new NotFoundException("Not found order");
+  async updateOrderStatus(req: any, orderId: number, orderStatus: OrderStatus) {
+    const order = await this.findOrderById(req, orderId);
 
-    return await this.orderRepository.save({ ...order, orderStatus: OrderStatus.CANCELED });
+    if (orderStatus === OrderStatus.CANCELED &&
+      (order.orderStatus === OrderStatus.SHIPPING || order.orderStatus === OrderStatus.COMPLETED)) {
+      throw new BadRequestException("Không thể hủy đơn hàng.");
+    }
+
+    return await this.orderRepository.save({ ...order, orderStatus: orderStatus });
   };
+
+  async getAllOrders(current: number, pageSize: number) {
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
+
+    const [listOrders, totalItems] = await this.orderRepository.findAndCount(
+      {
+        take: pageSize,
+        skip: (current - 1) * pageSize,
+        select: ['id', 'createdAt', 'username', 'orderStatus', 'totalPriceOrder']
+      }
+    );
+
+    return { listOrders, totalItems, totalPages: Math.ceil(totalItems / pageSize) };
+  }
 }

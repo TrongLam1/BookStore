@@ -4,6 +4,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './interceptor/response';
 import { TypeOrmExceptionFilter } from './exceptions/typeorm-exception.filter';
 
+declare const module: any;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -26,5 +28,10 @@ async function bootstrap() {
   );
 
   await app.listen(8080);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();

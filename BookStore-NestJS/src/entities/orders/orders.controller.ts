@@ -4,7 +4,9 @@ import { OrderRequestDto } from './dto/order-request.dto';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Roles } from '@/decorator/decorator';
-import { USER } from '@/role.environment';
+import { ADMIN, USER } from '@/role.environment';
+import { OrderStatus } from './entities/order.entity';
+import { UpdateStatusOrderRequest } from './dto/update-status-order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -31,6 +33,16 @@ export class OrdersController {
     return await this.ordersService.getHistoryOrdersFromUser(req, +current, +pageSize);
   }
 
+  @Put('update-status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
+  async updateOrderStatus(
+    @Request() req: any,
+    @Body() updateReq: UpdateStatusOrderRequest
+  ) {
+    return await this.ordersService.updateOrderStatus(req, updateReq.id, updateReq.orderStatus);
+  }
+
   @Put('cancel/:orderId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
@@ -38,6 +50,16 @@ export class OrdersController {
     @Request() req: any,
     @Param('orderId') orderId: number
   ) {
-    return await this.ordersService.cancelOrder(req, orderId);
+    return await this.ordersService.updateOrderStatus(req, orderId, OrderStatus.CANCELED);
+  }
+
+  @Get('all-orders')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
+  async getAllOrders(
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string
+  ) {
+    return await this.ordersService.getAllOrders(+current, +pageSize);
   }
 }
