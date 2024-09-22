@@ -1,0 +1,115 @@
+.footer {
+    .headingFooter {
+        background-color: #333;
+
+        .headingContent {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5px 0;
+            color: white;
+
+            .headingContentSocial {
+                font-size: 2rem;
+
+                svg {
+                    margin: 0 3px;
+                }
+            }
+
+            .headingContentSubscribe {
+                svg {
+                    margin-right: 15px;
+                    font-size: 1.8rem;
+                }
+
+                .subscribe {
+                    margin-right: 10px;
+                    font-size: .95rem;
+                }
+
+                .formSubscribe {
+                    border-radius: 8px;
+                    min-height: 38px;
+                    display: inline;
+
+                    input,
+                    button {
+                        display: inline-block;
+                        font-size: .95rem;
+                        min-height: 38px;
+                        outline: none;
+                        border: none;
+                    }
+
+                    input {
+                        padding: 2px 6px 2px 10px;
+                        border-bottom-left-radius: 4px;
+                        border-top-left-radius: 4px;
+                        background-color: white;
+                        color: black;
+                    }
+
+                    button {
+                        background-color: #a8f7dc;
+                        border-bottom-right-radius: 4px;
+                        border-top-right-radius: 4px;
+                        padding: 4px 10px;
+                        color: black;
+
+                        &:hover {
+                            background-color: #69f3c3;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .infoFooter {
+        margin-top: 2rem;
+
+        .infoFooterWrap {
+            max-width: 100%;
+            width: 1200px;
+            margin: 0 auto;
+
+            .infoFooterItem {
+
+                ul {
+                    font-weight: bold;
+                    padding-left: 0;
+
+                    li {
+                        font-weight: normal;
+                        font-size: .9rem;
+                        list-style: none;
+                        margin: 6px 0;
+                    }
+                }
+
+                .contact {
+                    font-size: .95rem;
+
+                    svg {
+                        margin-right: 5px;
+                    }
+                }
+            }
+
+        }
+    }
+
+    .copyRight {
+        display: flex;
+        font-weight: bold;
+        justify-content: center;
+        background-color: #ccc;
+        padding: 2px 0;
+        font-size: .95rem;
+
+        span {
+            font-size: 1rem;
+        }
+    }
+}
