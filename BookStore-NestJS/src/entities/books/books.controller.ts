@@ -5,8 +5,8 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, U
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateImgBookDto } from './dto/update-img-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { UpdateImgBookDto } from './dto/update-img-book.dto';
 
 @Controller('books')
 export class BooksController {
@@ -27,6 +27,15 @@ export class BooksController {
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  @Post('upload-excel')
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(process.env.ROLE_ADMIN)
+  @Public()
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file) {
+    return await this.booksService.uploadFileExcelBooks(file);
   }
 
   @Put('update-img')

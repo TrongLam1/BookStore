@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BrandModule } from '../brand/brand.module';
 import { CategoryModule } from '../category/category.module';
+import { ExcelModule } from '../excel/excel.module';
 import { TypeModule } from '../type/type.module';
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
@@ -12,6 +13,7 @@ import { Book } from './entities/book.entity';
   imports: [
     TypeOrmModule.forFeature([Book]),
     TypeModule,
+    ExcelModule,
     BrandModule,
     CategoryModule,
     CloudinaryModule

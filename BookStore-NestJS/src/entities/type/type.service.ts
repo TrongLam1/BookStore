@@ -28,7 +28,7 @@ export class TypeService {
     return await this.typeRepository.findOneBy({ typeName: name });
   }
 
-  async findAllTypes(current: number, pageSize: number, sort: string) {
+  async findAllTypesPagination(current: number, pageSize: number, sort: string) {
     if (!current || current == 0) current = 1;
     if (!pageSize || current == 0) pageSize = 10;
 
@@ -45,5 +45,11 @@ export class TypeService {
     const totalPages = Math.ceil(totalItems / pageSize);
 
     return { types, totalItems, totalPages };
+  }
+
+  async findAllTypes() {
+    const [types, total] = await this.typeRepository.findAndCount();
+
+    return types;
   }
 }

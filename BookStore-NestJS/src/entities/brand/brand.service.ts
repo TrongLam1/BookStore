@@ -39,7 +39,7 @@ export class BrandService {
     });
   }
 
-  async findAllBrands(current: number, pageSize: number, sort: string) {
+  async findAllBrandsPagination(current: number, pageSize: number, sort: string) {
     if (!current || current == 0) current = 1;
     if (!pageSize || current == 0) pageSize = 10;
 
@@ -58,6 +58,12 @@ export class BrandService {
     const totalPages = Math.ceil(totalItems / pageSize);
 
     return { brands, totalItems, totalPages };
+  }
+
+  async findAllBrands() {
+    const [brands, totalItems] = await this.brandRepository.findAndCount();
+
+    return brands;
   }
 
   async removeBrand(name: string) {

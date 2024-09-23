@@ -16,7 +16,7 @@ export class CategoryService {
     return await this.categoryRepository.save({ categoryName: createCategoryDto.categoryName });
   }
 
-  async findAllCategories(current: number, pageSize: number, sort: string) {
+  async findAllCategoriesPagination(current: number, pageSize: number, sort: string) {
     if (!current || current == 0) current = 1;
     if (!pageSize || current == 0) pageSize = 10;
 
@@ -34,6 +34,12 @@ export class CategoryService {
     const totalPages = Math.ceil(totalItems / pageSize);
 
     return { categories, totalItems, totalPages };
+  }
+
+  async findAllCategories() {
+    const [categories, total] = await this.categoryRepository.findAndCount();
+
+    return categories;
   }
 
   async findByName(name: string) {

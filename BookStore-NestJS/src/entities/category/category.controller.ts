@@ -32,6 +32,6 @@ export class CategoryController {
     @Query('pageSize') pageSize: string,
     @Query('sort') sort: string,
   ) {
-    return await this.categoryService.findAllCategories(+current, +pageSize, sort);
+    return await this.categoryService.findAllCategoriesPagination(+current, +pageSize, sort);
   }
 }

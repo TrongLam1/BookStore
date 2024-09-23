@@ -1,11 +1,16 @@
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, MoreThan, Repository } from 'typeorm';
 import { BrandService } from '../brand/brand.service';
+import { Brand } from '../brand/entities/brand.entity';
 import { CategoryService } from '../category/category.service';
+import { Category } from '../category/entities/category.entity';
+import { ExcelService } from '../excel/excel.service';
+import { Type } from '../type/entities/type.entity';
 import { TypeService } from '../type/type.service';
 import { CreateBookDto } from './dto/create-book.dto';
+import { ExcelBookDto } from './dto/excel-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
 import { Book } from './entities/book.entity';
@@ -21,8 +26,55 @@ export class BooksService {
     private readonly typeService: TypeService,
     private readonly brandService: BrandService,
     private readonly categoryService: CategoryService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly excelService: ExcelService
   ) { }
+
+  validateExcelBook(excelBook: ExcelBookDto) {
+    if (isNaN(excelBook.price) || excelBook.price < 0) excelBook.price = 0;
+    if (isNaN(excelBook.sale) || excelBook.sale < 0) excelBook.sale = 0;
+    if (isNaN(excelBook.inventory) || excelBook.inventory < 0) excelBook.inventory = 0;
+    return excelBook;
+  }
+
+  async convertExcelBookToBookEntity(
+    excelBooks: ExcelBookDto[],
+    types: Type[],
+    brands: Brand[],
+    categories: Category[]) {
+    const books = await Promise.all(excelBooks.map(async excelBook => {
+      excelBook = this.validateExcelBook(excelBook);
+
+      const book = new Book();
+      book.name = excelBook.name;
+      book.description = excelBook.description;
+      book.price = excelBook.price;
+      book.sale = excelBook.sale;
+      book.inventory = excelBook.inventory;
+      book.isAvailable = true;
+      book.currentPrice = +excelBook.price - (+excelBook.price * +excelBook.sale / 100);
+
+      const type = types.find(t => t.typeName === excelBook.type);
+      const brand = brands.find(b => b.brandName === excelBook.brand);
+      const category = categories.find(c => c.categoryName === excelBook.category);
+
+      if (!type) throw new BadRequestException(`Type ${excelBook.type} not found`);
+      if (!brand) throw new BadRequestException(`Brand ${excelBook.brand} not found`);
+      if (!category) throw new BadRequestException(`Category ${excelBook.category} not found`);
+
+      const files = await this.cloudinaryService.uploadFile(excelBook.file);
+
+      book.type = type;
+      book.brand = brand;
+      book.category = category;
+      book.imageId = files.public_id;
+      book.imageUrl = files.url;
+
+      return book;
+    }));
+
+    return books;
+  }
 
   async createNewBook(createBookDto: CreateBookDto, file: Express.Multer.File) {
     const { name, price, typeName, brandName, categoryName,
@@ -43,6 +95,17 @@ export class BooksService {
       imageId: files.public_id,
       imageUrl: files.url
     });
+  }
+
+  async uploadFileExcelBooks(file: Express.Multer.File) {
+    const types = await this.typeService.findAllTypes();
+    const brands = await this.brandService.findAllBrands();
+    const categories = await this.categoryService.findAllCategories();
+    const excelBooks = await this.excelService.extractDataFromExcel(file);
+
+    const listBooks = await this.convertExcelBookToBookEntity(excelBooks, types, brands, categories);
+
+    return await this.bookRepository.save(listBooks);
   }
 
   async updateBook(updateBookDto: UpdateBookDto) {

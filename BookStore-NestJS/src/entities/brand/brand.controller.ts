@@ -31,6 +31,6 @@ export class BrandController {
     @Query('pageSize') pageSize: string,
     @Query('sort') sort: string
   ) {
-    return this.brandService.findAllBrands(+current, +pageSize, sort);
+    return this.brandService.findAllBrandsPagination(+current, +pageSize, sort);
   }
 }

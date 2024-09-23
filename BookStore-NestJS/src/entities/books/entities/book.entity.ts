@@ -1,3 +1,4 @@
+import { Min } from "class-validator";
 import { Brand } from "src/entities/brand/entities/brand.entity";
 import { Category } from "src/entities/category/entities/category.entity";
 import { Comment } from "src/entities/comments/entities/comment.entity";
@@ -16,9 +17,11 @@ export class Book {
     updatedAt: Date;
 
     @Column('float', { precision: 10, scale: 2 })
+    @Min(0, { message: "Min value is 0" })
     price: number;
 
     @Column('float', { precision: 10, scale: 2 })
+    @Min(0, { message: "Min value is 0" })
     currentPrice: number;
 
     @Column({ unique: true })
@@ -37,9 +40,11 @@ export class Book {
     description: string;
 
     @Column({ default: 0 })
+    @Min(0, { message: "Min value is 0" })
     sale: number;
 
     @Column({ default: 0 })
+    @Min(0, { message: "Min value is 0" })
     inventory: number;
 
     @Column({ default: true })
@@ -56,4 +61,5 @@ export class Book {
 
     @OneToMany(() => Comment, comment => comment.book)
     comments: Comment[];
+    book: Type[];
 }

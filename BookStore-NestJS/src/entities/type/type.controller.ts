@@ -34,6 +34,6 @@ export class TypeController {
     @Query('pageSize') pageSize: string,
     @Query('sort') sort: string
   ) {
-    return this.typeService.findAllTypes(+current, +pageSize, sort);
+    return this.typeService.findAllTypesPagination(+current, +pageSize, sort);
   }
 }

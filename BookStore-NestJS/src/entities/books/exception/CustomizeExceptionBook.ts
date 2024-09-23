@@ -11,3 +11,9 @@ export class NotFoundBookException extends HttpException {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }
+
+export class InvalidFieldType extends HttpException {
+    constructor(message: string = 'Dữ liệu không phù hợp.') {
+        super(message, HttpStatus.BAD_REQUEST);
+    }
+}
