@@ -19,7 +19,7 @@ export class $npmConfigName1726222691214 implements MigrationInterface {
       await queryRunner.query(`
       INSERT INTO user (username, email, password, isActive) VALUES ('admin', 'admin@example.com', '${hashedPassword}', true);`);
       await queryRunner.query(`
-      INSERT INTO user_roles_role (userId, roleId) VALUES (1, 1);`);
+      INSERT INTO user_roles_role (userId, roleId) VALUES (1, 1), (1, 3);`);
     } else {
       console.log('Admin user already exists, skipping insertion.');
     }

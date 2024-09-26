@@ -21,6 +21,7 @@ export class OrderItemService {
         const orderItems = items.map(item => {
             const book = item.book;
             book.inventory -= item.quantity;
+            book.sold += item.quantity;
 
             if (book.inventory < 0) throw new NotEnoughBookException();
 

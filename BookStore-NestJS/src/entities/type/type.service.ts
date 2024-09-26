@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Type } from './entities/type.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { TypeDto } from './dto/type.dto';
 
 @Injectable()
@@ -25,30 +25,38 @@ export class TypeService {
   }
 
   async findByName(name: string) {
-    return await this.typeRepository.findOneBy({ typeName: name });
+    return await this.typeRepository.findOne({
+      where: {
+        typeName: name,
+        isAvailable: true
+      }
+    });
   }
 
-  async findAllTypesPagination(current: number, pageSize: number, sort: string) {
-    if (!current || current == 0) current = 1;
-    if (!pageSize || current == 0) pageSize = 10;
+  async findByNames(names: string[]) {
+    return await this.typeRepository.find({
+      where: {
+        typeName: In([...names]),
+        isAvailable: true
+      }
+    });
+  }
 
-    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
-
+  async findAllTypesName() {
     const [types, totalItems] = await this.typeRepository.findAndCount(
       {
-        order: { id: sortOrder },
-        take: pageSize,
-        skip: (current - 1) * pageSize
+        where: { isAvailable: true },
+        select: ['typeName']
       }
     );
 
-    const totalPages = Math.ceil(totalItems / pageSize);
-
-    return { types, totalItems, totalPages };
+    return { types, totalItems };
   }
 
   async findAllTypes() {
-    const [types, total] = await this.typeRepository.findAndCount();
+    const [types, total] = await this.typeRepository.findAndCount({
+      where: { isAvailable: true },
+    });
 
     return types;
   }

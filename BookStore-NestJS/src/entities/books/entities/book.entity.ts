@@ -59,7 +59,9 @@ export class Book {
     @Column('float', { default: 0 })
     rating: number;
 
+    @Column({ default: 0 })
+    sold: number;
+
     @OneToMany(() => Comment, comment => comment.book)
     comments: Comment[];
-    book: Type[];
 }

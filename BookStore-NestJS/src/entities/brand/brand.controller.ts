@@ -1,10 +1,10 @@
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Public, Roles } from '@/decorator/decorator';
-import { Body, Controller, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { ADMIN } from '@/role.environment';
+import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { BrandDto } from './dto/brand.dto';
-import { ADMIN } from '@/role.environment';
 
 @Controller('brand')
 export class BrandController {
@@ -13,24 +13,20 @@ export class BrandController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(ADMIN)
-  createBrand(@Body() createBrandDto: BrandDto) {
-    return this.brandService.createNewBrand(createBrandDto);
+  async createBrand(@Body() createBrandDto: BrandDto) {
+    return await this.brandService.createNewBrand(createBrandDto);
   }
 
   @Put()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(ADMIN)
-  updateBrand(@Body() updateBrandDto: BrandDto) {
-    return this.brandService.updateBrand(updateBrandDto);
+  async updateBrand(@Body() updateBrandDto: BrandDto) {
+    return await this.brandService.updateBrand(updateBrandDto);
   }
 
-  @Get()
+  @Get('all')
   @Public()
-  findAllBrands(
-    @Query('current') current: string,
-    @Query('pageSize') pageSize: string,
-    @Query('sort') sort: string
-  ) {
-    return this.brandService.findAllBrandsPagination(+current, +pageSize, sort);
+  async findAllBrands() {
+    return await this.brandService.findAllBrandsName();
   }
 }

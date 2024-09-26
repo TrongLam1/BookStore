@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -16,34 +16,41 @@ export class CategoryService {
     return await this.categoryRepository.save({ categoryName: createCategoryDto.categoryName });
   }
 
-  async findAllCategoriesPagination(current: number, pageSize: number, sort: string) {
-    if (!current || current == 0) current = 1;
-    if (!pageSize || current == 0) pageSize = 10;
-
-    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
-
+  async findAllCategoriesName() {
     const [categories, totalItems] = await this.categoryRepository.findAndCount(
       {
         where: { isAvailable: true },
-        order: { id: sortOrder },
-        take: pageSize,
-        skip: (current - 1) * pageSize
+        select: ['categoryName']
       }
     );
 
-    const totalPages = Math.ceil(totalItems / pageSize);
-
-    return { categories, totalItems, totalPages };
+    return { categories, totalItems };
   }
 
   async findAllCategories() {
-    const [categories, total] = await this.categoryRepository.findAndCount();
+    const [categories, total] = await this.categoryRepository.findAndCount({
+      where: { isAvailable: true },
+    });
 
     return categories;
   }
 
   async findByName(name: string) {
-    return await this.categoryRepository.findOneBy({ categoryName: name });
+    return await this.categoryRepository.findOne({
+      where: {
+        categoryName: name,
+        isAvailable: true
+      }
+    });
+  }
+
+  async findByNames(names: string[]) {
+    return await this.categoryRepository.find({
+      where: {
+        categoryName: In([...names]),
+        isAvailable: true
+      }
+    });
   }
 
   async updateCategory(updateCategoryDto: UpdateCategoryDto) {

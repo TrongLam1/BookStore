@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { BrandDto } from './dto/brand.dto';
 
@@ -39,29 +39,31 @@ export class BrandService {
     });
   }
 
-  async findAllBrandsPagination(current: number, pageSize: number, sort: string) {
-    if (!current || current == 0) current = 1;
-    if (!pageSize || current == 0) pageSize = 10;
+  async findByNames(names: string[]) {
+    return await this.brandRepository.find({
+      where: {
+        brandName: In([...names]),
+        isAvailable: true
+      },
+      select: selectFields
+    });
+  }
 
-    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
-
+  async findAllBrandsName() {
     const [brands, totalItems] = await this.brandRepository.findAndCount(
       {
         where: { isAvailable: true },
-        order: { id: sortOrder },
-        take: pageSize,
-        skip: (current - 1) * pageSize,
-        select: selectFields
+        select: ['brandName']
       }
     );
 
-    const totalPages = Math.ceil(totalItems / pageSize);
-
-    return { brands, totalItems, totalPages };
+    return { brands, totalItems };
   }
 
   async findAllBrands() {
-    const [brands, totalItems] = await this.brandRepository.findAndCount();
+    const [brands, totalItems] = await this.brandRepository.findAndCount({
+      where: { isAvailable: true },
+    });
 
     return brands;
   }

@@ -44,9 +44,9 @@ import { RolesGuard } from './auth/guard/roles.guard';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        // entities: ["dist/**/*.entity.js"],
         entities: [__dirname + '/../**/*.entity.{js,ts}'],
         synchronize: true,
+        // logging: true
       }),
       inject: [ConfigService],
     }),
