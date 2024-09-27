@@ -1,6 +1,11 @@
+import HomePage from "./(client)/home/page";
 
-export default function Home() {
+export default function Home({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <div></div>
+    <HomePage></HomePage>
   );
 }

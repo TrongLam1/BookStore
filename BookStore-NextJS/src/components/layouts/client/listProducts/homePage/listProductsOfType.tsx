@@ -1,11 +1,13 @@
+/* eslint-disable @next/next/no-img-element */
+'use client'
 import Image from "next/image";
 import Link from "next/link";
-import CardProduct from "../cardProduct/cardProduct";
+import CardProduct from "../../cardProduct/cardProduct";
 import './listProducts.scss';
 
 const ListProductsType = (props: any) => {
 
-    const { imgBanner } = props;
+    const { imgBanner, listBooks } = props;
 
     return (
         <>
@@ -15,7 +17,11 @@ const ListProductsType = (props: any) => {
                         <Image src={imgBanner} alt="Banner" />
                     </Link>
                     <div className="container-book-cards row mx-sm-0">
-                        <CardProduct col={'col-20'} />
+                        {listBooks && listBooks.length > 0 ?
+                            listBooks.map((item: IBook, index: number) => {
+                                return <CardProduct key={index} book={item} col={'col-20'} />
+                            }) : (<div>Không có sản phẩm</div>)
+                        }
                     </div>
                 </div>
             </section>

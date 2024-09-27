@@ -1,0 +1,35 @@
+.types-book-list {
+    padding-left: 3rem;
+
+    .heading-types-list {
+        padding-left: .9rem;
+
+        .heading-types-header {
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .heading-types-sort {
+            span {
+                margin-right: 15px;
+
+                .btn-sort {
+                    background-color: transparent;
+                    color: #585858;
+                    border: none;
+                    outline: none;
+
+                    &:hover {
+                        color: #3636ff;
+                    }
+
+                    &.active {
+                        color: #3636ff;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+}

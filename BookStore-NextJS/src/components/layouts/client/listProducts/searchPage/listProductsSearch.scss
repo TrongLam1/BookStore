@@ -1,0 +1,33 @@
+.search-page-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+
+    .heading-search-page {
+        &::after {
+            content: "";
+            background: #252a2b;
+            display: block;
+            width: 60px;
+            height: 4px;
+            margin: 20px auto;
+        }
+
+        .heading-search {
+            display: flex;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .heading-text {
+            display: flex;
+            justify-content: center;
+
+            strong {
+                margin: 0 5px;
+            }
+        }
+    }
+}

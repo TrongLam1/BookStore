@@ -37,4 +37,41 @@ declare global {
         },
         access_token: string;
     }
+
+    interface IBook {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        price: number;
+        currentPrice: number;
+        name: string;
+        type: IType;
+        brand: IBrand;
+        category: ICategory;
+        description: string;
+        sale: number;
+        inventory: number;
+        isAvailable: boolean;
+        imageId: string;
+        imageUrl: string;
+        rating: number;
+    }
+
+    interface IType {
+        id: number;
+        typeName: string;
+        isAvailable: boolean;
+    }
+
+    interface IBrand {
+        id: number;
+        brandName: string;
+        isAvailable: boolean;
+    }
+
+    interface ICategory {
+        id: number;
+        categoryName: string;
+        isAvailable: boolean;
+    }
 }

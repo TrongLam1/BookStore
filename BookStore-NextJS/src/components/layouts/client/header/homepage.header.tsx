@@ -4,22 +4,38 @@ import { faMagnifyingGlass, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import {
     Button,
     Container, Nav, Navbar,
     NavDropdown
 } from 'react-bootstrap';
 import logo from '../../../../assets/images/logo.png';
-import style from './homepage.header.module.scss';
 import ShoppingCartDropdown from '../shoppingCartDropdown/shoppingCartDropdown';
+import style from './homepage.header.module.scss';
 
 const HomePageHeader = () => {
+    const router = useRouter();
+
+    const [search, setSearch] = useState('');
+
+    const handleSearch = () => {
+        router.push(`/search?keyword=${search}`);
+    };
+
+    const handleKeyPress = (event: any) => {
+        console.log(event.key);
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
 
     return (
         <>
             <Navbar collapseOnSelect expand="lg" className={style.headerContainer}>
                 <Container>
-                    <Link href="/" className='navbar-brand'>
+                    <Link href="/home" className='navbar-brand'>
                         <Image
                             src={logo}
                             width="120"
@@ -39,12 +55,16 @@ const HomePageHeader = () => {
                                     type="search"
                                     placeholder="Tìm kiếm sản phẩm ..."
                                     aria-label="Search"
-                                // onChange={(e) => setSearch(e.target.value)}
-                                // onKeyDown={(e) => handleKeyPress(e)}
+                                    onChange={(e) => {
+                                        console.log(e.target.value);
+                                        setSearch(e.target.value)
+                                    }}
+                                    value={search}
+                                    onKeyDown={(e) => handleKeyPress(e)}
                                 />
                                 <Button
                                     variant="outline-success"
-                                // onClick={handleSearch}
+                                    onClick={handleSearch}
                                 >
                                     <FontAwesomeIcon icon={faMagnifyingGlass} />
                                 </Button>

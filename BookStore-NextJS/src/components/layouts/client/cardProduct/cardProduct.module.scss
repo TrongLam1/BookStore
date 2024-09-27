@@ -1,0 +1,96 @@
+.bookCardWrap {
+    background-color: white;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    .bookCard {
+        width: 100%;
+        text-decoration: none;
+        color: black;
+
+        .bookImg {
+            margin-bottom: 20px;
+            display: block;
+            background-color: #e3f4fe;
+            padding-top: 10px;
+            object-fit: contain;
+
+            img {
+                width: 100%;
+                transition: transform 0.3s ease;
+                max-width: 200px;
+                height: 240px;
+
+                &:hover {
+                    transform: translateY(-10px);
+                }
+            }
+        }
+
+        .bookName {
+            text-decoration: none;
+            color: black;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            overflow: hidden;
+            height: 3rem;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+
+            &:hover {
+                color: #4a4aff;
+            }
+        }
+
+        .wrapBookInfo {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+
+            .bookPrice {
+                .salePrice {
+                    color: red;
+                    font-weight: bold;
+                }
+
+                .saleWrap {
+                    display: flex;
+
+                    .oldPrice {
+                        text-decoration: line-through;
+                        font-size: 0.95rem;
+                    }
+
+                    .sale {
+                        display: inline-block;
+                        background-color: #ff1313;
+                        color: white;
+                        font-weight: bold;
+                        font-size: 0.9rem;
+                        margin-left: 10px;
+                        padding: 5px;
+                        border-radius: 6px;
+                        line-height: 1;
+                    }
+                }
+            }
+
+            .addBook {
+                .addBookBtn {
+                    font-size: 1.8rem;
+                    background-color: white;
+                    color: #3636ff;
+                    border: none;
+                    outline: none;
+
+                    &:hover {
+                        color: rgba(54, 54, 255, .85);
+                    }
+                }
+            }
+        }
+    }
+}
