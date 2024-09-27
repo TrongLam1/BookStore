@@ -63,3 +63,16 @@ export async function FindProductsByFilter(
         totalPages: res?.data?.totalPages
     }
 }
+
+export async function FindProductById(id: string) {
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/find-one/${id}`,
+        method: 'GET',
+        nextOption: {
+            cache: 'no-store',
+            next: { tags: [`book-${id}`] }
+        }
+    });
+
+    return res;
+}
