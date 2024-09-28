@@ -11,7 +11,7 @@ import {
     Container, Nav, Navbar,
     NavDropdown
 } from 'react-bootstrap';
-import logo from '../../../../assets/images/logo.png';
+import logo from '@/assets/images/logo.png';
 import ShoppingCartDropdown from '../shoppingCartDropdown/shoppingCartDropdown';
 import style from './homepage.header.module.scss';
 
@@ -79,8 +79,8 @@ const HomePageHeader = () => {
                                     </>}
                                 className={style.accountContainer}
                             >
-                                <Link href="/register" className='dropdown-item'>Đăng kí</Link>
-                                <Link href="/login" className='dropdown-item'>Đăng nhập</Link>
+                                <Link href="/auth/register" className='dropdown-item'>Đăng kí</Link>
+                                <Link href="/auth/login" className='dropdown-item'>Đăng nhập</Link>
                             </NavDropdown>
                             {/* {user && user?.auth === false ?
                                 <NavDropdown

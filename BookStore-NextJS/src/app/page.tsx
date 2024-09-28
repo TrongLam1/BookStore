@@ -1,11 +1,8 @@
-import HomePage from "./(client)/home/page";
+import RedirectHomePage from "@/components/layouts/client/header/redirectHomePage";
 
-export default function Home({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function Home() {
+
   return (
-    <HomePage></HomePage>
+    <RedirectHomePage />
   );
 }

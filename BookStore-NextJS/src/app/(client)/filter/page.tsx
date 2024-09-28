@@ -1,7 +1,7 @@
-import { FindAllBrands } from "@/api/brandsApi"
-import { FindAllCategories } from "@/api/categoriesApi"
-import { FindProductsByFilter } from "@/api/productsApi"
-import { FindAllTypes } from "@/api/typesApi"
+import { FindAllBrands } from "@/app/api/brandsApi"
+import { FindAllCategories } from "@/app/api/categoriesApi"
+import { FindProductsByFilter } from "@/app/api/productsApi"
+import { FindAllTypes } from "@/app/api/typesApi"
 import SidebarFilter from "@/components/layouts/client/filter/sidebarFilter"
 import ListProductsFilter from "@/components/layouts/client/listProducts/filterPage/listProductsFilter"
 import '../../../components/layouts/client/filter/filterPage.scss'

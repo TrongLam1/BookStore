@@ -31,11 +31,19 @@ declare global {
 
     interface ILogin {
         user: {
-            _id: string;
+            id: number;
             name: string;
             email: string;
+            role: any;
         },
         access_token: string;
+        refresh_token: string;
+    }
+
+    interface IUser {
+        id: number;
+        name: string;
+        email: string;
     }
 
     interface IBook {

@@ -1,4 +1,4 @@
-import { FindProductsByKeyword } from "@/api/productsApi";
+import { FindProductsByKeyword } from "@/app/api/productsApi";
 import ListProductsSearch from "@/components/layouts/client/listProducts/searchPage/listProductsSearch";
 
 export default async function SearchPage({ searchParams }: {

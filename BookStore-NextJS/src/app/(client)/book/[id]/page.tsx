@@ -1,4 +1,4 @@
-import { FindProductById } from "@/api/productsApi";
+import { FindProductById } from "@/app/api/productsApi";
 import ProductDetailComponent from "@/components/layouts/client/productDetail/productDetailComponent";
 import '../../../../components/layouts/client/productDetail/productDetailComponent.scss'
 

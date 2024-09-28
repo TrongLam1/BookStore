@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css"
-import '@fortawesome/fontawesome-svg-core/styles.css'
-import { config } from "@fortawesome/fontawesome-svg-core"
+import '@fortawesome/fontawesome-svg-core/styles.css';
+import NextAuthWrapper from '../lib/next.auth.wrapper';
+import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 
 const roboto = Roboto({
@@ -24,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={roboto.className}>
-        <div className="app-container">{children}</div>
+        <NextAuthWrapper>
+          <div className="app-container">{children}</div>
+        </NextAuthWrapper>
       </body>
     </html>
   );

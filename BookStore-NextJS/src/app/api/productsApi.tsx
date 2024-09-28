@@ -44,9 +44,9 @@ export async function FindProductsByFilter(
     pageSize: string,
     sort: string,
     orderBy: string,
-    typesString: string,
-    brandsString: string,
-    categoriesString: string
+    typesString: string | null = null,
+    brandsString: string | null = null,
+    categoriesString: string | null = null
 ) {
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/find/filter`,
