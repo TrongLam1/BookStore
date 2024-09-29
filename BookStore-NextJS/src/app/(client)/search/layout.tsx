@@ -1,5 +1,7 @@
-import HomePageFooter from "@/components/layouts/client/footer/homepage.footer"
-import HomePageHeader from "@/components/layouts/client/header/homepage.header"
+
+export const metadata = {
+    title: 'Tìm kiếm'
+}
 
 export default function SearchPageLayout({
     children,
@@ -7,10 +9,6 @@ export default function SearchPageLayout({
     children: React.ReactNode
 }) {
     return (
-        <>
-            <HomePageHeader></HomePageHeader>
-            {children}
-            <HomePageFooter></HomePageFooter>
-        </>
+        <div>{children}</div>
     )
 }

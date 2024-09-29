@@ -26,6 +26,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             id: res.data.user.id,
                             email: res.data.user.email,
                             username: res.data.user.username,
+                            phone: res.data.user.phone,
+                            role: res.data.user.roles,
                         },
                         token: res.data.access_token,
                         refresh_token: res.data.refresh_token
@@ -43,7 +45,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     pages: {
-        signIn: "/auth/login"
+        signIn: "/auth/login",
+        signOut: "/auth/login"
     },
     callbacks: {
         jwt({ token, user }) {

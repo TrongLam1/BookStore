@@ -4,7 +4,7 @@
 import { faMinus, faPlus, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ProductDetailComponent(props: any) {
 
@@ -14,6 +14,10 @@ export default function ProductDetailComponent(props: any) {
     const brand = productDetail.brand;
 
     const [quantityProduct, setQuantityProduct] = useState(1);
+
+    useEffect(() => {
+        if (productDetail) document.title = productDetail.name
+    }, [productDetail])
 
     const handleChangeQuantity = (e: any, action: any) => {
         e.preventDefault();

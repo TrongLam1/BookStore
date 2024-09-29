@@ -19,7 +19,8 @@
     "query-string": "^9.1.0",
     "react": "^18",
     "react-bootstrap": "^2.10.4",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-toastify": "^10.0.5"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -14,10 +14,12 @@ import {
 import logo from '@/assets/images/logo.png';
 import ShoppingCartDropdown from '../shoppingCartDropdown/shoppingCartDropdown';
 import style from './homepage.header.module.scss';
+import { signOut } from 'next-auth/react';
 
-const HomePageHeader = () => {
+const HomePageHeader = (props: any) => {
     const router = useRouter();
 
+    const { user } = props;
     const [search, setSearch] = useState('');
 
     const handleSearch = () => {
@@ -25,7 +27,6 @@ const HomePageHeader = () => {
     };
 
     const handleKeyPress = (event: any) => {
-        console.log(event.key);
         if (event.key === 'Enter') {
             handleSearch();
         }
@@ -71,52 +72,41 @@ const HomePageHeader = () => {
                             </div>
                         </Nav>
                         <Nav>
-                            <NavDropdown
-                                title={
-                                    <>
-                                        <FontAwesomeIcon icon={faUser} className='mx-2' />
-                                        Tài khoản
-                                    </>}
-                                className={style.accountContainer}
-                            >
-                                <Link href="/auth/register" className='dropdown-item'>Đăng kí</Link>
-                                <Link href="/auth/login" className='dropdown-item'>Đăng nhập</Link>
-                            </NavDropdown>
-                            {/* {user && user?.auth === false ?
+                            {!user ?
                                 <NavDropdown
                                     title={
                                         <>
-                                            <FontAwesomeIcon icon={faUser} />
+                                            <FontAwesomeIcon icon={faUser} className='mx-2' />
                                             Tài khoản
                                         </>}
                                     className={style.accountContainer}
                                 >
-                                    <Link href="/register" className='dropdown-item'>Đăng kí</Link>
-                                    <Link href="/login" className='dropdown-item'>Đăng nhập</Link>
+                                    <Link href="/auth/register" className='dropdown-item'>Đăng kí</Link>
+                                    <Link href="/auth/login" className='dropdown-item'>Đăng nhập</Link>
                                 </NavDropdown>
                                 :
                                 <NavDropdown
                                     title={
                                         <>
-                                            <i className="fa-regular fa-user mx-2"></i>
+                                            <FontAwesomeIcon icon={faUser} className='mx-2' />
                                             <div>
                                                 <span>Xin chào,</span>
-                                                <span>{user.email}</span>
+                                                <span>{user.username}</span>
                                             </div>
                                         </>}
-                                    className='account-container'
+                                    className={style.accountContainer}
                                 >
-                                    <Link to={"/users/profile"} className='dropdown-item'>
+                                    <Link href="/profile" className='dropdown-item'>
                                         Thông tin cá nhân
                                     </Link>
-                                    <Link to={"/"}
+                                    <Link href="/"
                                         className='dropdown-item'
-                                        onClick={() => handleLogout()}
+                                        onClick={() => signOut()}
                                     >
                                         Đăng xuất
                                     </Link>
                                 </NavDropdown>
-                            } */}
+                            }
                         </Nav>
                         <Nav>
                             <ShoppingCartDropdown />

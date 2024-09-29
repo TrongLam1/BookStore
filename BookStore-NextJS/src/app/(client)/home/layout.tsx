@@ -1,8 +1,10 @@
 import HomePageBanner from "@/components/layouts/client/banner/homepage.banner";
-import HomePageFooter from "@/components/layouts/client/footer/homepage.footer";
-import HomePageHeader from "@/components/layouts/client/header/homepage.header";
 
-const ClientLayout = async ({
+export const metadata = {
+    title: 'Trang chủ'
+}
+
+const HomeLayout = async ({
     children,
 }: {
     children: React.ReactNode
@@ -10,12 +12,10 @@ const ClientLayout = async ({
 
     return (
         <div>
-            <HomePageHeader></HomePageHeader>
             <HomePageBanner></HomePageBanner>
             {children}
-            <HomePageFooter></HomePageFooter>
         </div>
     );
 };
 
-export default ClientLayout;
+export default HomeLayout;

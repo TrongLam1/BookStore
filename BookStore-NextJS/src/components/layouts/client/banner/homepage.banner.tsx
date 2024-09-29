@@ -66,7 +66,7 @@ const HomePageBanner = () => {
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={dictionary} alt="" />
-                            <span>Sách mới 2024</span>
+                            <span>Tủ sách từ điển</span>
                         </Link>
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
@@ -75,7 +75,7 @@ const HomePageBanner = () => {
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={art} alt="" />
-                            <span>Sách mới 2024</span>
+                            <span>Tủ sách hội họa</span>
                         </Link>
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
@@ -84,7 +84,7 @@ const HomePageBanner = () => {
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={history} alt="" />
-                            <span>Sách mới 2024</span>
+                            <span>Từ điển lịch sử</span>
                         </Link>
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
@@ -93,7 +93,7 @@ const HomePageBanner = () => {
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={children} alt="" />
-                            <span>Sách mới 2024</span>
+                            <span>Tủ sách thiếu nhi</span>
                         </Link>
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
@@ -102,7 +102,7 @@ const HomePageBanner = () => {
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={all} alt="" />
-                            <span>Sách mới 2024</span>
+                            <span>Tất cả sách</span>
                         </Link>
                     </li>
                 </ul>

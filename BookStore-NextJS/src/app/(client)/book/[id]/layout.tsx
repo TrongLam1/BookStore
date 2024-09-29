@@ -1,5 +1,3 @@
-import HomePageFooter from "@/components/layouts/client/footer/homepage.footer"
-import HomePageHeader from "@/components/layouts/client/header/homepage.header"
 
 export default function ProductDetailLayout({
     children
@@ -8,10 +6,6 @@ export default function ProductDetailLayout({
 }) {
 
     return (
-        <>
-            <HomePageHeader />
-            {children}
-            <HomePageFooter />
-        </>
+        <div>{children}</div>
     )
 }

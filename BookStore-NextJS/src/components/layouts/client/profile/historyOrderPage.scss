@@ -1,0 +1,145 @@
+.profile-user-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+
+    .navbar-profile {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 0;
+        min-height: 442px;
+
+        .navbar-profile-header {
+            text-transform: capitalize;
+            margin: 15px;
+            color: #4d4e4e;
+        }
+
+        .navbar-profile-container {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px;
+
+            .profile-item {
+                text-decoration: none;
+                color: #4d4e4e;
+                margin: 6px 0;
+                text-transform: capitalize;
+                padding-left: 30px;
+                line-height: 2;
+                background-color: transparent;
+
+                &:hover {
+                    color: #3e3efa;
+                }
+
+                &.active {
+                    border-left: 2px solid #3e3efa;
+                    color: #3e3efa;
+                }
+            }
+        }
+    }
+
+    .profile-content-wrap {
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 15px 30px;
+        color: black;
+
+        .profile-content-header {
+            text-transform: capitalize;
+            font-size: 1.3rem;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #aaaaaa;
+        }
+
+        .profile-content-body {
+            .profile-body-title {
+                color: #6e6e6e;
+                margin-bottom: 10px;
+            }
+
+            .profile-body-container {
+                padding-left: 30px;
+
+                .profile-body-item {
+                    margin: 20px 0;
+
+                    .content,
+                    .content-email {
+                        color: #6e6e6e;
+                        margin-left: 30px;
+                        background-color: white;
+                        color: black;
+                        border: none;
+                        outline: none;
+                    }
+
+                    .content {
+                        border-bottom: 1px solid #7e7e7e;
+
+                        &:read-only {
+                            border-bottom: none;
+                        }
+                    }
+                }
+            }
+
+            .change-password {
+                .btn-change-password {
+                    button {
+                        font-size: .9rem;
+                    }
+                }
+
+                .change-pass-container {
+                    // display: none;
+
+                    &.active {
+                        display: flex;
+                    }
+
+                    .change-pass-input {
+                        margin-bottom: 10px;
+
+                        input {
+                            border-bottom: 1px solid red;
+                        }
+
+                        .error-message {
+                            color: red;
+                            font-size: .9rem;
+                        }
+                    }
+                }
+            }
+
+            .profile-update-btn {
+                display: flex;
+                float: right;
+                margin: 20px 0;
+
+                button {
+                    margin-right: 4px;
+                }
+
+                &.hidden {
+                    display: none;
+                }
+            }
+
+            .table-history-orders {
+                table {
+                    tr {
+                        text-align: center;
+                    }
+                }
+            }
+        }
+    }
+}
