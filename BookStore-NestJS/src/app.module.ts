@@ -15,9 +15,10 @@ import { OrderItemModule } from './entities/order-item/order-item.module';
 import { OrdersModule } from './entities/orders/orders.module';
 import { ShoppingCartModule } from './entities/shopping-cart/shopping-cart.module';
 import { TypeModule } from './entities/type/type.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
+import { TransformInterceptor } from './interceptor/response';
 
 @Module({
   imports: [
@@ -62,6 +63,10 @@ import { RolesGuard } from './auth/guard/roles.guard';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })

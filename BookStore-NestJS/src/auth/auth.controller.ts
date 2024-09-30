@@ -1,4 +1,4 @@
-import { Public } from '@/decorator/decorator';
+import { Public, ResponseMessage } from '@/decorator/decorator';
 import { CreateUserDto } from '@/entities/users/dto/create-user.dto';
 import { UsersService } from '@/entities/users/users.service';
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
@@ -14,20 +14,22 @@ export class AuthController {
   ) { }
 
   @Post('register')
+  @ResponseMessage("Register account")
   @Public()
   async register(@Body() registerDTO: CreateUserDto) {
     return await this.userService.register(registerDTO);
   }
 
+  @Post('login')
   @UseGuards(LocalAuthGuard)
   @Public()
-  @Post('login')
+  @ResponseMessage("Fetch login")
   async login(@Request() req) {
     return await this.authService.signIn(req.user);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('logout')
+  @UseGuards(JwtAuthGuard)
   async logout(@Request() req) {
     return await this.authService.logout(req.user);
   }

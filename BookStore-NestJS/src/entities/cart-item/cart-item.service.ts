@@ -27,15 +27,20 @@ export class CartItemService {
       cartItem.quantity = quantity;
       return await this.cartItemRepository.save(cartItem);
     }
-    this.updateQuantityCartItem(quantity, cartItem, book);
+    await this.updateQuantityCartItem(quantity, cartItem, book);
   }
 
   async updateQuantityCartItem(quantityAdd: number, cartItem: CartItem, book: Book) {
-    return await this.cartItemRepository.save({
+    const add = quantityAdd - cartItem.quantity;
+    if (add === 1) {
+      quantityAdd++;
+    }
+    cartItem = await this.cartItemRepository.save({
       ...cartItem,
-      quantity: cartItem.quantity + quantityAdd,
+      quantity: quantityAdd,
       totalPrice: book.currentPrice * cartItem.quantity
     });
+    return cartItem;
   }
 
   async removeCartItem(book: Book, shoppingCart: ShoppingCart) {

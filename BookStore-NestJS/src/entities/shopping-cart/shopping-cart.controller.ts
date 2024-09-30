@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
-import { ShoppingCartService } from './shopping-cart.service';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
-import { Roles } from '@/decorator/decorator';
+import { ResponseMessage, Roles } from '@/decorator/decorator';
 import { USER } from '@/role.environment';
+import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { AddToCartDto } from './dto/add-to-cart.dto';
+import { ShoppingCartService } from './shopping-cart.service';
 
 @Controller('shopping-cart')
 export class ShoppingCartController {
@@ -13,6 +13,7 @@ export class ShoppingCartController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
+  @ResponseMessage("Add product to cart")
   async addProductToCart(
     @Request() req,
     @Body() addToCartDto: AddToCartDto
@@ -24,6 +25,7 @@ export class ShoppingCartController {
   @Delete('remove-product/:bookId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
+  @ResponseMessage("Remove product from cart")
   async removeProductFromCart(
     @Request() req,
     @Param('bookId') bookId: number
@@ -35,6 +37,7 @@ export class ShoppingCartController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
+  @ResponseMessage("Get shopping cart")
   async getShoppingCart(@Request() req) {
     return await this.shoppingCartService.getShoppingCartFromUser(req);
   }

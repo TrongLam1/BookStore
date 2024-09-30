@@ -13,15 +13,17 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this.usersService.findOneByEmail(email);
-    const validPassword = await comparePasswordHelper(password, user.password);
+    if (!user) return null;
 
-    if (!user || !validPassword) return null;
+    const validPassword = await comparePasswordHelper(password, user.password);
+    if (!validPassword) return null;
 
     return user;
   }
 
   async signIn(user: User): Promise<any> {
-    const payload = { username: user.email, id: user.id, roles: user.roles.map(role => role.name), hasRefreshToken: true };
+    const roles = user.roles.map(role => role.name);
+    const payload = { username: user.email, id: user.id, roles, hasRefreshToken: true };
     const refreshToken = this.jwtService.sign(payload,
       {
         secret: process.env.REFRESH_JWT_SECRET_KEY,
@@ -33,7 +35,9 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        username: user.username
+        username: user.username,
+        phone: user.phone,
+        roles
       },
       access_token: this.jwtService.sign(payload, { expiresIn: '1d' }),
       refreshToken

@@ -11,7 +11,6 @@ import { Type } from '../type/entities/type.entity';
 import { TypeService } from '../type/type.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { ExcelBookDto } from './dto/excel-book.dto';
-import { FilterBooksRequest } from './dto/filter-book-request.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
 import { Book } from './entities/book.entity';
@@ -157,6 +156,18 @@ export class BooksService {
     throw new NotFoundBookException();
   }
 
+  async findDetailById(id: number) {
+    const book = await this.bookRepository.findOne({
+      where: {
+        id: id,
+        isAvailable: true
+      },
+      relations: ['category', 'brand']
+    })
+    if (book) return book;
+    throw new NotFoundBookException();
+  }
+
   async findAllBooks(current: number, pageSize: number, sort: string, orderBy: string) {
     if (!current || current == 0) current = 1;
     if (!pageSize || current == 0) pageSize = 10;
@@ -204,12 +215,28 @@ export class BooksService {
     return { books, totalItems, totalPages };
   }
 
-  async findBooksByFilter(filterReq: FilterBooksRequest) {
-    const { current, pageSize, sort, orderBy, typeNames, brandNames, categoryNames } = filterReq;
+  async findBooksByFilter(
+    current: number,
+    pageSize: number,
+    sort: string,
+    orderBy: string,
+    typesString: string,
+    brandsString: string,
+    categoriesString: string
+  ) {
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
 
-    const types = typeNames !== null ? await this.typeService.findByNames(typeNames) : null;
-    const brands = brandNames !== null ? await this.brandService.findByNames(brandNames) : null;
-    const categories = categoryNames !== null ? await this.categoryService.findByNames(categoryNames) : null;
+    orderBy = orderBy ?? 'id';
+    const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
+
+    const listTypes = typesString !== '' ? JSON.parse(typesString) : null;
+    const listBrands = brandsString !== '' ? JSON.parse(brandsString) : null;
+    const listCategories = categoriesString !== '' ? JSON.parse(categoriesString) : null;
+
+    const types = listTypes !== null ? await this.typeService.findByNames(listTypes) : null;
+    const brands = listBrands !== null ? await this.brandService.findByNames(listBrands) : null;
+    const categories = listCategories !== null ? await this.categoryService.findByNames(listCategories) : null;
 
     const whereConditions: any = {
       isAvailable: true,
@@ -234,7 +261,7 @@ export class BooksService {
     const [books, totalItems] = await this.bookRepository.findAndCount(
       {
         where: whereConditions,
-        order: { [orderBy]: sort },
+        order: { [orderBy]: sortOrder },
         take: pageSize,
         skip: (current - 1) * pageSize,
         select: selectFields,

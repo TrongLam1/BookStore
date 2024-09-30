@@ -3,6 +3,8 @@
     "development"
   ],
   "hints": {
-    "typescript-config/strict": "off"
+    "typescript-config/strict": "off",
+    "axe/name-role-value": "off",
+    "axe/forms": "off"
   }
 }

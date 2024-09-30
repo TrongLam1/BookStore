@@ -19,7 +19,7 @@ export class ShoppingCartService {
     private readonly bookService: BooksService
   ) { }
 
-  updateCartTotal(shoppingCart: ShoppingCart, cartItems: any) {
+  updateCartTotal(shoppingCart: ShoppingCart, cartItems: CartItem[]) {
     let totalItems = 0;
     let totalPrices = 0.0;
 
@@ -35,7 +35,7 @@ export class ShoppingCartService {
   async addProductToCart(req, bookId: number, quantity: number) {
     let user = await this.userRepository.findOne({
       where: { id: req.user.userId },
-      relations: ['shoppingCart']
+      relations: ['shoppingCart', 'shoppingCart.cartItems']
     });
     if (!user) throw new NotFoundException("No user");
 
@@ -45,18 +45,14 @@ export class ShoppingCartService {
 
     const shoppingCart = user.shoppingCart;
 
-    if (shoppingCart === undefined) {
+    if (shoppingCart === null) {
       const shoppingCart = await this.shoppingCartRepository.save({});
       user = await this.userRepository.save({ ...user, shoppingCart });
     }
 
     await this.cartItemService.addCartItem(quantity, book, shoppingCart);
 
-    return await this.shoppingCartRepository.save({
-      ...shoppingCart,
-      totalItems: shoppingCart.totalItems + quantity,
-      totalPrices: shoppingCart.totalPrices + book.currentPrice * quantity
-    });
+    return await this.updateShoppingCart(req);
   }
 
   async updateShoppingCart(req: any) {

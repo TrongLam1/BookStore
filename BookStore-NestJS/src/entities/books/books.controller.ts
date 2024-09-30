@@ -7,7 +7,6 @@ import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
-import { FilterBooksRequest } from './dto/filter-book-request.dto';
 
 @Controller('books')
 export class BooksController {
@@ -93,13 +92,28 @@ export class BooksController {
 
   @Get('find/filter')
   @Public()
-  async findBooksByFilter(@Body() filterReq: FilterBooksRequest) {
-    return await this.booksService.findBooksByFilter(filterReq);
+  async findBooksByFilter(
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string,
+    @Query('sort') sort: string,
+    @Query('orderBy') orderBy: string,
+    @Query('typesString') typesString: string,
+    @Query('brandsString') brandsString: string,
+    @Query('categoriesString') categoriesString: string
+  ) {
+    return await this.booksService
+      .findBooksByFilter(+current, +pageSize, sort, orderBy, typesString, brandsString, categoriesString);
   }
 
   @Get('/random')
   @Public()
   async getRandomBooks() {
     return await this.booksService.findRandomBooks();
+  }
+
+  @Get('find-one/:id')
+  @Public()
+  async findBookById(@Param('id') id: string) {
+    return await this.booksService.findDetailById(+id);
   }
 }
