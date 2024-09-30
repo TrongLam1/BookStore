@@ -3,14 +3,9 @@ import CardProduct from "../../cardProduct/cardProduct";
 import './listProductsSearch.scss';
 import '../homePage/listProducts.scss';
 
-interface IListProducts {
-    listBooks: [],
-    totalItems: number
-}
+const ListProductsSearch = (props: any) => {
 
-const ListProductsSearch = (props: IListProducts) => {
-
-    const { listBooks, totalItems } = props;
+    const { listBooks, totalItems, handleAddProductToCart } = props;
 
     return (
         <div className='search-page-container'>
@@ -25,7 +20,11 @@ const ListProductsSearch = (props: IListProducts) => {
                     <div className="container-book-cards row mx-sm-0">
                         {listBooks && listBooks.length > 0 ?
                             listBooks.map((item: IBook, index: number) => {
-                                return <CardProduct key={index} book={item} col={'col-20'} />
+                                return <CardProduct
+                                    key={index}
+                                    book={item} col={'col-20'}
+                                    handleAddProductToCart={handleAddProductToCart}
+                                />
                             }) : (<div>Không có sản phẩm</div>)
                         }
                     </div>
@@ -36,3 +35,4 @@ const ListProductsSearch = (props: IListProducts) => {
 };
 
 export default ListProductsSearch;
+

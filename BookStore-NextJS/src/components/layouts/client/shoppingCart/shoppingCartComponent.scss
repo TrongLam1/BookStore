@@ -1,0 +1,119 @@
+.shopping-cart-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+    color: black;
+
+    button {
+        border: none;
+        outline: none;
+    }
+
+    .shopping-cart-body {
+        background-color: white;
+
+        .shopping-cart-heading {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+
+            strong {
+                color: red;
+            }
+        }
+
+        .shopping-cart-list {
+            padding: 0 15px;
+
+            .no-cart {
+                text-align: center;
+
+                h5 {
+                    margin-top: 20px;
+                    font-size: .9rem;
+                    text-align: center;
+                }
+
+                a {
+                    text-decoration: none;
+                }
+            }
+        }
+
+        .back-home {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            a {
+                text-decoration: none;
+                color: black;
+                font-size: 1.5rem;
+            }
+
+            .update-cart {
+                background-color: orangered;
+                font-size: 1rem;
+                color: white;
+                padding: 5px 10px;
+                margin-bottom: 10px;
+                border-radius: 4px;
+
+                &:hover {
+                    background-color: rgba(255, 69, 0, .8);
+                }
+            }
+        }
+    }
+
+    .shopping-cart-payment {
+        .cart-payment-container {
+            padding: 20px;
+            background-color: white;
+
+            .cart-payment-heading {
+                text-transform: uppercase;
+                border-bottom: 1px solid #ccc;
+                margin-bottom: 10px;
+            }
+
+            .cart-payment-body {
+                .cart-payment-total {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    margin-top: 20px;
+                }
+
+                .cart-payment-btn {
+
+                    .payment-process {
+                        width: 100%;
+                        background-color: orangered;
+                        color: white;
+                        min-height: 40px;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        border-radius: 4px;
+                        font-size: .95rem;
+                        border: 1px solid black;
+                        text-decoration: none;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        &:hover {
+                            background-color: rgba(255, 69, 0, .8);
+                            border: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

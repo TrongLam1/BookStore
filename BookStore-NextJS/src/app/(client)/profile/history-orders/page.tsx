@@ -1,4 +1,8 @@
 
+export const metadata = {
+    title: 'Lịch sử đơn hàng'
+}
+
 export default function HistoryOrdersPage() {
 
     return (

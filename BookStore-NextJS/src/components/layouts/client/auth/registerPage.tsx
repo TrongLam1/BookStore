@@ -1,33 +1,38 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
-import logo from '@/assets/images/logo.png';
-import authenticate from "@/utils/actions";
-import { CSpinner } from '@coreui/react';
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import logo from '@/assets/images/logo.png';
 import { useState } from "react";
+import { sendRequest } from "@/utils/api";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-export default function LoginComponent() {
+export default function RegisterComponent() {
     const router = useRouter();
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
     const [loadingApi, setLoadingApi] = useState<boolean>(false);
 
-    const handleLogin = async (event: any) => {
-        event.preventDefault();
+    const handleSignUp = async (e: any) => {
+        e.preventDefault();
 
-        setLoadingApi(true);
-        const res = await authenticate(email, password);
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`,
+            method: 'POST',
+            body: {
+                username, email, password
+            }
+        });
 
-        if (res?.error) {
-            alert(res.error);
+        if (res.statusCode === 201) {
+            toast.success("Đăng ký tài khoản thành công.");
+            router.push('/auth/login');
         } else {
-            router.push("/home");
+            toast.error(res.message);
         }
-        setLoadingApi(false);
-    };
+    }
 
     return (
         <section className="bg-light py-3 py-md-5">
@@ -42,10 +47,20 @@ export default function LoginComponent() {
                                     </div>
                                 </div>
                                 <h2 className="fs-2 fw-bold text-center text-secondary mb-4">
-                                    Đăng nhập
+                                    Đăng kí
                                 </h2>
-                                <form onSubmit={(e) => handleLogin(e)}>
+                                <form onSubmit={(e) => handleSignUp(e)}>
                                     <div className="row gy-2 overflow-hidden">
+                                        <div className="col-12">
+                                            <div className="form-floating mb-3">
+                                                <input type="text" className="form-control" name="username" placeholder='Nguyễn Văn A' id="username"
+                                                    onChange={(e) => setUsername(e.target.value)}
+                                                    required />
+                                                <label htmlFor="username" className="form-label">
+                                                    Họ và tên
+                                                </label>
+                                            </div>
+                                        </div>
                                         <div className="col-12">
                                             <div className="form-floating mb-3">
                                                 <input type="email" className="form-control" name="email" id="email" placeholder="name@example.com"
@@ -56,36 +71,23 @@ export default function LoginComponent() {
                                         </div>
                                         <div className="col-12">
                                             <div className="form-floating mb-3">
-                                                <input
-                                                    type="password"
-                                                    className="form-control"
-                                                    name="password" id="password"
+                                                <input type="password" className="form-control" name="password" id="password"
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     placeholder="Mật khẩu..." required />
                                                 <label htmlFor="password" className="form-label">Mật khẩu</label>
                                             </div>
                                         </div>
                                         <div className="col-12">
-                                            <div className="d-flex gap-2 justify-content-between">
-                                                <div className="form-check">
-
-                                                </div>
-                                                <a href="#!" className="link-primary text-decoration-none">Quên mật khẩu?</a>
-                                            </div>
-                                        </div>
-                                        <div className="col-12">
                                             <div className="d-grid my-3">
                                                 <button className="btn btn-primary btn-lg" type="submit">
-                                                    {loadingApi &&
-                                                        <CSpinner color="light" size="sm" className='me-3' style={{ width: '1.3rem', height: '1.3rem' }} />}
-                                                    Đăng nhập
+                                                    {loadingApi && <i className="fa-solid fa-sync fa-spin loader"></i>}
+                                                    Đăng kí
                                                 </button>
                                             </div>
                                         </div>
                                         <div className="col-12">
-                                            <p className="m-0 text-secondary text-center">
-                                                Bạn chưa có tài khoản?
-                                                <Link href='/auth/register' className="link-primary text-decoration-none"> Đăng kí</Link>
+                                            <p className="m-0 text-secondary text-center">Bạn đã có tài khoản?
+                                                <Link href='/auth/login' className="link-primary text-decoration-none"> Đăng nhập</Link>
                                             </p>
                                         </div>
                                     </div>
@@ -96,5 +98,5 @@ export default function LoginComponent() {
                 </div>
             </div>
         </section>
-    )
+    );
 };

@@ -13,7 +13,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             authorize: async (credentials) => {
                 const res = await sendRequest<IBackendRes<any>>({
                     method: 'POST',
-                    url: 'http://localhost:8080/api/v1/auth/login',
+                    url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
                     body: {
                         email: credentials.email,
                         password: credentials.password
@@ -45,8 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     pages: {
-        signIn: "/auth/login",
-        signOut: "/auth/login"
+        signIn: "/auth/login"
     },
     callbacks: {
         jwt({ token, user }) {

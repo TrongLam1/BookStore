@@ -2,6 +2,10 @@ import '@/components/layouts/client/profile/historyOrderPage.scss';
 import SidebarProfileComponent from '@/components/layouts/client/profile/sidebarProfile';
 import { auth } from '../../../../auth';
 
+export const metadata = {
+    title: 'Thông tin cá nhân'
+}
+
 export default async function ProfileLayout({
     children,
 }: {

@@ -6,7 +6,8 @@ import { Roboto } from "next/font/google";
 import NextAuthWrapper from '../lib/next.auth.wrapper';
 import "./globals.css";
 import Scroll from "@/components/layouts/scroll";
-import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { Bounce, ToastContainer } from "react-toastify";
 config.autoAddCss = false;
 
 const roboto = Roboto({
@@ -35,7 +36,7 @@ export default function RootLayout({
           </div>
         </NextAuthWrapper>
         <ToastContainer
-          position="top-center"
+          position="top-right"
           autoClose={2000}
           hideProgressBar={false}
           newestOnTop={false}
@@ -45,6 +46,7 @@ export default function RootLayout({
           draggable
           pauseOnHover
           theme="light"
+          transition={Bounce}
         />
       </body>
     </html>

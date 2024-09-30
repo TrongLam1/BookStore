@@ -2,6 +2,10 @@
 
 import LoginComponent from "@/components/layouts/client/auth/loginPage";
 
+export const metadata = {
+    title: 'Đăng nhập'
+}
+
 const LoginPage = () => {
 
     return (

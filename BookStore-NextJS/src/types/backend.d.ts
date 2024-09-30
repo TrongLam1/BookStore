@@ -76,4 +76,16 @@ declare global {
         categoryName: string;
         isAvailable: boolean;
     }
+
+    interface IShoppingCart {
+        id: number;
+        totalItems: number;
+        totalPrices: number
+    }
+
+    interface ICartItem {
+        id: number;
+        quantity: number;
+        totalPrice: number;
+    }
 }

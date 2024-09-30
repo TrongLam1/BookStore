@@ -1,13 +1,29 @@
+/* eslint-disable @next/next/no-async-client-component */
 /* eslint-disable @next/next/no-img-element */
 'use client'
+import { AddProductToCart } from "@/app/api/shoppingCartApi";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import styles from './cardProduct.module.scss';
+import { toast } from "react-toastify";
 
 const CardProduct = (props: any) => {
 
     const { book, col } = props;
+
+    const handleAddProductToCart = async (productId: number) => {
+        const res = await AddProductToCart({
+            bookId: productId,
+            quantity: 1
+        });
+
+        if (+res.statusCode === 201) {
+            toast.success("Thêm sản phẩm thành công.");
+        } else {
+            toast.error("Thêm sản phẩm thất bại.");
+        }
+    };
 
     return (
         <div className={`${col} col-6 col-sm-4`}>
@@ -32,7 +48,7 @@ const CardProduct = (props: any) => {
                         <div className={styles.addBook}>
                             <button title="Add Product"
                                 className={styles.addBookBtn}
-                            // onClick={() => handleAddProduct(item.id)}
+                                onClick={() => handleAddProductToCart(book.id)}
                             >
                                 <FontAwesomeIcon icon={faCirclePlus} />
                             </button>
