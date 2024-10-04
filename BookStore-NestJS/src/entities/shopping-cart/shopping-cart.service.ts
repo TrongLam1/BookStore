@@ -19,7 +19,7 @@ export class ShoppingCartService {
     private readonly bookService: BooksService
   ) { }
 
-  updateCartTotal(shoppingCart: ShoppingCart, cartItems: CartItem[]) {
+  private updateCartTotal(shoppingCart: ShoppingCart, cartItems: CartItem[]) {
     let totalItems = 0;
     let totalPrices = 0.0;
 
@@ -55,6 +55,20 @@ export class ShoppingCartService {
     return await this.updateShoppingCart(req);
   }
 
+  async updateQuantityProduct(req, quantity: number, cartItemId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: req.user.userId },
+      relations: ['shoppingCart', 'shoppingCart.cartItems']
+    });
+    if (!user) throw new NotFoundException("No user");
+
+    const shoppingCart = user.shoppingCart;
+
+    await this.cartItemService.updateQuantityCartItem(quantity, cartItemId, shoppingCart);
+
+    return await this.updateShoppingCart(req);
+  }
+
   async updateShoppingCart(req: any) {
     const user = await this.userRepository.findOneOrFail({
       where: { id: req.user.userId },
@@ -68,23 +82,16 @@ export class ShoppingCartService {
     return await this.shoppingCartRepository.save(shoppingCart);
   }
 
-  async removeCartItemInCart(req: any, bookId: number) {
+  async removeCartItemInCart(req: any, cartItemId: number) {
     const user = await this.userRepository.findOneOrFail({
       where: { id: req.user.userId },
-      relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
+      relations: ['shoppingCart', 'shoppingCart.cartItems']
     });
     const shoppingCart = user.shoppingCart;
-    const cartItems = user.shoppingCart.cartItems;
 
-    const bookRemove = await this.bookService.findById(bookId);
+    await this.cartItemService.removeCartItem(cartItemId, shoppingCart);
 
-    await this.cartItemService.removeCartItem(bookRemove, shoppingCart);
-
-    const updatedCartItems = cartItems.filter(item => item.book.id !== bookRemove.id);
-
-    this.updateCartTotal(shoppingCart, updatedCartItems);
-
-    return await this.shoppingCartRepository.save(shoppingCart);
+    return await this.updateShoppingCart(req);
   }
 
   async getShoppingCartFromUserInternal(req) {
@@ -108,5 +115,22 @@ export class ShoppingCartService {
     return await this.shoppingCartRepository.save({
       ...shoppingCart, totalItems: 0, totalPrices: 0,
     });
+  }
+
+  async addProductToCartSession(session, bookId: number, quantity: number) {
+    console.log(">>>>>>>>>>>>>> Session: ", session);
+    const book = await this.bookService.findById(bookId);
+    if (!book) throw new NotFoundException("No book");
+    if (book.inventory < quantity) throw new NotEnoughBookException();
+
+    if (session?.shoppingCart === undefined) {
+      session.shoppingCart = {
+        totalItems: 0,
+        totalPrices: 0,
+        cartItems: []
+      };
+    }
+
+    return await this.cartItemService.addCartItemSession(quantity, book, session);
   }
 }

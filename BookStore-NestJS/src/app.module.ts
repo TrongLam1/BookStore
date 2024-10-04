@@ -19,6 +19,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
 import { TransformInterceptor } from './interceptor/response';
+import { VnpayModule } from './entities/vnpay/vnpay.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TransformInterceptor } from './interceptor/response';
     OrdersModule,
     ShoppingCartModule,
     TypeModule,
+    VnpayModule,
     ConfigModule.forRoot({
       isGlobal: true
     }),
@@ -51,7 +53,7 @@ import { TransformInterceptor } from './interceptor/response';
       }),
       inject: [ConfigService],
     }),
-    AuthModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [
