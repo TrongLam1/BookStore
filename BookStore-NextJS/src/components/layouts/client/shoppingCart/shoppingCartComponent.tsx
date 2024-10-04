@@ -7,24 +7,33 @@ import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
 import './shoppingCartComponent.scss';
+import { useShoppingCart } from "@/provider/shoppingCartProvider";
+import { useEffect } from "react";
 
 export default function ShoppingCartComponent(props: any) {
 
     const router = useRouter();
-    const { user, shoppingCart } = props;
+    const { user } = props;
+    const { shoppingCart } = useShoppingCart();
 
-    if (!user) { router.push("/auth/login") }
+    const cartItems = shoppingCart?.cartItems;
+
+    useEffect(() => {
+        if (!user) { router.push("/auth/login") }
+    });
+
+    useEffect(() => { }, [shoppingCart]);
 
     return (
-        <div className="shopping-cart-container row justify-content-evenly">
+        <div className="shopping-cart-page-container row justify-content-evenly">
             <div className="shopping-cart-body col-lg-7">
                 <div className="shopping-cart-heading">
                     <div>Giỏ hàng của bạn</div>
-                    <div><strong>{shoppingCart.totalItems}</strong> sản phẩm</div>
+                    <div><strong>{shoppingCart?.totalItems}</strong> sản phẩm</div>
                 </div>
                 <ul className="shopping-cart-list">
-                    {shoppingCart.cartItems && shoppingCart.cartItems.length > 0 ? (
-                        shoppingCart.cartItems.map((item, index: any) => {
+                    {shoppingCart?.cartItems && shoppingCart?.cartItems.length > 0 ? (
+                        shoppingCart?.cartItems.map((item, index: any) => {
                             return (
                                 <CartItemComponent key={`cart-item-${index}`} item={item} />
                             )
@@ -50,11 +59,15 @@ export default function ShoppingCartComponent(props: any) {
                     </div>
                     <div className="cart-payment-body">
                         <div className="cart-payment-total">
-                            Tổng: <strong>{shoppingCart.totalPrices.toLocaleString()}đ</strong>
+                            Tổng: <strong>{shoppingCart?.totalPrices.toLocaleString()}đ</strong>
                         </div>
                         <div className="cart-payment-btn">
-                            <Link href='/check-out'
-                                className="payment-process">Tiến hành thanh toán</Link>
+                            <Link
+                                href='/check-out'
+                                className={`payment-process ${cartItems?.length === 0 ? 'disabled' : ''}`}
+                            >
+                                Tiến hành thanh toán
+                            </Link>
                         </div>
                     </div>
                 </div>

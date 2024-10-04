@@ -1,0 +1,16 @@
+.cart_item {
+    td {
+        margin: 4px 0;
+        font-size: .95rem;
+    }
+
+    .product-name {
+        display: flex;
+        flex-direction: column;
+        padding-right: 10px;
+    }
+
+    .product-quantity {
+        text-align: center;
+    }
+}

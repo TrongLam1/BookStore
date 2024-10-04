@@ -1,0 +1,75 @@
+.check-out-page {
+    justify-content: space-between;
+    color: black;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+
+    .info-order {
+        background-color: white;
+
+        .checkout-form {
+            padding: 20px;
+
+            .invalid-feedback {
+                font-size: .95rem;
+            }
+        }
+    }
+
+    .cart-order-details {
+        .order-review-container {
+            padding: 1rem;
+            background-color: white;
+
+            .order-review {
+                .woocommerce-checkout-review-order {
+                    .shop_table {
+                        width: 100%;
+
+                        tfoot {
+                            border-top: 1px solid #ccc;
+                            height: 100px;
+
+                            tr {
+                                margin: 5px 0;
+                            }
+                        }
+                    }
+
+                    .cart-payment-container {
+                        .cart-payment-body {
+                            .cart-payment-coupon {
+                                margin-bottom: 20px;
+
+                                .coupon-apply {
+                                    border: 1px solid #ccc;
+                                    font-size: .9rem;
+                                    padding: 4px;
+                                    outline: none;
+                                    background-color: white;
+                                    color: black;
+                                }
+
+                                button {
+                                    border: 2px solid rgba(255, 69, 0, .8);
+                                    padding: 3px 10px;
+                                    font-size: .95rem;
+                                    background-color: transparent;
+                                    margin-left: 4px;
+                                    color: rgba(255, 69, 0, .8);
+
+                                    &:hover {
+                                        color: white;
+                                        background-color: rgba(255, 69, 0, .8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

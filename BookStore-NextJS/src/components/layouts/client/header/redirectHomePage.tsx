@@ -8,7 +8,7 @@ export default function RedirectHomePage() {
 
     useEffect(() => {
         router.push('/home');
-    }, [router]);
+    }, []);
 
     return null;
 };

@@ -1,4 +1,4 @@
-.shopping-cart-container {
+.shopping-cart-page-container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -34,12 +34,13 @@
 
                 h5 {
                     margin-top: 20px;
-                    font-size: .9rem;
+                    font-size: .95rem;
                     text-align: center;
                 }
 
                 a {
                     text-decoration: none;
+                    color: orangered;
                 }
             }
         }
@@ -53,18 +54,9 @@
                 text-decoration: none;
                 color: black;
                 font-size: 1.5rem;
-            }
 
-            .update-cart {
-                background-color: orangered;
-                font-size: 1rem;
-                color: white;
-                padding: 5px 10px;
-                margin-bottom: 10px;
-                border-radius: 4px;
-
-                &:hover {
-                    background-color: rgba(255, 69, 0, .8);
+                svg {
+                    color: orangered;
                 }
             }
         }
@@ -101,11 +93,17 @@
                         text-transform: uppercase;
                         border-radius: 4px;
                         font-size: .95rem;
-                        border: 1px solid black;
+                        border: 1px solid orangered;
                         text-decoration: none;
                         display: flex;
                         align-items: center;
                         justify-content: center;
+
+                        &.disabled {
+                            pointer-events: none;
+                            background-color: #ccc;
+                            border: 1px solid #ccc;
+                        }
 
                         &:hover {
                             background-color: rgba(255, 69, 0, .8);

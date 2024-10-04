@@ -80,12 +80,14 @@ declare global {
     interface IShoppingCart {
         id: number;
         totalItems: number;
-        totalPrices: number
+        totalPrices: number;
+        cartItems: ICartItem[];
     }
 
     interface ICartItem {
         id: number;
         quantity: number;
         totalPrice: number;
+        book: IBook;
     }
 }

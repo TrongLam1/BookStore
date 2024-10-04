@@ -14,13 +14,13 @@ export default async function ClientLayout({
     let shoppingCart = null;
 
     if (user) {
-        const res = await GetShoppingCart(user.id, session?.user?.token);
+        const res = await GetShoppingCart();
         if (res.statusCode === 200) { shoppingCart = res?.data; }
     }
 
     return (
         <div>
-            <HomePageHeader user={user} shoppingCart={shoppingCart} />
+            <HomePageHeader user={user} dataShoppingCart={shoppingCart} />
             {children}
             <HomePageFooter />
         </div>

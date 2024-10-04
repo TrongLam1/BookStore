@@ -1,16 +1,18 @@
 /* eslint-disable @next/next/no-async-client-component */
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { AddProductToCart } from "@/app/api/shoppingCartApi";
+import { AddProductToCart, GetShoppingCart } from "@/app/api/shoppingCartApi";
+import { useShoppingCart } from "@/provider/shoppingCartProvider";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import styles from './cardProduct.module.scss';
 import { toast } from "react-toastify";
+import styles from './cardProduct.module.scss';
 
 const CardProduct = (props: any) => {
 
     const { book, col } = props;
+    const { setShoppingCart } = useShoppingCart();
 
     const handleAddProductToCart = async (productId: number) => {
         const res = await AddProductToCart({
@@ -20,6 +22,12 @@ const CardProduct = (props: any) => {
 
         if (+res.statusCode === 201) {
             toast.success("Thêm sản phẩm thành công.");
+
+            setShoppingCart({
+                totalItems: res.data.totalItems,
+                totalPrices: res.data.totalPrices,
+                cartItems: res.data.cartItems
+            })
         } else {
             toast.error("Thêm sản phẩm thất bại.");
         }

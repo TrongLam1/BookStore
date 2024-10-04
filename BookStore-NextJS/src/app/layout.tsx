@@ -8,6 +8,7 @@ import "./globals.css";
 import Scroll from "@/components/layouts/scroll";
 import 'react-toastify/dist/ReactToastify.css';
 import { Bounce, ToastContainer } from "react-toastify";
+import { ShoppingCartProvider } from "@/provider/shoppingCartProvider";
 config.autoAddCss = false;
 
 const roboto = Roboto({
@@ -30,10 +31,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={roboto.className}>
         <NextAuthWrapper>
-          <div className="app-container">
-            <Scroll />
-            {children}
-          </div>
+          <ShoppingCartProvider>
+            <div className="app-container">
+              <Scroll />
+              {children}
+            </div>
+          </ShoppingCartProvider>
         </NextAuthWrapper>
         <ToastContainer
           position="top-right"

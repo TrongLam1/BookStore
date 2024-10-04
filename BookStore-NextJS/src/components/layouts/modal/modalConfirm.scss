@@ -1,0 +1,45 @@
+.modal {
+    display: block;
+
+    .modal-dialog {
+
+        .modal-content {
+            color: black;
+            cursor: default;
+
+            .modal-header {
+                justify-content: space-between;
+
+                .close {
+                    background-color: transparent;
+                    color: red;
+                    outline: none;
+                    border: none;
+
+                    svg {
+                        font-size: 1.5rem;
+                    }
+                }
+            }
+
+            .modal-body {
+
+                p {
+                    white-space: normal;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    line-height: 2;
+
+                    strong {
+                        color: red;
+
+                        span {
+                            font-weight: normal;
+                            color: black;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

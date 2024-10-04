@@ -27,6 +27,8 @@
 
         .shopping-cart-item {
             min-width: 382px;
+            border: none;
+            margin: 0;
 
             &:hover {
                 background-color: transparent;
@@ -71,6 +73,11 @@
 
                 .no-cart {
                     text-align: center;
+                    height: 190px;
+
+                    img {
+                        cursor: default;
+                    }
 
                     h5 {
                         margin-top: 20px;

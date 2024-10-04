@@ -1,13 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import logo from '@/assets/images/logo.png';
+import { useShoppingCart } from '@/provider/shoppingCartProvider';
 import { faMagnifyingGlass, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Button,
     Container, Nav, Navbar,
@@ -19,8 +21,14 @@ import style from './homepage.header.module.scss';
 const HomePageHeader = (props: any) => {
     const router = useRouter();
 
-    const { user, shoppingCart } = props;
+    const { user, dataShoppingCart } = props;
     const [search, setSearch] = useState('');
+
+    const { setShoppingCart } = useShoppingCart();
+
+    useEffect(() => {
+        setShoppingCart(dataShoppingCart);
+    }, []);
 
     const handleSearch = () => {
         router.push(`/search?keyword=${search}`);
@@ -108,7 +116,7 @@ const HomePageHeader = (props: any) => {
                         }
                     </Nav>
                     <Nav>
-                        <ShoppingCartDropdown shoppingCart={shoppingCart} />
+                        <ShoppingCartDropdown />
                     </Nav>
                 </Navbar.Collapse>
             </Container>
