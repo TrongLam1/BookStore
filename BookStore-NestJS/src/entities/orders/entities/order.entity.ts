@@ -14,6 +14,11 @@ export enum PaymentMethod {
     BANKING = "BANKING",
 }
 
+export enum PaymentStatus {
+    PAID = "Đã thanh toán",
+    UNPAID = "Chưa thanh toán"
+}
+
 @Entity()
 export class Order {
     @PrimaryGeneratedColumn()
@@ -59,7 +64,10 @@ export class Order {
     @Column('date', { nullable: true })
     paymentDate: Date;
 
-    @Column({ nullable: true })
+    @Column({
+        type: 'enum',
+        enum: PaymentStatus
+    })
     paymentStatus: string;
 
     @Column({
@@ -70,4 +78,7 @@ export class Order {
 
     @Column({ nullable: true })
     codeBill: string;
+
+    @Column({ nullable: true })
+    bankNo: string;
 }

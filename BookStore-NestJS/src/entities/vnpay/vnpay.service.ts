@@ -1,12 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import moment from 'moment';
-import config from 'config';
-import querystring from 'qs';
+import { InjectRepository } from '@nestjs/typeorm';
 import crypto from "crypto";
+import moment from 'moment';
+import querystring from 'qs';
+import { Repository } from 'typeorm';
+import { Order, PaymentStatus } from '../orders/entities/order.entity';
 
 @Injectable()
 export class VnpayService {
-  createPaymentUrl(req) {
+  constructor(
+    @InjectRepository(Order)
+    private orderRepository: Repository<Order>,
+  ) { }
+
+  async createPaymentUrl(req, orderId: number) {
     process.env.TZ = 'Asia/Ho_Chi_Minh';
 
     const date = new Date();
@@ -17,13 +24,19 @@ export class VnpayService {
       req.socket.remoteAddress ||
       req.connection.socket.remoteAddress;
 
+    const order = await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        user: { id: req.user.userId }
+      }
+    });
+
     const tmnCode = process.env.vnp_TmnCode;
     const secretKey = process.env.vnp_HashSecret;
     let vnpUrl = process.env.vnp_Url;
     const returnUrl = process.env.vnp_ReturnUrl;
-    const orderId = moment(date).format('DDHHmmss');
-    // const amount = req.body.amount;
-    const amount = 10000;
+    const paymentId = moment(date).format('DDHHmmss');
+    const amount = order.totalPriceOrder;
     const bankCode = "NCB";
 
     const locale = 'vn';
@@ -34,20 +47,16 @@ export class VnpayService {
     vnp_Params['vnp_TmnCode'] = tmnCode;
     vnp_Params['vnp_Locale'] = locale;
     vnp_Params['vnp_CurrCode'] = currCode;
-    vnp_Params['vnp_TxnRef'] = orderId;
-    vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + orderId;
+    vnp_Params['vnp_TxnRef'] = paymentId;
+    vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + paymentId;
     vnp_Params['vnp_OrderType'] = 'other';
     vnp_Params['vnp_Amount'] = amount * 100;
     vnp_Params['vnp_ReturnUrl'] = returnUrl;
     vnp_Params['vnp_IpAddr'] = ipAddr;
     vnp_Params['vnp_CreateDate'] = createDate;
     vnp_Params['vnp_BankCode'] = bankCode;
-    // if (bankCode !== null && bankCode !== '') {
-    //   vnp_Params['vnp_BankCode'] = bankCode;
-    // }
 
     vnp_Params = this.sortObject(vnp_Params);
-
 
     const signData = querystring.stringify(vnp_Params, { encode: false });
     const hmac = crypto.createHmac("sha512", secretKey);
@@ -55,10 +64,12 @@ export class VnpayService {
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
 
+    await this.orderRepository.save({ ...order, codeBill: paymentId });
+
     return vnpUrl;
   }
 
-  getVnPayReturn(req) {
+  async getVnPayReturn(req, res) {
     let vnp_Params = req.query;
 
     const secureHash = vnp_Params['vnp_SecureHash'];
@@ -68,17 +79,20 @@ export class VnpayService {
 
     vnp_Params = this.sortObject(vnp_Params);
 
-  //   vnp_Amount: '1000000',
-  // vnp_BankCode: 'NCB',
-  // vnp_BankTranNo: 'VNP14601425',
-  // vnp_CardType: 'ATM',
-  // vnp_OrderInfo: 'Thanh+toan+cho+ma+GD%3A03121801',
-  // vnp_PayDate: '20241003121858',
-  // vnp_ResponseCode: '00',
-  // vnp_TmnCode: 'EXYL20C2',
-  // vnp_TransactionNo: '14601425',
-  // vnp_TransactionStatus: '00',
-  // vnp_TxnRef: '03121801'
+    const order = await this.orderRepository.findOne({
+      where: { codeBill: vnp_Params['vnp_TxnRef'] }
+    });
+
+    const dateStr = vnp_Params['vnp_PayDate'];
+
+    const year = parseInt(dateStr.substring(0, 4), 10);
+    const month = parseInt(dateStr.substring(4, 6), 10) - 1;
+    const day = parseInt(dateStr.substring(6, 8), 10);
+    const hour = parseInt(dateStr.substring(8, 10), 10);
+    const minute = parseInt(dateStr.substring(10, 12), 10);
+    const second = parseInt(dateStr.substring(12, 14), 10);
+
+    const formatDate = new Date(year, month, day, hour, minute, second);
 
     const tmnCode = process.env.vnp_TmnCode;
     const secretKey = process.env.vnp_HashSecret;
@@ -88,7 +102,17 @@ export class VnpayService {
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
     if (secureHash === signed) {
-      return { code: vnp_Params['vnp_ResponseCode'] };
+      await this.orderRepository.save(
+        {
+          ...order,
+          paymentDate: formatDate,
+          paymentStatus: PaymentStatus.PAID,
+          bankNo: vnp_Params['vnp_BankTranNo']
+        }
+      );
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/payment?status=success&codeBill=${vnp_Params['vnp_TxnRef']}`
+      );
     } else {
       return { code: '97' };
     }

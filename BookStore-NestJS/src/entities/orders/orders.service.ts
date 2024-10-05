@@ -5,7 +5,7 @@ import { OrderItemService } from '../order-item/order-item.service';
 import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
 import { User } from '../users/entities/user.entity';
 import { OrderRequestDto } from './dto/order-request.dto';
-import { Order, OrderStatus } from './entities/order.entity';
+import { Order, OrderStatus, PaymentStatus } from './entities/order.entity';
 
 @Injectable()
 export class OrdersService {
@@ -32,11 +32,11 @@ export class OrdersService {
     newOrder.totalItemsOrder = shoppingCart.totalItems;
     newOrder.totalPriceOrder = shoppingCart.totalPrices;
     newOrder.paymentMethod = placeOrderRequest.paymentMethod;
-    // newOrder.paymentStatus =
+    newOrder.paymentStatus = PaymentStatus.UNPAID;
     newOrder = await this.orderRepository.save(newOrder);
 
     await this.orderItemService.createNewOrderItems(cartItems, newOrder);
-    await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
+    // await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
 
     delete newOrder.user;
     return newOrder;
@@ -48,6 +48,15 @@ export class OrdersService {
         id: orderId,
         user: { id: req.user.userId }
       },
+    });
+    if (!order) throw new NotFoundException("Not found order");
+    return order;
+  }
+
+  async findOrderByCodeBill(codeBill: string) {
+    const order = await this.orderRepository.findOne({
+      where: { codeBill: codeBill },
+      select: ['bankNo', 'updateAt', 'username', 'paymentMethod', 'totalPriceOrder']
     });
     if (!order) throw new NotFoundException("Not found order");
     return order;
@@ -97,6 +106,12 @@ export class OrdersService {
 
     return await this.orderRepository.save({ ...order, orderStatus: orderStatus });
   };
+
+  async updateOrderPayment(order: Order, paymentStatus: PaymentStatus, codeBill: string) {
+    return await this.orderRepository.save({
+      ...order, paymentStatus, codeBill
+    });
+  }
 
   async getAllOrders(current: number, pageSize: number) {
     if (!current || current == 0) current = 1;

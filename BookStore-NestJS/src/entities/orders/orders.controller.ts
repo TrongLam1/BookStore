@@ -62,4 +62,11 @@ export class OrdersController {
   ) {
     return await this.ordersService.getAllOrders(+current, +pageSize);
   }
+
+  @Get('one-order/:codeBill')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async findOneOrder(@Param("codeBill") codeBill: string) {
+    return await this.ordersService.findOrderByCodeBill(codeBill);
+  }
 }

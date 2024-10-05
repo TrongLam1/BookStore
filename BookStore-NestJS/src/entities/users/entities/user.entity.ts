@@ -39,7 +39,7 @@ export class User {
     @Column({ nullable: true })
     codeExpired: Date;
 
-    @Column({ nullable: true })
+    @Column('longtext', { nullable: true })
     refreshToken: string;
 
     @OneToOne(() => ShoppingCart)
