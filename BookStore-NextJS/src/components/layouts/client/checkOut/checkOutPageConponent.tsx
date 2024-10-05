@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 
+import { PaymentBanking, PlaceOrder } from "@/app/api/orderApi";
 import { useShoppingCart } from "@/provider/shoppingCartProvider";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import CartItemsReview from "../cartItem/cartItemReview";
 import './checkOutPage.scss';
 import CheckOutPageFooter from "./checkOutPageFooter";
-import CartItemsReview from "../cartItem/cartItemReview";
-import { useRouter } from "next/navigation";
-import { error } from "console";
 
 export default function CheckOutPageComponent(props: any) {
     const router = useRouter();
@@ -24,13 +24,25 @@ export default function CheckOutPageComponent(props: any) {
         if (!user) router.push("/auth/login");
     }, [router]);
 
-    const handlePlaceOrder = () => {
+    const handlePlaceOrder = async () => {
         const validForm = checkValidForm();
         if (!validForm) return;
 
-        const form = {
-            userName, phone, address, payment, couponValue
+        const form: IRequestPlaceOrder = {
+            username: userName,
+            phone,
+            address,
+            paymentMethod: payment,
+            couponValue: +couponValue
         };
+
+        const res = await PlaceOrder(form);
+        if (payment === 'BANKING') {
+            const resPayment = await PaymentBanking(res?.data.id);
+            if (+resPayment.statusCode === 201) {
+                router.push(resPayment?.data);
+            }
+        }
     };
 
     const checkValidForm = () => {
@@ -125,7 +137,7 @@ export default function CheckOutPageComponent(props: any) {
                             <div className="custom-control custom-radio">
                                 <input
                                     className="paymentMethod custom-control-input"
-                                    value="ship-cod"
+                                    value="SHIP COD"
                                     name="paymentMethod" type="radio" readOnly
                                     onClick={(e) => setPayment(e.target.value)}
                                 />
@@ -133,7 +145,7 @@ export default function CheckOutPageComponent(props: any) {
                             </div>
                             <div className="custom-control custom-radio">
                                 <input
-                                    className="paymentMethod custom-control-input" value="vnpay" name="paymentMethod" type="radio" readOnly
+                                    className="paymentMethod custom-control-input" value="BANKING" name="paymentMethod" type="radio" readOnly
                                     onClick={(e) => setPayment(e.target.value)}
                                 />
                                 <label className="custom-control-label" htmlFor="debit">VNPay</label>

@@ -90,4 +90,12 @@ declare global {
         totalPrice: number;
         book: IBook;
     }
+
+    interface IRequestPlaceOrder {
+        username: string;
+        phone: string;
+        address: string;
+        paymentMethod: string;
+        couponValue: number;
+    }
 }
