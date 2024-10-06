@@ -7,30 +7,26 @@ export default function ProfileInfoComponent(props: any) {
     const router = useRouter();
 
     const { user } = props;
-    if (!user) router.push("/auth/login");
 
-    const [userName, setUsername] = useState<string>(user.username);
+    const [userName, setUsername] = useState<string>(user?.username);
     const [email, setEmail] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
-    const [currentPassword, setCurrentPassword] = useState<string>('');
-    const [newPassword, setNewPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
+    const [address, setAddress] = useState<string>('');
     const [isUpdateInfo, setIsUpdateInfo] = useState<boolean>(false);
 
     useEffect(() => {
-        const email = maskEmail(user.email);
-        const phone = maskPhoneNumber(user.phone);
+        if (!user) router.push("/auth/login");
+
+        const email = user?.email !== null ? maskEmail(user?.email) : '';
+        const phone = user?.phone !== null ? maskPhoneNumber(user?.phone) : '';
+        const address = user?.address !== null ? maskPhoneNumber(user?.address) : '';
         setEmail(email);
         setPhone(phone);
+        setAddress(address);
     }, []);
 
-    const handleShowChangePassword = () => {
-        setShowChangePassword(!showChangePassword);
-    };
-
     const maskPhoneNumber = (phoneNumber: string) => {
-        if (phoneNumber !== undefined) {
+        if (phoneNumber !== '' || phoneNumber !== undefined) {
             if (typeof phoneNumber !== 'string' || phoneNumber.length !== 10) {
                 return "Invalid phone number format";
             }
@@ -51,43 +47,17 @@ export default function ProfileInfoComponent(props: any) {
 
     const maskEmail = (email: string) => {
         // Find the position of the "@" symbol
-        const atIndex = email.indexOf("@");
+        const atIndex = email?.indexOf("@");
 
-        const firstPart = email.substring(0, 2);
+        const firstPart = email?.substring(0, 2);
 
-        const maskedMiddle = email.substring(2, atIndex).replace(/[^\s@]/g, "*");
+        const maskedMiddle = email?.substring(2, atIndex).replace(/[^\s@]/g, "*");
 
         // Extract the domain part
-        const domainPart = email.substring(atIndex);
+        const domainPart = email?.substring(atIndex);
 
         // Concatenate the parts to form the masked email
         return firstPart + maskedMiddle + domainPart;
-    }
-
-    const handleChangePassword = async (e: any) => {
-        const parentNode = e.target.parentNode.parentNode;
-        const errorMessages = parentNode.querySelectorAll(".error-message");
-
-        let res;
-
-        if (currentPassword === newPassword) {
-            errorMessages[1].innerHTML = "Mật khẩu mới phải khác mật khẩu hiện tại."
-            return;
-        } else {
-            errorMessages[1].innerHTML = ""
-        }
-
-        if (newPassword === confirmPassword) {
-            //res = await changePassword(currentPassword, newPassword);
-            errorMessages[2].innerHTML = ""
-        } else {
-            errorMessages[2].innerHTML = "Nhập lại mật khẩu không đúng."
-            return;
-        }
-
-        // if (res && res.status === 200) {
-
-        // }
     }
 
     const handleActiveUpdateInfo = () => {
@@ -138,62 +108,15 @@ export default function ProfileInfoComponent(props: any) {
                         />
                         <span className="error-message"></span>
                     </div>
-                </div>
-                <div className="change-password d-flex align-items-center row">
-                    <div className="btn-change-password col-lg-2">
-                        <button
-                            type="button"
-                            id="btn-change-pass"
-                            className="btn btn-primary"
-                            onClick={() => handleShowChangePassword()}
-                        >
-                            Đổi mật khẩu
-                        </button>
+                    <div className="profile-body-item row">
+                        <span className="col-lg-2">Địa chỉ</span>
+                        <input
+                            className="content col-lg-8" readOnly type="text" maxLength={10}
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                        />
+                        <span className="error-message"></span>
                     </div>
-                    {showChangePassword === true &&
-                        <div className="change-pass-container row profile-body-item align-items-center col-lg-10">
-                            <div className="col-lg-10">
-                                <div className="change-pass-input row">
-                                    <span className="col-lg-3">Mật khẩu hiện tại:</span>
-                                    <input
-                                        type="password" className="content col-lg-7"
-                                        value={currentPassword}
-                                        min={8}
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                    />
-                                    <span className="error-message"></span>
-                                </div>
-                                <div className="change-pass-input row">
-                                    <span className="col-lg-3">Mật khẩu mới:</span>
-                                    <input
-                                        type="password" className="content col-lg-7"
-                                        min={8}
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                    />
-                                    <span className="error-message"></span>
-                                </div>
-                                <div className="change-pass-input row">
-                                    <span className="col-lg-3">Nhập lại mật khẩu mới:</span>
-                                    <input
-                                        type="password" className="content col-lg-7"
-                                        min={8}
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    />
-                                    <span className="error-message"></span>
-                                </div>
-                            </div>
-                            <div className="col-lg-2">
-                                <button
-                                    type="submit" id="save-pass" className="btn btn-primary"
-                                    onClick={(e) => handleChangePassword(e)}
-                                >
-                                    Lưu mật khẩu
-                                </button>
-                            </div>
-                        </div>
-                    }
                 </div>
                 <div className="profile-update-btn">
                     {!isUpdateInfo ?

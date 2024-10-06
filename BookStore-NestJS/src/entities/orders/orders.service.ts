@@ -48,6 +48,7 @@ export class OrdersService {
         id: orderId,
         user: { id: req.user.userId }
       },
+      relations: ['orderItems', 'orderItems.book']
     });
     if (!order) throw new NotFoundException("Not found order");
     return order;

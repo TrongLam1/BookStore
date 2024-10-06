@@ -1,7 +1,7 @@
 import { Public, ResponseMessage } from '@/decorator/decorator';
 import { CreateUserDto } from '@/entities/users/dto/create-user.dto';
 import { UsersService } from '@/entities/users/users.service';
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
@@ -28,8 +28,16 @@ export class AuthController {
     return await this.authService.signIn(req.user);
   }
 
+  @Put('reset-password')
+  @UseGuards(JwtAuthGuard)
+  @ResponseMessage("Reset password")
+  async resetPassword(@Request() req, @Body() password: any) {
+    return await this.authService.resetPassword(req.user, password);
+  }
+
   @Get('logout')
   @UseGuards(JwtAuthGuard)
+  @ResponseMessage("Logout")
   async logout(@Request() req) {
     return await this.authService.logout(req.user);
   }

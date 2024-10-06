@@ -1,7 +1,7 @@
 import { User } from '@/entities/users/entities/user.entity';
 import { UsersService } from '@/entities/users/users.service';
 import { comparePasswordHelper } from '@/helpers/utils';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class AuthService {
   async signIn(user: User): Promise<any> {
     const roles = user.roles.map(role => role.name);
     const payload = {
-      username: user.email, id: user.id,
+      id: user.id, email: user.email,
       phone: user.phone, address: user.address, roles
     };
     const refreshToken = this.jwtService.sign(payload,
@@ -46,6 +46,16 @@ export class AuthService {
       access_token: this.jwtService.sign(payload, { expiresIn: '1d' }),
       refreshToken
     };
+  }
+
+  async resetPassword(req, newPassword: any) {
+    const user = await this.usersService.findOneByEmail(req.email);
+    if (!user) return null;
+
+    const checkDuplicatePassword = await comparePasswordHelper(newPassword.password, user.password);
+    if (checkDuplicatePassword) throw new BadRequestException("Mật khẩu mới phải khác mật khẩu cũ.");
+
+    return await this.usersService.resetPassword(user, newPassword.password);
   }
 
   async logout(user: User) {

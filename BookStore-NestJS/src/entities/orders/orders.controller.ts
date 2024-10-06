@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { OrderRequestDto } from './dto/order-request.dto';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
@@ -22,7 +22,7 @@ export class OrdersController {
     return await this.ordersService.placeOrder(request, placeOrderRequest);
   }
 
-  @Get('history-order')
+  @Get('history-orders')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
   async getHistoryOrdersFromUser(
@@ -66,7 +66,14 @@ export class OrdersController {
   @Get('one-order/:codeBill')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
-  async findOneOrder(@Param("codeBill") codeBill: string) {
+  async findOneOrderByCode(@Param("codeBill") codeBill: string) {
     return await this.ordersService.findOrderByCodeBill(codeBill);
+  }
+
+  @Get('order-id/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(USER)
+  async findOrderById(@Req() req, @Param("id") id: number) {
+    return await this.ordersService.findOrderById(req, id);
   }
 }

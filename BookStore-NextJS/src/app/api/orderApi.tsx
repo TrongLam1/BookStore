@@ -20,7 +20,36 @@ export async function FindOrderByCodeBill(codeBill: string) {
     return await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/one-order/${codeBill}`,
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        nextOption: {
+            cache: 'no-store'
+        }
+    });
+}
+
+export async function FindOrderById(orderId: number) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/order-id/${orderId}`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        nextOption: {
+            cache: 'no-store'
+        }
+    });
+}
+
+export async function GetAllOrdersByUser() {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/history-orders`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        nextOption: {
+            next: { tags: [`list-orders-${session?.user?.user?.userId}`] },
+        }
     });
 }
 

@@ -39,6 +39,13 @@ export class UsersService {
     });
   }
 
+  async resetPassword(user: User, newPassword: string) {
+    const newPasswordHash = await hashPasswordHelper(newPassword);
+    await this.usersRepository.save({ ...user, password: newPasswordHash });
+
+    return "Reset password successfully.";
+  }
+
   async logout(user: User) {
     user = await this.usersRepository.save({
       ...user, refreshToken: null

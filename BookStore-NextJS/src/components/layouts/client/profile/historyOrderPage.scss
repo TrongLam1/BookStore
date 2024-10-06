@@ -90,35 +90,6 @@
                 }
             }
 
-            .change-password {
-                .btn-change-password {
-                    button {
-                        font-size: .9rem;
-                    }
-                }
-
-                .change-pass-container {
-                    // display: none;
-
-                    &.active {
-                        display: flex;
-                    }
-
-                    .change-pass-input {
-                        margin-bottom: 10px;
-
-                        input {
-                            border-bottom: 1px solid red;
-                        }
-
-                        .error-message {
-                            color: red;
-                            font-size: .9rem;
-                        }
-                    }
-                }
-            }
-
             .profile-update-btn {
                 display: flex;
                 float: right;

@@ -19,6 +19,11 @@ export default function SidebarProfileComponent(props: any) {
                     className={`profile-item orders ${pathName === '/profile/history-orders' ? 'active' : ''}`}>
                     Lịch sử mua hàng
                 </Link>
+                <Link
+                    href='/profile/reset-password'
+                    className={`profile-item orders ${pathName === '/profile/reset-password' ? 'active' : ''}`}>
+                    Đổi mật khẩu
+                </Link>
             </div>
         </div>
     );
