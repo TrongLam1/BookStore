@@ -27,6 +27,12 @@ const HomePageHeader = (props: any) => {
     const { setShoppingCart } = useShoppingCart();
 
     useEffect(() => {
+        if (user.role.includes("ADMIN")) {
+            router.push("/dashboard");
+        }
+    })
+
+    useEffect(() => {
         setShoppingCart(dataShoppingCart);
     }, []);
 

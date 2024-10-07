@@ -53,7 +53,7 @@ const HomePageBanner = () => {
                 <ul className="list-type row">
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
                         <Link
-                            href="/category/Sách%20mới%202024"
+                            href="/filter?category=Sách%20mới%202024&type=&brand="
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={newbook} alt="" />
@@ -62,7 +62,7 @@ const HomePageBanner = () => {
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
                         <Link
-                            href="/category/Từ%20điển"
+                            href="/filter?category=Từ%20điển&type=&brand="
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={dictionary} alt="" />
@@ -71,7 +71,7 @@ const HomePageBanner = () => {
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
                         <Link
-                            href="/category/Hội%20họa"
+                            href="/filter?category=Hội%20họa&type=&brand="
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={art} alt="" />
@@ -80,7 +80,7 @@ const HomePageBanner = () => {
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
                         <Link
-                            href="/category/Lịch%20sử"
+                            href="/filter?category=Lịch%20sử&type=&brand="
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={history} alt="" />
@@ -89,7 +89,7 @@ const HomePageBanner = () => {
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
                         <Link
-                            href="/category/Thiếu%20nhi"
+                            href="/filter?category=Thiếu%20nhi&type=&brand="
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={children} alt="" />
@@ -98,7 +98,7 @@ const HomePageBanner = () => {
                     </li>
                     <li className="list-type-item col-lg-2 col-6 col-sm-4">
                         <Link
-                            href="/category/all"
+                            href="/filter"
                             className="d-flex flex-column align-items-center"
                         >
                             <Image className="type-book-img" src={all} alt="" />

@@ -55,12 +55,12 @@ export default function ListProductsFilter(props: any) {
                     </span>
                     <span>
                         <button className="btn-sort" type="button"
-                            onClick={(e) => handleSort(e, "salePrice", "ASC")}>Giá tăng dần
+                            onClick={(e) => handleSort(e, "currentPrice", "ASC")}>Giá tăng dần
                         </button>
                     </span>
                     <span>
                         <button className="btn-sort" type="button"
-                            onClick={(e) => handleSort(e, "salePrice", "DESC")}>Giá giảm dần
+                            onClick={(e) => handleSort(e, "currentPrice", "DESC")}>Giá giảm dần
                         </button>
                     </span>
                 </div>

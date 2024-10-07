@@ -114,10 +114,10 @@ export default function SidebarFilter(props: any) {
                             <div key={`types-${index}`} className="form-check form-check-custom">
                                 <input type="checkbox"
                                     className="form-check-input"
-                                    id={`types-${index}`}
+                                    id={`category-${index}`}
                                     name={item.categoryName} value={item.categoryName}
                                 />
-                                <label className="form-check-label" htmlFor={`types-${index}`}>
+                                <label className="form-check-label" htmlFor={`category-${index}`}>
                                     {item.categoryName}
                                 </label>
                             </div>

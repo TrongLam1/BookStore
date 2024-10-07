@@ -36,7 +36,7 @@ export class OrdersService {
     newOrder = await this.orderRepository.save(newOrder);
 
     await this.orderItemService.createNewOrderItems(cartItems, newOrder);
-    // await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
+    await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
 
     delete newOrder.user;
     return newOrder;
@@ -127,5 +127,37 @@ export class OrdersService {
     );
 
     return { listOrders, totalItems, totalPages: Math.ceil(totalItems / pageSize) };
+  }
+
+  async statisticOrders() {
+    const totalCancelOrders = await this.orderRepository.count({
+      where: { orderStatus: OrderStatus.CANCELED }
+    });
+
+    const totalPendingOrders = await this.orderRepository.count({
+      where: { orderStatus: OrderStatus.PENDING }
+    });
+
+    const totalShippingOrders = await this.orderRepository.count({
+      where: { orderStatus: OrderStatus.SHIPPING }
+    });
+
+    const totalCompletedOrders = await this.orderRepository.count({
+      where: { orderStatus: OrderStatus.COMPLETED }
+    });
+
+    const sum = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('SUM(order.totalPriceOrder)', 'total')
+      .where('order.orderStatus = :status', { status: OrderStatus.COMPLETED })
+      .getRawOne();
+
+    return {
+      cancelOrders: totalCancelOrders,
+      pendingOrders: totalPendingOrders,
+      shippingOrders: totalShippingOrders,
+      completedOrders: totalCompletedOrders,
+      revenue: sum.total || 0
+    }
   }
 }

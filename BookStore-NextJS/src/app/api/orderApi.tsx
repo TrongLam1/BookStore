@@ -53,6 +53,24 @@ export async function GetAllOrdersByUser() {
     });
 }
 
+export async function CancelOrder(orderId: number) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/cancel/${orderId}`,
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
+export async function GetStatisticOrders(token: string) {
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/statistic-orders`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
 export async function PaymentBanking(orderId: number) {
     const session = await auth();
     const token = session?.user?.token;

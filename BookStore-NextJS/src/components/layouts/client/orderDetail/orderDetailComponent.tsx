@@ -5,14 +5,20 @@ import './orderDetailComponent.scss';
 import OrderItem from "./orderItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleLeft } from "@fortawesome/free-solid-svg-icons";
+import { CancelOrder, PaymentBanking } from "@/app/api/orderApi";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function OrderDetailComponent(props: any) {
 
+    const router = useRouter();
+
     const { order } = props;
-
     const orderItems = order.orderItems;
+    const [orderData, setOrderData] = useState(order);
 
-    console.log(order);
+    useEffect(() => { }, [orderData]);
 
     const date = new Date(order.createdAt);
 
@@ -28,11 +34,15 @@ export default function OrderDetailComponent(props: any) {
     const formattedDate = date.toLocaleString('en-GB', options).replace(/\//g, '-');
 
     const renderBtnPayment = () => {
+        if (order?.orderStatus === "Đã hoàn thành" || order?.orderStatus === "Đã hủy") {
+            return ('')
+        }
+
         if (order?.paymentMethod === "BANKING" && order?.paymentStatus === "Chưa thanh toán") {
             return (
                 <div
                     className="payment-order d-flex justify-content-end"
-                    data-id={order?.id}
+                    onClick={() => handlePayment(orderData?.id)}
                 >
                     <button type="button">Thanh toán</button>
                 </div>
@@ -43,27 +53,42 @@ export default function OrderDetailComponent(props: any) {
     };
 
     const renderBtnCancelOrder = () => {
-        if (order?.orderStatus !== "Delivered" && order?.orderStatus !== "Cancelled") {
+        if (order?.orderStatus !== "Đã hoàn thành" && order?.orderStatus !== "Đã hủy") {
             return (
                 <div
                     className="cancel-order d-flex justify-content-end"
-                    data-id={order?.id}
-                    onClick={() => handleUpdateStatusOrder(order?.id, "Cancel")}
+                    onClick={() => handleCancelOrder(orderData?.id)}
                 >
                     <button type="button">Hủy</button>
                 </div>
             )
         } else {
-            return ('')
+            return (
+                <div
+                    className="cancel-order d-flex justify-content-end"
+                >
+                    <button disabled type="button">Đã hủy</button>
+                </div>
+            )
         }
     };
 
-    const handleUpdateStatusOrder = async (orderId, status) => {
-        // const res = await updateStatusOrder(orderId, status);
-        // if (res && res.status === 200) {
-        //     toast.success("Hủy đơn hàng thành công.");
-        //     getOrder(orderId);
-        // }
+    const handlePayment = async (orderId: string) => {
+        const res = await PaymentBanking(+orderId);
+        if (res.statusCode === 201) {
+            router.push(res.data);
+        } else {
+            toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+        }
+    }
+
+    const handleCancelOrder = async (orderId: string) => {
+        const res = await CancelOrder(+orderId);
+        if (res.statusCode === 200) {
+            toast.success("Hủy đơn hàng thành công.");
+            setOrderData(res.data);
+            router.refresh();
+        } else { toast.error("Hủy đơn hàng thất bại.") };
     };
 
     return (

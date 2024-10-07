@@ -48,14 +48,17 @@ export class AuthService {
     };
   }
 
-  async resetPassword(req, newPassword: any) {
+  async resetPassword(req, body: any) {
     const user = await this.usersService.findOneByEmail(req.email);
     if (!user) return null;
 
-    const checkDuplicatePassword = await comparePasswordHelper(newPassword.password, user.password);
+    const checkPassword = await comparePasswordHelper(body.oldPass, user.password);
+    if (!checkPassword) throw new BadRequestException("Mật khẩu không đúng.");
+
+    const checkDuplicatePassword = await comparePasswordHelper(body.newPass, user.password);
     if (checkDuplicatePassword) throw new BadRequestException("Mật khẩu mới phải khác mật khẩu cũ.");
 
-    return await this.usersService.resetPassword(user, newPassword.password);
+    return await this.usersService.resetPassword(user, body.newPass);
   }
 
   async logout(user: User) {

@@ -1,17 +1,26 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './resetPassword.scss';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { signOut } from "next-auth/react";
 import { ResetPasswordApi } from "@/app/api/userApi";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function ResetPassword(props: any) {
+
+    const router = useRouter();
+    const { user } = props;
 
     const [currentPassword, setCurrentPassword] = useState<string>('');
     const [newPassword, setNewPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
+
+    useEffect(() => {
+        if (!user) router.push("/auth/login");
+    }, []);
 
     const checkFormReset = (e: any) => {
         const parentNode = e.target.parentNode.parentNode;
@@ -38,8 +47,15 @@ export default function ResetPassword(props: any) {
     const handleResetPassword = async (e) => {
         const validForm = checkFormReset(e);
         if (validForm) {
-            const res = await ResetPasswordApi({ password: newPassword });
-            if (+res.statusCode === 200) signOut();
+            const res = await ResetPasswordApi({ oldPass: currentPassword, newPass: newPassword });
+
+            if (+res.statusCode === 400) {
+                toast.error(res?.message);
+            } else {
+                toast.success(res?.message);
+                signOut();
+                router.push('/home');
+            }
         }
     }
 
@@ -112,4 +128,4 @@ export default function ResetPassword(props: any) {
             </div>
         </div>
     )
-} 
+}

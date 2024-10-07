@@ -16,7 +16,7 @@ const ListProducts = (props: any) => {
                         <div className="link">Top sách bán chạy</div>
                     </h4>
                     <h6 className="heading-bar__showall">
-                        <Link href="/category/all" className="link">Xem tất cả</Link>
+                        <Link href="/filter" className="link">Xem tất cả</Link>
                     </h6>
                 </div>
                 <div className="container-book-cards row mx-sm-0">

@@ -105,6 +105,11 @@
                             &:hover {
                                 background-color: red;
                             }
+
+                            &:disabled {
+                                background-color: #ccc;
+                                cursor: not-allowed;
+                            }
                         }
                     }
 

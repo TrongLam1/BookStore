@@ -76,4 +76,11 @@ export class OrdersController {
   async findOrderById(@Req() req, @Param("id") id: number) {
     return await this.ordersService.findOrderById(req, id);
   }
+
+  @Get('statistic-orders')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
+  async getStatisticOrders() {
+    return await this.ordersService.statisticOrders();
+  }
 }
