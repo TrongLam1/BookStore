@@ -5,6 +5,7 @@ import { Body, Controller, Get, Param, Post, Query, Request, UseGuards } from '@
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ADMIN } from '@/role.environment';
 
 @Controller('users')
 export class UsersController {
@@ -17,7 +18,7 @@ export class UsersController {
 
   @Get('find/email/:email')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles(ADMIN)
   async findByEmail(@Param('email') email: string) {
     return await this.usersService.findOneByEmail(email);
   }
@@ -30,7 +31,7 @@ export class UsersController {
 
   @Get('find/all-users')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles(ADMIN)
   async findAllUsers(
     @Query('current') current: string,
     @Query('pageSize') pageSize: string,

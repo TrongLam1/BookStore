@@ -120,6 +120,7 @@ export class OrdersService {
 
     const [listOrders, totalItems] = await this.orderRepository.findAndCount(
       {
+        order: { id: "DESC" },
         take: pageSize,
         skip: (current - 1) * pageSize,
         select: ['id', 'createdAt', 'username', 'orderStatus', 'totalPriceOrder']

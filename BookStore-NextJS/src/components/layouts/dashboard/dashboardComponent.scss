@@ -45,6 +45,8 @@
                 margin-left: 0;
 
                 .sidebar-item {
+                    list-style: none;
+
                     .sidebar-link {
                         padding: .625rem 1.625rem;
                         color: #e9ecef;
@@ -84,6 +86,8 @@
                             color: white;
                             width: 100%;
                             height: auto;
+                            border: none;
+                            outline: none;
                         }
                     }
                 }
@@ -164,169 +168,6 @@
                                 margin-bottom: 24px;
 
                                 .card-body {}
-                            }
-                        }
-
-                        .container-fluid {
-                            .container {
-                                .import-excel-container {
-                                    margin-left: 3rem;
-                                    padding: 5px;
-                                    border-radius: 8px;
-                                    font-size: .85rem;
-
-                                    #import-excel {
-                                        margin-top: 5px;
-                                    }
-
-                                    #btn-import-excel,
-                                    #btn-export-excel {
-                                        background-color: transparent;
-                                        border: 1px solid orangered;
-                                        padding: 2px 4px;
-                                        border-radius: 6px;
-                                        margin-right: 5px;
-                                    }
-                                }
-
-                                .search-container {
-                                    background-color: white;
-                                    border-radius: 6px;
-                                    overflow: hidden;
-                                    margin-bottom: 20px;
-                                    max-width: 362px;
-
-                                    .search-form {
-                                        min-width: 320px;
-                                        border: none;
-                                        font-size: .9rem;
-                                        padding-left: .6rem;
-
-                                        &:focus {
-                                            box-shadow: none;
-                                        }
-                                    }
-                                }
-
-                                .btn-filter-status-order {
-                                    margin-right: 2rem;
-                                    margin-bottom: 10px;
-
-                                    button {
-                                        background-color: transparent;
-                                        border: 1px solid orangered;
-                                        min-height: 40px;
-                                        max-width: 120px;
-                                        border-radius: 10px;
-                                        font-size: .9rem;
-                                        padding: 4px;
-                                    }
-
-                                    #create-admin {
-                                        display: inline-block;
-                                        max-width: 150px;
-                                    }
-
-                                    .btn-filter-status-order button:hover {
-                                        background-color: orangered;
-                                        color: white;
-                                    }
-                                }
-
-                                .new-coupon {
-                                    margin-right: 20px;
-                                    margin-left: 20px;
-
-                                    #add-new-coupon {
-                                        font-size: 1.4rem;
-                                        background-color: transparent;
-
-                                        &:hover {
-                                            color: orangered;
-                                        }
-                                    }
-                                }
-
-                                #add-new-book {
-                                    background-color: transparent;
-                                    border: 2px solid orangered;
-                                    margin: 20px 0;
-                                    border-radius: 10px;
-                                    padding: 5px 10px;
-                                    color: orangered;
-
-                                    &:hover {
-                                        background-color: orangered;
-                                        color: white;
-                                    }
-                                }
-
-                                table {
-                                    tr {
-                                        vertical-align: middle;
-                                    }
-
-                                    .heading-table {
-                                        th {
-                                            text-align: center;
-                                        }
-                                    }
-
-                                    .body-table {
-                                        td {
-                                            text-align: center;
-                                        }
-
-                                        #img-book {
-                                            object-fit: contain;
-
-                                            img {
-                                                max-width: 120px;
-                                                max-height: 120px;
-                                            }
-                                        }
-
-                                        .btn-table-dashboard {
-                                            padding: 3px 8px;
-                                            border-radius: 10px;
-                                        }
-
-                                        #view-book,
-                                        #view-order,
-                                        #view-coupon {
-                                            margin-right: 5px;
-                                            border: 1px solid #34f234;
-                                            color: #34f234;
-                                            font-size: 1.2rem;
-
-                                            &:hover {
-                                                background-color: #34f234;
-                                                color: white;
-                                            }
-                                        }
-
-                                        #remove-book {
-                                            border: 1px solid red;
-                                            color: red;
-                                            font-size: 1.2rem;
-
-                                            &:hover {
-                                                background-color: red;
-                                                color: white;
-                                            }
-                                        }
-
-                                        #btn-lock-acc {
-                                            color: #39ac31;
-                                            background-color: transparent;
-                                            font-size: 1.1rem;
-
-                                            &:hover {
-                                                color: red;
-                                            }
-                                        }
-                                    }
-                                }
                             }
                         }
 

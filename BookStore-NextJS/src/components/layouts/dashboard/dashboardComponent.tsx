@@ -1,12 +1,10 @@
 'use client'
 
-import { useRouter } from "next/navigation";
 import './dashboardComponent.scss';
 import StatisticComponent from "./statisticComponent";
 
 export default function DashboardComponent(props: any) {
 
-    const router = useRouter();
     const { user, statistic } = props;
 
     if (!user || !user.role.includes("ADMIN")) {

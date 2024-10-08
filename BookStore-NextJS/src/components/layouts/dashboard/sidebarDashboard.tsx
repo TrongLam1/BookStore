@@ -1,4 +1,6 @@
 'use client'
+import { faFaceLaughWink, faFileLines, faList, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
 import { Collapse } from "react-bootstrap";
@@ -14,7 +16,7 @@ export default function SidebarDashboard() {
                 <div className="sidebar-logo">
                     <a className="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard">
                         <div className="sidebar-brand-icon rotate-n-15">
-                            <i className="fas fa-laugh-wink"></i>
+                            <FontAwesomeIcon icon={faFaceLaughWink} />
                         </div>
                         <div className="sidebar-brand-text mx-3">Admin Panel</div>
                     </a>
@@ -22,7 +24,7 @@ export default function SidebarDashboard() {
                 <ul className="sidebar-nav">
                     <li className="sidebar-item">
                         <Link href="/dashboard" className="sidebar-link">
-                            <i className="fa-solid fa-list pe-2"></i>
+                            <FontAwesomeIcon icon={faList} className="pe-2" />
                             Dashboard
                         </Link>
                     </li>
@@ -34,13 +36,13 @@ export default function SidebarDashboard() {
                             aria-expanded={openTable}
                             data-bs-toggle="collapse"
                         >
-                            <i className="fa-solid fa-file-lines pe-2"></i>
+                            <FontAwesomeIcon icon={faFileLines} className="pe-2" />
                             Bảng
                         </div>
                         <Collapse in={openTable}>
                             <ul id="table-collapse">
                                 <li className="sidebar-item">
-                                    <Link href={'/dashboard/products/1'}
+                                    <Link href='/dashboard/products/1'
                                         className="sidebar-link sidebar-link-custom"
                                     >
                                         <button className="btn-dashboard" id="tableBooks" type="button">
@@ -86,7 +88,7 @@ export default function SidebarDashboard() {
                             aria-expanded={openAuth}
                             data-bs-toggle="collapse"
                         >
-                            <i className="fa-regular fa-user pe-2"></i>
+                            <FontAwesomeIcon icon={faUser} className="pe-2" />
                             Xác thực
                         </div>
                         <Collapse in={openAuth}>

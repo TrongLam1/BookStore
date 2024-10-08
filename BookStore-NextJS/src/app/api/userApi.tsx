@@ -14,3 +14,20 @@ export async function ResetPasswordApi(body: any) {
         });
     }
 }
+
+export async function FindAllUsers(current: number, pageSize: number) {
+    const session = await auth();
+    const token = session?.user?.token;
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/find/all-users`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        queryParams: { current, pageSize }
+    });
+
+    return {
+        listUsers: res.data.result,
+        totalItems: res.data.totalItems,
+        totalPages: res.data.totalPages
+    }
+}

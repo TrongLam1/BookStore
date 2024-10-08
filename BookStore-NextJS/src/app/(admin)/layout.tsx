@@ -1,12 +1,24 @@
+import '@/components/layouts/dashboard/dashboardComponent.scss';
 import NavDashboard from "@/components/layouts/dashboard/navDashboard";
 import SidebarDashboard from "@/components/layouts/dashboard/sidebarDashboard";
-import '@/components/layouts/dashboard/dashboardComponent.scss';
+import { auth } from '../../../auth';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+
+    const session = await auth();
+    const user = session?.user.user;
+
+    if (!user || !user.role.includes("ADMIN")) {
+        return (
+            <div className="alert alert-danger" role="alert">
+                <h4 className="alert-heading">Permission Denided</h4>
+            </div>
+        );
+    };
 
     return (
         < div className="dashboard-container" >

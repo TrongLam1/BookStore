@@ -71,6 +71,15 @@ export async function GetStatisticOrders(token: string) {
     });
 }
 
+export async function GetAllOrders(current: number, pageSize: number, token: string) {
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/all-orders`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        queryParams: { current, pageSize }
+    });
+}
+
 export async function PaymentBanking(orderId: number) {
     const session = await auth();
     const token = session?.user?.token;

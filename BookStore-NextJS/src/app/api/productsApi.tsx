@@ -14,13 +14,13 @@ export async function FindProductsByKeyword(keyword: string) {
     return {
         listProducts: res?.data?.books,
         totalItems: res?.data?.totalItems,
-        totalPages: res?.data?.totalItems
+        totalPages: res?.data?.totalPages
     }
 }
 
 export async function FindAllProducts(
     current: number = 1,
-    pageSize: number = 5,
+    pageSize: number = 10,
     sort: string = 'ASC',
     orderBy: string = 'id') {
     const res = await sendRequest<IBackendRes<any>>({
@@ -28,14 +28,14 @@ export async function FindAllProducts(
         method: 'GET',
         queryParams: { current, pageSize, sort, orderBy },
         nextOption: {
-            next: { tags: ['list-books'] }
+            next: { tags: [`all-products-page-${current}`] }
         }
     });
 
     return {
         listProducts: res?.data?.books,
         totalItems: res?.data?.totalItems,
-        totalPages: res?.data?.totalItems
+        totalPages: res?.data?.totalPages
     }
 }
 
