@@ -42,22 +42,10 @@ export class TypeService {
     });
   }
 
-  async findAllTypesName() {
-    const [types, totalItems] = await this.typeRepository.findAndCount(
-      {
-        where: { isAvailable: true },
-        select: ['typeName']
-      }
-    );
-
-    return { types, totalItems };
-  }
-
   async findAllTypes() {
-    const [types, total] = await this.typeRepository.findAndCount({
+    return await this.typeRepository.find({
       where: { isAvailable: true },
+      select: ['typeName']
     });
-
-    return types;
   }
 }

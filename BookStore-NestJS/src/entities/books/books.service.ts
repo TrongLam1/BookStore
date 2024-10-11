@@ -114,7 +114,7 @@ export class BooksService {
 
     const oldBook = await this.bookRepository.findOneBy({ id });
 
-    if (oldBook) throw new NotFoundBookException();
+    if (oldBook === null) throw new NotFoundBookException();
 
     const type = typeName ? await this.typeService.findByName(typeName) : oldBook.type;
     const brand = brandName ? await this.brandService.findByName(brandName) : oldBook.brand;
@@ -136,7 +136,7 @@ export class BooksService {
     const files = await this.cloudinaryService.uploadFile(file);
 
     return await this.bookRepository.save({
-      ...book, imageId: files.imageId, imageUrl: files.imageUrl
+      ...book, imageId: files.public_id, imageUrl: files.url
     });
   }
 
@@ -162,7 +162,7 @@ export class BooksService {
         id: id,
         isAvailable: true
       },
-      relations: ['category', 'brand']
+      relations: ['category', 'brand', 'type']
     })
     if (book) return book;
     throw new NotFoundBookException();

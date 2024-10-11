@@ -119,6 +119,21 @@
                         max-width: 120px;
                         max-height: 120px;
                     }
+
+                    button {
+                        width: 55%;
+                        background-color: white;
+                        color: #34f234;
+                        outline: none;
+                        border: 1px solid #34f234;
+                        border-radius: 4px;
+                        cursor: pointer;
+
+                        &:hover {
+                            background-color: #34f234;
+                            color: white;
+                        }
+                    }
                 }
 
                 .btn-table-dashboard {

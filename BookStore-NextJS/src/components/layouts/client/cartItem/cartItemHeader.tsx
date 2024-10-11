@@ -6,7 +6,7 @@ import { faRectangleXmark } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { useShoppingCart } from '@/provider/shoppingCartProvider';
 import { RemoveProductFromCart, UpdateQuantityProductCart } from '@/app/api/shoppingCartApi';
-import ModalConfirm from '../../modal/modalConfirm';
+import ModalConfirm from '../../modal/modalConfirm/modalConfirm';
 
 export default function CartItemHeaderComponent(props: any) {
 

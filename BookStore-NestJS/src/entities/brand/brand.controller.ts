@@ -27,6 +27,6 @@ export class BrandController {
   @Get('all')
   @Public()
   async findAllBrands() {
-    return await this.brandService.findAllBrandsName();
+    return await this.brandService.findAllBrands();
   }
 }

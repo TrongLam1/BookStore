@@ -7,6 +7,7 @@ import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
+import { ADMIN } from '@/role.environment';
 
 @Controller('books')
 export class BooksController {
@@ -16,7 +17,7 @@ export class BooksController {
 
   @Post('create')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(process.env.ROLE_ADMIN)
+  @Roles(ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   async createNewBook(
     @Body() createBookDto: CreateBookDto,
@@ -31,7 +32,7 @@ export class BooksController {
 
   @Post('upload-excel')
   // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(process.env.ROLE_ADMIN)
+  // @Roles(ADMIN)
   @Public()
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file) {
@@ -40,7 +41,7 @@ export class BooksController {
 
   @Put('update-img')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(process.env.ROLE_ADMIN)
+  @Roles(ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   async updateImgBook(
     @Body() updateImgBook: UpdateImgBookDto,
@@ -55,15 +56,14 @@ export class BooksController {
 
   @Put('update-book')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(process.env.ROLE_ADMIN)
-  @UseInterceptors(FileInterceptor('file'))
+  @Roles(ADMIN)
   async updateBook(@Body() updateBookDto: UpdateBookDto) {
     return this.booksService.updateBook(updateBookDto);
   }
 
   @Delete('remove/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(process.env.ROLE_ADMIN)
+  @Roles(ADMIN)
   async removeBook(@Param('id') id: number) {
     return await this.booksService.removeBook(id);
   }

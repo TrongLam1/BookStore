@@ -16,23 +16,11 @@ export class CategoryService {
     return await this.categoryRepository.save({ categoryName: createCategoryDto.categoryName });
   }
 
-  async findAllCategoriesName() {
-    const [categories, totalItems] = await this.categoryRepository.findAndCount(
-      {
-        where: { isAvailable: true },
-        select: ['categoryName']
-      }
-    );
-
-    return { categories, totalItems };
-  }
-
   async findAllCategories() {
-    const [categories, total] = await this.categoryRepository.findAndCount({
+    return await this.categoryRepository.find({
       where: { isAvailable: true },
+      select: ['categoryName']
     });
-
-    return categories;
   }
 
   async findByName(name: string) {

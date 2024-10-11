@@ -28,6 +28,6 @@ export class CategoryController {
   @Get('all')
   @Public()
   async findAllCategories() {
-    return await this.categoryService.findAllCategoriesName();
+    return await this.categoryService.findAllCategories();
   }
 }

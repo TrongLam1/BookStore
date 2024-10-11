@@ -30,6 +30,6 @@ export class TypeController {
   @Get('all')
   @Public()
   async findAllTypes() {
-    return await this.typeService.findAllTypesName();
+    return await this.typeService.findAllTypes();
   }
 }

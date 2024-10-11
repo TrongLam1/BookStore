@@ -1,4 +1,45 @@
-import { sendRequest } from "@/utils/api";
+'use server'
+import { sendRequest, sendRequestFile } from "@/utils/api";
+import { auth } from "../../../auth";
+
+export async function AddNewProduct(formData) {
+    const session = await auth();
+    const token = session?.user.token;
+    return await sendRequestFile<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/create`,
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        body: formData
+    });
+}
+
+export async function UpdateProduct(formData) {
+    const session = await auth();
+    const token = session?.user.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/update-book`,
+        method: 'PUT',
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        body: formData
+    });
+}
+
+export async function UpdateImgProduct(formData) {
+    const session = await auth();
+    const token = session?.user.token;
+    return await sendRequestFile<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/update-img`,
+        method: 'PUT',
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        body: formData
+    });
+}
 
 export async function FindProductsByKeyword(keyword: string) {
     const res = await sendRequest<IBackendRes<any>>({
@@ -69,7 +110,6 @@ export async function FindProductById(id: string) {
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/find-one/${id}`,
         method: 'GET',
         nextOption: {
-            cache: 'no-store',
             next: { tags: [`book-${id}`] }
         }
     });
