@@ -1,0 +1,71 @@
+.modal-order-detail-container {
+    border-right: 1px solid #ccc;
+    margin-bottom: 1rem;
+
+    .modal-order-detail {
+        .order-item {
+            padding: 0 1rem;
+            margin-bottom: 1rem;
+
+            .order-item-img {
+                object-fit: contain;
+
+                img {
+                    width: 100px;
+                    height: 100px;
+                }
+            }
+
+            .order-item-info {
+                margin-left: 1rem;
+
+                .item-name {
+                    margin-bottom: 1rem;
+                    width: 80%;
+                }
+            }
+        }
+    }
+
+    .modal-info-user-container {
+        border-left: 2px solid #ccc;
+
+        .modal-info-user {
+            padding-right: 20px;
+
+            .col {
+                margin-bottom: .5rem;
+
+                span {
+                    &:first-child {
+                        color: #858585;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.modal-payment-status-change {
+    background-color: #77a774;
+    padding: 10px;
+    margin: 1rem auto;
+    align-items: center;
+
+    .form-label {
+        color: white;
+        margin: 0 0 0 10px;
+        min-width: 100px;
+    }
+
+    .form-select {
+        border-radius: 4px;
+        padding: 5px 1rem;
+        max-width: 20%;
+        margin-left: 1rem;
+
+        option {
+            padding: 5px 8px;
+        }
+    }
+}

@@ -4,7 +4,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function OrderItemComponent(props: any) {
-    const { item } = props;
+    const { item, setIdOrderDetail, setIsShowModalOrderDetail } = props;
 
     const date = new Date(item.createdAt);
 
@@ -30,8 +30,8 @@ export default function OrderItemComponent(props: any) {
                     className="btn-table-dashboard"
                     id="view-order" type="button"
                     onClick={() => {
-                        // setIsShowModalOrderDetail(true);
-                        // setIdOrderDetail(item?.id);
+                        setIsShowModalOrderDetail(true);
+                        setIdOrderDetail(item?.id);
                     }}
                 >
                     <FontAwesomeIcon icon={faCircleInfo} />

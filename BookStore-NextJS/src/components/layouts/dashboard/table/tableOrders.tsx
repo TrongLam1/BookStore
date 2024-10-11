@@ -6,20 +6,21 @@ import { useEffect, useState } from 'react';
 import OrderItemComponent from './tableItem/orderItemComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import ModalOrderDetail from '../../modal/modalOrderDetail/modalOrderDetail';
 
 export default function TableOrdersComponent(props: any) {
 
     const { data, current } = props;
-    const [loadingApi, setLoadingApi] = useState(false);
-    const [listOrders, setListOrders] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [loadingApi, setLoadingApi] = useState<boolean>(false);
+    const [listOrders, setListOrders] = useState<Array<any>>([]);
+    const [page, setPage] = useState<number>();
+    const [totalPages, setTotalPages] = useState<number>();
 
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState<string>('');
 
-    const [idOrderDetail, setIdOrderDetail] = useState('');
+    const [idOrderDetail, setIdOrderDetail] = useState<number>();
 
-    const [isShowModalOrderDetail, setIsShowModalOrderDetail] = useState(false);
+    const [isShowModalOrderDetail, setIsShowModalOrderDetail] = useState<boolean>(false);
 
     useEffect(() => {
         setListOrders(data.listOrders ?? []);
@@ -28,6 +29,10 @@ export default function TableOrdersComponent(props: any) {
     }, [data, current]);
 
     const handleSearchOrder = async () => { }
+
+    const handleClose = () => {
+        setIsShowModalOrderDetail(false);
+    };
 
     return (
         <>
@@ -73,7 +78,9 @@ export default function TableOrdersComponent(props: any) {
                                     listOrders.map((item, index: number) => {
                                         return (
                                             <OrderItemComponent
-                                                item={item} key={`order-${index}`} />
+                                                item={item} key={`order-${index}`}
+                                                setIdOrderDetail={setIdOrderDetail}
+                                                setIsShowModalOrderDetail={setIsShowModalOrderDetail} />
                                         )
                                     }) : (<tr><td><div>Không có danh sách đơn hàng.</div></td></tr>)}
                             </tbody>
@@ -81,6 +88,8 @@ export default function TableOrdersComponent(props: any) {
                     }
                 </div>
             </div>
+            <ModalOrderDetail show={isShowModalOrderDetail} idOrderDetail={idOrderDetail}
+                handleClose={handleClose} />
         </>
     );
 };

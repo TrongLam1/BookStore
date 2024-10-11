@@ -35,7 +35,20 @@ export async function FindOrderById(orderId: number) {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
         nextOption: {
-            cache: 'no-store'
+            next: { tags: [`order-detail-${orderId}`] }
+        }
+    });
+}
+
+export async function AdminFindOrderById(orderId: number) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/admin/order-id/${orderId}`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        nextOption: {
+            next: { tags: [`order-detail-${orderId}`] }
         }
     });
 }
@@ -60,6 +73,20 @@ export async function CancelOrder(orderId: number) {
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/cancel/${orderId}`,
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
+export async function UpdateOrderStatus(orderId: number, orderStatus: string) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/update-status`,
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+        body: {
+            id: orderId,
+            orderStatus
+        }
     });
 }
 

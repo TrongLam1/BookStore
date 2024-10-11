@@ -54,6 +54,15 @@ export class OrdersService {
     return order;
   }
 
+  async adminFindOrderById(orderId: number) {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['orderItems', 'orderItems.book']
+    });
+    if (!order) throw new NotFoundException("Not found order");
+    return order;
+  }
+
   async findOrderByCodeBill(codeBill: string) {
     const order = await this.orderRepository.findOne({
       where: { codeBill: codeBill },
@@ -98,7 +107,7 @@ export class OrdersService {
   };
 
   async updateOrderStatus(req: any, orderId: number, orderStatus: OrderStatus) {
-    const order = await this.findOrderById(req, orderId);
+    const order = await this.orderRepository.findOneBy({ id: orderId });
 
     if (orderStatus === OrderStatus.CANCELED &&
       (order.orderStatus === OrderStatus.SHIPPING || order.orderStatus === OrderStatus.COMPLETED)) {
