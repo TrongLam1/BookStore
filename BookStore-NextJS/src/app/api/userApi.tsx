@@ -31,3 +31,14 @@ export async function FindAllUsers(current: number, pageSize: number) {
         totalPages: res.data.totalPages
     }
 }
+
+export async function FindUsersByNameContaining(current: number, pageSize: number, username: string) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/find/username`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        queryParams: { current, pageSize, username }
+    });
+}

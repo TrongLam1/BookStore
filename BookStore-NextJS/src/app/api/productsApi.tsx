@@ -47,8 +47,7 @@ export async function FindProductsByKeyword(keyword: string) {
         method: 'GET',
         queryParams: { name: keyword },
         nextOption: {
-            next: { tags: [`list-books-${keyword}`] },
-            cache: 'no-store'
+            next: { tags: [`list-books-${keyword}`] }
         }
     });
 

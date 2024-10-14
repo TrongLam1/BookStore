@@ -58,9 +58,10 @@ export class OrdersController {
   @Roles(ADMIN)
   async getAllOrders(
     @Query('current') current: string,
-    @Query('pageSize') pageSize: string
+    @Query('pageSize') pageSize: string,
+    @Query('status') status: OrderStatus
   ) {
-    return await this.ordersService.getAllOrders(+current, +pageSize);
+    return await this.ordersService.getAllOrders(+current, +pageSize, status);
   }
 
   @Get('one-order/:codeBill')

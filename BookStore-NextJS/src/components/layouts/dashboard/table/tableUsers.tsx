@@ -1,27 +1,24 @@
 'use client'
 
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import UserItemComponent from "./tableItem/userItemComponent";
 import './table.scss';
+import { FindUsersByNameContaining } from "@/app/api/userApi";
 
 export default function TableUsersComponent(props: any) {
 
     const { data, current } = props;
 
     const [loadingApi, setLoadingApi] = useState(false);
-    const [listUsers, setListUsers] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [listUsers, setListUsers] = useState(data?.listUsers ?? []);
+    const [page, setPage] = useState(current ?? 1);
+    const [totalPages, setTotalPages] = useState(data.totalPages ?? 1);
     const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        setListUsers(data?.listUsers ?? []);
-        setPage(current ?? 1);
-        setTotalPages(data.totalPages ?? 1);
-    }, [data, current]);
+    useEffect(() => { }, [listUsers, current]);
 
     const handleGetUsersByRole = (role) => {
         // setRole(role);
@@ -29,45 +26,47 @@ export default function TableUsersComponent(props: any) {
         // setSearchParams({ role: role });
     };
 
-    const handleSearchByEmail = async () => {
-
+    const handleSearchByName = async () => {
+        const res = await FindUsersByNameContaining(page, 10, search);
+        if (res.statusCode === 200) {
+            setListUsers(res.data.result);
+            setTotalPages(res.data.totalPages);
+        }
     };
 
     return (
         <>
             <div className="container-fluid">
                 <div className="container">
-                    <div className="d-flex justify-content-between mt-3">
+                    <div className="d-flex justify-content-between mt-3 align-items-center">
                         <div className="d-flex search-container">
                             <input
                                 className='search-form'
                                 type="search"
-                                placeholder="Nhập email ..."
+                                placeholder="Nhập tên người dùng ..."
                                 aria-label="Search"
                                 value={search} onChange={(e) => setSearch(e.target.value)}
                             />
                             <Button
-                                variant="outline-success" onClick={() => {
-                                    handleSearchByEmail();
-                                    // clearRole();
-                                }}
+                                variant="outline-success"
+                                onClick={handleSearchByName}
                             >
                                 <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </Button>
                         </div>
                         <div className="d-flex justify-content-end">
-                            <div className="btn-filter-status-order">
-                                <button type="button" id="create-admin" className="dropdown-item dropdown-custom"
-                                    data-bs-toggle="modal" data-bs-target="#ModalFormCreateAdmin">
-                                    Tạo tài khoản Admin
-                                </button>
-                            </div>
-                            <div className="btn-filter-status-order">
-                                <button type="button" onClick={() => handleGetUsersByRole("ADMIN")}>ADMIN</button>
-                            </div>
-                            <div className="btn-filter-status-order">
-                                <button type="button" onClick={() => handleGetUsersByRole("USER")} >USER</button>
-                            </div>
+                            <button type="button" id="create-admin" className="dropdown-item dropdown-custom btn-create-account"
+                                data-bs-toggle="modal" data-bs-target="#ModalFormCreateAdmin">
+                                <FontAwesomeIcon icon={faPlus} />
+                            </button>
+                            {/* <button className="btn-filter-status-order"
+                                type="button" onClick={() => handleGetUsersByRole("ADMIN")}>
+                                ADMIN
+                            </button>
+                            <button className="btn-filter-status-order"
+                                type="button" onClick={() => handleGetUsersByRole("USER")} >
+                                USER
+                            </button> */}
                         </div>
                     </div>
                     {loadingApi ? <div className='loader-container'><div className="loader"></div></div> :

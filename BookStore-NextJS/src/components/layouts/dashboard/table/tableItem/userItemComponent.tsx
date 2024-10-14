@@ -4,8 +4,6 @@ export default function UserItemComponent(props: any) {
 
     const { item } = props;
 
-    console.log(item);
-
     return (
         <tr>
             <td>#{item.id}</td>

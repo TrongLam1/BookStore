@@ -9,29 +9,25 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalNewProduct from "../../modal/modalProduct/modalNewProduct";
 import ModalUpdateProduct from "../../modal/modalProduct/modalUpdateProduct";
+import { CSpinner } from "@coreui/react";
 
 export default function TableProductsComponent(props: any) {
 
     const { dataProducts, current, dataSelect } = props;
 
     const [loadingApi, setLoadingApi] = useState(false);
-    const [listProducts, setListProducts] = useState([]);
-    const [totalItems, setTotalItems] = useState(1);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [listProducts, setListProducts] = useState(dataProducts?.listProducts ?? []);
+    const [totalItems, setTotalItems] = useState(dataProducts?.totalItems ?? 1);
+    const [page, setPage] = useState(current ?? 1);
+    const [totalPages, setTotalPages] = useState(dataProducts?.totalPages ?? 1);
 
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState();
 
     const [isShowModalNewProduct, setIsShowModalNewProduct] = useState(false);
     const [isShowModalEditProduct, setIsShowModalEditProduct] = useState(false);
     const [productIdUpdate, setProductIdUpdate] = useState();
 
-    useEffect(() => {
-        setListProducts(dataProducts?.listProducts ?? []);
-        setTotalPages(dataProducts?.totalPages ?? 1);
-        setTotalItems(dataProducts?.totalItems ?? 1);
-        setPage(current ?? 1);
-    }, [dataProducts, current]);
+    useEffect(() => { }, [listProducts, current]);
 
     const handleCloseModal = () => {
         setIsShowModalNewProduct(false);
@@ -41,11 +37,10 @@ export default function TableProductsComponent(props: any) {
     const handleSearchByName = async () => {
         setLoadingApi(true);
         const res = await FindProductsByKeyword(search);
-        if (+res.statusCode === 200) {
-            console.log(res);
-            // setListProducts(res.dataProducts.dataProducts);
-            // setTotalPages(res.dataProducts.totalPages);
-            // setTotalItems(res.dataProducts.totalItems);
+        if (res.listProducts.length > 0) {
+            setListProducts(res.listProducts);
+            setTotalPages(res.totalPages);
+            setTotalItems(res.totalItems);
         } else {
             setListProducts([]);
             setTotalPages(0);
@@ -100,7 +95,8 @@ export default function TableProductsComponent(props: any) {
                         </Button>
                     </div>
 
-                    {loadingApi ? <div className='loader-container'><div className="loader"></div></div> :
+                    {loadingApi ? <CSpinner color="light" size="sm" className='me-3'
+                        style={{ width: '5rem', height: '5rem' }} /> :
                         <table className="table table-striped table-responsive table-dashboard">
                             <thead className="heading-table">
                                 <tr>

@@ -1,37 +1,46 @@
 'use client'
 
-import { Button } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import './table.scss';
 import { useEffect, useState } from 'react';
 import OrderItemComponent from './tableItem/orderItemComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faCircleArrowRight, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import ModalOrderDetail from '../../modal/modalOrderDetail/modalOrderDetail';
+import { AdminFindOrderById, GetAllOrders } from '@/app/api/orderApi';
 
 export default function TableOrdersComponent(props: any) {
 
     const { data, current } = props;
     const [loadingApi, setLoadingApi] = useState<boolean>(false);
-    const [listOrders, setListOrders] = useState<Array<any>>([]);
-    const [page, setPage] = useState<number>();
-    const [totalPages, setTotalPages] = useState<number>();
+    const [listOrders, setListOrders] = useState<Array<any>>(data.listOrders ?? []);
+    const [page, setPage] = useState<number>(current ?? 1);
+    const [totalPages, setTotalPages] = useState<number>(data.totalPages ?? 1);
+    const [orderStatus, setOrderStatus] = useState<string>();
 
-    const [search, setSearch] = useState<string>('');
+    const [search, setSearch] = useState<number>();
 
     const [idOrderDetail, setIdOrderDetail] = useState<number>();
 
     const [isShowModalOrderDetail, setIsShowModalOrderDetail] = useState<boolean>(false);
 
-    useEffect(() => {
-        setListOrders(data.listOrders ?? []);
-        setTotalPages(data.totalPages ?? 1);
-        setPage(current ?? 1);
-    }, [data, current]);
+    useEffect(() => { }, [listOrders, current]);
 
-    const handleSearchOrder = async () => { }
+    const handleSearchOrder = async () => {
+        const res = await AdminFindOrderById(search);
+        if (res.statusCode === 200) setListOrders([res.data]);
+    }
 
     const handleClose = () => {
         setIsShowModalOrderDetail(false);
+    };
+
+    const handleGetOrdersByStatus = async () => {
+        const res = await GetAllOrders(page, 10, orderStatus);
+        if (res.statusCode === 200) {
+            setListOrders(res.data.listOrders);
+            setTotalPages(res.data.totalPages);
+        }
     };
 
     return (
@@ -45,7 +54,7 @@ export default function TableOrdersComponent(props: any) {
                                 type="search"
                                 placeholder="Tìm kiếm mã đơn hàng ..."
                                 aria-label="Search"
-                                value={search} onChange={(e) => setSearch(e.target.value)}
+                                value={search} onChange={(e) => setSearch(+e.target.value)}
                             />
                             <Button
                                 variant="outline-success" onClick={handleSearchOrder}
@@ -53,13 +62,23 @@ export default function TableOrdersComponent(props: any) {
                                 <FontAwesomeIcon icon={faMagnifyingGlass} />
                             </Button>
                         </div>
-                        <div className="d-flex justify-content-end">
-                            <div className="btn-filter-status-order">
-                                <button type="button" id="not-delivered-order">Đơn hàng chưa hoàn thành</button>
-                            </div>
-                            <div className="btn-filter-status-order">
-                                <button type="button" id="delivered-order">Đơn hàng đã hoàn thành</button>
-                            </div>
+                        <div className="d-flex justify-content-end align-items-center">
+                            <div>Trạng thái:</div>
+                            <Form.Select
+                                style={{ height: '38px' }}
+                                value={orderStatus}
+                                onChange={(e) => setOrderStatus(e.target.value)}
+                            >
+                                <option>---Options---</option>
+                                <option value="Đã hủy">Đã hủy</option>
+                                <option value="Đang xử lí">Đang xử lí</option>
+                                <option value="Đang giao hàng">Đang giao hàng</option>
+                                <option value="Đã hoàn thành">Đã hoàn thành</option>
+                            </Form.Select>
+                            <button className="btn-filter-status-order"
+                                onClick={handleGetOrdersByStatus}>
+                                <FontAwesomeIcon icon={faCircleArrowRight} />
+                            </button>
                         </div>
                     </div>
                     {loadingApi ? <div className='loader-container'><div className="loader"></div></div> :

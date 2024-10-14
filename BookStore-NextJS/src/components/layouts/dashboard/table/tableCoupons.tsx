@@ -1,29 +1,38 @@
 'use client'
 
+import { faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import './table.scss';
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import ModalNewCoupon from '../../modal/modalCoupon/modalNewCoupon';
+import ModalUpdateCoupon from '../../modal/modalCoupon/modalUpdateCoupon';
+import './table.scss';
 import CouponItemComponent from './tableItem/couponItemComponent';
+import { revalidateTag } from 'next/cache';
 
 export default function TableCouponsComponent(props: any) {
 
     const { data, current } = props;
 
-    const [loadingApi, setLoadingApi] = useState(false);
-    const [listCoupons, setListCoupons] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [loadingApi, setLoadingApi] = useState<boolean>(false);
+    const [listCoupons, setListCoupons] = useState(data.listCoupons ?? []);
+    const [page, setPage] = useState<number>(current ?? 1);
+    const [totalPages, setTotalPages] = useState<number>(data.totalPages ?? 1);
 
-    const [isShowModalNewCoupon, setIsShowModalNewCoupon] = useState(false);
-    const [isShowModalEditCoupon, setIsShowModalEditCoupon] = useState(false);
+    const [isShowModalNewCoupon, setIsShowModalNewCoupon] = useState<boolean>(false);
+    const [isShowModalEditCoupon, setIsShowModalEditCoupon] = useState<boolean>(false);
+    const [idCouponUpdate, setIdCouponUpdate] = useState<number>();
 
-    useEffect(() => {
-        setListCoupons(data.listCoupons ?? []);
-        setTotalPages(data.totalPages ?? 1);
-        setPage(current ?? 1);
-    }, [data, current]);
+    useEffect(() => { }, [listCoupons, current]);
+
+    const handleClose = () => {
+        setIsShowModalNewCoupon(false);
+        setIsShowModalEditCoupon(false);
+    };
+
+    const handleRevalidateTag = () => {
+        revalidateTag(`list-coupons-${current}`);
+    };
 
     return (
         <>
@@ -39,20 +48,20 @@ export default function TableCouponsComponent(props: any) {
                         <Button
                             variant="outline-success"
                         >
-                            <i className="fa-solid fa-magnifying-glass"></i>
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
                         </Button>
                     </div>
                     <div className="d-flex align-items-center">
                         <div className="new-coupon">
-                            <button type="button" id="add-new-coupon"
-                                onClick={() => setIsShowModalNewCoupon(true)}
-                            >
-                                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            <button type="button"
+                                className="dropdown-item dropdown-custom btn-create-account"
+                                onClick={() => setIsShowModalNewCoupon(true)}>
+                                <FontAwesomeIcon icon={faPlus} />
                             </button>
                         </div>
-                        <div className="btn-filter-status-order">
-                            <button type="button" id="coupon-valid">Coupon khả dụng</button>
-                        </div>
+                        <button className="btn-filter-status-order" type="button" id="coupon-valid">
+                            Coupon khả dụng
+                        </button>
                     </div>
 
                     {loadingApi ? <div className='loader-container'><div className="loader"></div></div> :
@@ -71,11 +80,12 @@ export default function TableCouponsComponent(props: any) {
                             </thead>
                             <tbody className="body-table">
                                 {listCoupons && listCoupons.length > 0 ?
-                                    listCoupons.map((item, index) => {
+                                    listCoupons.map((item, index: number) => {
                                         return (
                                             <CouponItemComponent
                                                 item={item} key={`coupon-${index}`}
-                                                setIsShowModalNewCoupon={setIsShowModalNewCoupon}
+                                                setIsShowModalEditCoupon={setIsShowModalEditCoupon}
+                                                setIdCouponUpdate={setIdCouponUpdate}
                                             />
                                         )
                                     }) : (<tr><td>Không có danh sách coupon.</td></tr>)
@@ -85,6 +95,9 @@ export default function TableCouponsComponent(props: any) {
                     }
                 </div>
             </div>
+            <ModalNewCoupon show={isShowModalNewCoupon} handleClose={handleClose} />
+            <ModalUpdateCoupon show={isShowModalEditCoupon} handleClose={handleClose}
+                idCouponUpdate={idCouponUpdate} revalidate={handleRevalidateTag} />
         </>
     )
 }

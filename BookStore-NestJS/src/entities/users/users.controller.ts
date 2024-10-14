@@ -41,9 +41,9 @@ export class UsersController {
   }
 
   @Get('find/username')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
   async findUsersByUsername(
-    @Query() query: string,
     @Query('current') current: string,
     @Query('pageSize') pageSize: string,
     @Query('sort') sort: string,

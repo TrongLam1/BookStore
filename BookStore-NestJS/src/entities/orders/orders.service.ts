@@ -123,18 +123,22 @@ export class OrdersService {
     });
   }
 
-  async getAllOrders(current: number, pageSize: number) {
+  async getAllOrders(current: number, pageSize: number, status: OrderStatus) {
     if (!current || current == 0) current = 1;
     if (!pageSize || current == 0) pageSize = 10;
 
-    const [listOrders, totalItems] = await this.orderRepository.findAndCount(
-      {
-        order: { id: "DESC" },
-        take: pageSize,
-        skip: (current - 1) * pageSize,
-        select: ['id', 'createdAt', 'username', 'orderStatus', 'totalPriceOrder']
-      }
-    );
+    const queryBuilder = this.orderRepository.createQueryBuilder('order');
+
+    if (status) {
+      queryBuilder.where('order.orderStatus = :status', { status });
+    }
+
+    const [listOrders, totalItems] = await queryBuilder
+      .orderBy('order.id', 'DESC')
+      .take(pageSize)
+      .skip((current - 1) * pageSize)
+      .select(['order.id', 'order.createdAt', 'order.username', 'order.orderStatus', 'order.totalPriceOrder'])
+      .getManyAndCount();
 
     return { listOrders, totalItems, totalPages: Math.ceil(totalItems / pageSize) };
   }

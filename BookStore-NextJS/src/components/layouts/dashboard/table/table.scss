@@ -42,30 +42,31 @@
             }
         }
 
+        .btn-create-account,
         .btn-filter-status-order {
-            margin-right: 2rem;
-            margin-bottom: 10px;
+            margin-left: 5px;
+            margin-bottom: 5px;
+            background-color: transparent;
+            border: 1px solid orangered;
+            color: orangered;
+            border-radius: 10px;
+            font-size: .9rem;
+            padding: 4px;
+            font-weight: bold;
 
-            button {
-                background-color: transparent;
-                border: 1px solid orangered;
-                color: orangered;
-                min-height: 40px;
-                max-width: 120px;
-                border-radius: 10px;
-                font-size: .9rem;
-                padding: 4px;
-
-                &:hover {
-                    background-color: orangered;
-                    color: white;
-                }
+            &:hover {
+                background-color: orangered;
+                color: white;
             }
+        }
 
-            #create-admin {
-                display: inline-block;
-                max-width: 150px;
-            }
+        .btn-create-account {
+            border-radius: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .new-coupon {
@@ -116,12 +117,12 @@
                     object-fit: contain;
 
                     img {
-                        max-width: 120px;
-                        max-height: 120px;
+                        width: 100px;
+                        height: 100px;
                     }
 
                     button {
-                        width: 55%;
+                        width: 65%;
                         background-color: white;
                         color: #34f234;
                         outline: none;
