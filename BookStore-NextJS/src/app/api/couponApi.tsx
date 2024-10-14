@@ -45,6 +45,16 @@ export async function GetAllCoupons(current: number) {
     });
 };
 
+export async function GetCouponsValid(current: number) {
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/coupons/coupon-valid/${current}`,
+        method: 'GET',
+        nextOption: {
+            next: { tags: [`list-coupons-valid-${current}`] }
+        }
+    });
+}
+
 export async function GetOneCoupon(idCoupon: number) {
     return await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/coupons/id/${idCoupon}`,
@@ -54,3 +64,13 @@ export async function GetOneCoupon(idCoupon: number) {
         }
     });
 };
+
+export async function FindCouponByName(name: string) {
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/coupons/name/${name}`,
+        method: 'GET',
+        nextOption: {
+            next: { tags: [`coupon-${name}`] }
+        }
+    });
+}

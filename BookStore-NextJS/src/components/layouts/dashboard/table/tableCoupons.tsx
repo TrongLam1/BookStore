@@ -8,7 +8,7 @@ import ModalNewCoupon from '../../modal/modalCoupon/modalNewCoupon';
 import ModalUpdateCoupon from '../../modal/modalCoupon/modalUpdateCoupon';
 import './table.scss';
 import CouponItemComponent from './tableItem/couponItemComponent';
-import { revalidateTag } from 'next/cache';
+import { FindCouponByName, GetCouponsValid } from '@/app/api/couponApi';
 
 export default function TableCouponsComponent(props: any) {
 
@@ -18,50 +18,77 @@ export default function TableCouponsComponent(props: any) {
     const [listCoupons, setListCoupons] = useState(data.listCoupons ?? []);
     const [page, setPage] = useState<number>(current ?? 1);
     const [totalPages, setTotalPages] = useState<number>(data.totalPages ?? 1);
+    const [search, setSearch] = useState<string>('');
 
     const [isShowModalNewCoupon, setIsShowModalNewCoupon] = useState<boolean>(false);
     const [isShowModalEditCoupon, setIsShowModalEditCoupon] = useState<boolean>(false);
     const [idCouponUpdate, setIdCouponUpdate] = useState<number>();
 
-    useEffect(() => { }, [listCoupons, current]);
+    useEffect(() => {
+        setListCoupons(data.listCoupons ?? []);
+        setPage(current ?? 1);
+        setTotalPages(data.totalPages ?? 1);
+    }, [data]);
+
+    useEffect(() => { }, [listCoupons]);
 
     const handleClose = () => {
         setIsShowModalNewCoupon(false);
         setIsShowModalEditCoupon(false);
     };
 
-    const handleRevalidateTag = () => {
-        revalidateTag(`list-coupons-${current}`);
+    const getValidCoupons = async () => {
+        const res = await GetCouponsValid(page);
+        setListCoupons(res.data.listCoupons ?? []);
+        setTotalPages(res.data.totalPages ?? 1);
+    };
+
+    const findCouponByName = async () => {
+        if (search !== '') {
+            const res = await FindCouponByName(search);
+            if (res.statusCode === 200) {
+                setListCoupons([res.data]);
+            } else {
+                setListCoupons([]);
+            }
+        }
     };
 
     return (
         <>
             <div className="container-fluid">
                 <div className="container">
-                    <div className="d-flex search-container">
-                        <input
-                            className='search-form'
-                            type="search"
-                            placeholder="Tìm kiếm coupon ..."
-                            aria-label="Search"
-                        />
-                        <Button
-                            variant="outline-success"
-                        >
-                            <FontAwesomeIcon icon={faMagnifyingGlass} />
-                        </Button>
-                    </div>
-                    <div className="d-flex align-items-center">
-                        <div className="new-coupon">
-                            <button type="button"
-                                className="dropdown-item dropdown-custom btn-create-account"
-                                onClick={() => setIsShowModalNewCoupon(true)}>
-                                <FontAwesomeIcon icon={faPlus} />
+                    <div className='d-flex justify-content-between align-items-center mb-3 mt-3'>
+                        <div className="d-flex search-container">
+                            <input
+                                className='search-form'
+                                type="search"
+                                placeholder="Tìm kiếm coupon ..."
+                                aria-label="Search"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <Button
+                                variant="outline-success"
+                                onClick={findCouponByName}
+                            >
+                                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            </Button>
+                        </div>
+                        <div className="d-flex align-items-center">
+                            <div className="new-coupon">
+                                <button type="button"
+                                    className="dropdown-item dropdown-custom btn-create-account"
+                                    onClick={() => setIsShowModalNewCoupon(true)}>
+                                    <FontAwesomeIcon icon={faPlus} />
+                                </button>
+                            </div>
+                            <button className="btn-filter-status-order" type="button" id="coupon-valid"
+                                onClick={getValidCoupons}
+                            >
+                                Coupon khả dụng
                             </button>
                         </div>
-                        <button className="btn-filter-status-order" type="button" id="coupon-valid">
-                            Coupon khả dụng
-                        </button>
                     </div>
 
                     {loadingApi ? <div className='loader-container'><div className="loader"></div></div> :
@@ -97,7 +124,7 @@ export default function TableCouponsComponent(props: any) {
             </div>
             <ModalNewCoupon show={isShowModalNewCoupon} handleClose={handleClose} />
             <ModalUpdateCoupon show={isShowModalEditCoupon} handleClose={handleClose}
-                idCouponUpdate={idCouponUpdate} revalidate={handleRevalidateTag} />
+                idCouponUpdate={idCouponUpdate} />
         </>
     )
 }

@@ -38,7 +38,7 @@ export default function TableUsersComponent(props: any) {
         <>
             <div className="container-fluid">
                 <div className="container">
-                    <div className="d-flex justify-content-between mt-3 align-items-center">
+                    <div className="d-flex justify-content-between mt-3 mb-3 align-items-center">
                         <div className="d-flex search-container">
                             <input
                                 className='search-form'

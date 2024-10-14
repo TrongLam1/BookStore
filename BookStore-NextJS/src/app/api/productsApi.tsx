@@ -115,3 +115,10 @@ export async function FindProductById(id: string) {
 
     return res;
 }
+
+export async function GetRandomProducts() {
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/random`,
+        method: 'GET'
+    });
+}

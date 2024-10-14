@@ -126,7 +126,7 @@ export default function ModalOrderDetail(props: any) {
                 </Button>
                 <Button variant="primary" type='submit'
                     disabled={loadingApi ||
-                        orderStatus === "Đã hoàn thành" || orderStatus === "Đã hủy" ? true : false}
+                        dataOrder?.orderStatus === "Đã hoàn thành" || dataOrder?.orderStatus === "Đã hủy" ? true : false}
                     onClick={handleUpdateOrderStatus}
                 >
                     {loadingApi &&

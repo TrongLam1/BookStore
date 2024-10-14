@@ -1,0 +1,87 @@
+.coupons-page {
+    color: black;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+
+    .direction-page {
+        margin-bottom: 10px;
+
+        a {
+            margin-right: 5px;
+
+            &:hover {
+                color: blue;
+            }
+        }
+    }
+
+    .coupon-container {
+        background-color: white;
+        width: 100%;
+
+        .coupon-item {
+            margin: 0;
+            display: flex;
+            justify-content: space-around;
+
+            .coupon {
+                position: relative;
+                background: #fff;
+                filter: drop-shadow(0px 0px 3px rgba(0, 0, 0, 0.527));
+                border-radius: 5px;
+                min-height: 100px;
+                padding: 10px;
+                margin: 10px 5px;
+
+                .coupon-heading {
+                    font-weight: bold;
+                    color: red;
+                    font-size: .9rem;
+                    text-transform: uppercase;
+
+                    .coupon-name {
+                        font-weight: bold;
+                        color: red;
+                        font-size: .9rem;
+                        text-transform: uppercase;
+                        max-width: 130px;
+                        background-color: transparent;
+                        margin-left: 4px;
+                        text-align: center;
+                        border: none;
+                        width: 40%;
+                        outline: none;
+                    }
+                }
+
+                .coupon-body {
+                    font-size: .8rem;
+                    color: #4d4e4e;
+                }
+
+                .coupon-copy {
+                    text-align: center;
+                    margin-top: 5px;
+
+                    button {
+                        border: none;
+                        padding: 2px 15px;
+                        border-radius: 999px;
+                        margin-bottom: 3px;
+                        background-color: #f30d12;
+                        box-shadow: 2px 3px 5px #212529;
+                        min-width: 100px;
+                        text-align: center;
+
+                        span {
+                            font-size: .8rem;
+                            color: white;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

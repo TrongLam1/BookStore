@@ -2,7 +2,6 @@
 
 import { GetOneCoupon, UpdateCoupon } from '@/app/api/couponApi';
 import { CSpinner } from '@coreui/react';
-import { revalidateTag } from 'next/cache';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
@@ -10,7 +9,7 @@ import { toast } from 'react-toastify';
 
 export default function ModalUpdateCoupon(props: any) {
     const router = useRouter();
-    const { show, handleClose, idCouponUpdate, revalidate } = props;
+    const { show, handleClose, idCouponUpdate } = props;
 
     const [loadingApi, setLoadingApi] = useState<boolean>(false);
 
@@ -50,7 +49,7 @@ export default function ModalUpdateCoupon(props: any) {
             if (res.statusCode === 200) {
                 toast.success("Cập nhật coupon thành công.");
                 handleClose();
-                revalidate();
+                router.refresh();
             } else {
                 toast.error(res.message);
             }

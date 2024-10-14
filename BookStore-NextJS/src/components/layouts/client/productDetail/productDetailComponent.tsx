@@ -5,19 +5,27 @@ import { faMinus, faPlus, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import './productDetailComponent.scss';
+import CouponItem from "../coupon/couponItem";
 
 export default function ProductDetailComponent(props: any) {
 
-    const { productDetail } = props;
+    const { productDetail, coupons, random } = props;
 
     const category = productDetail.category;
     const brand = productDetail.brand;
 
-    const [quantityProduct, setQuantityProduct] = useState(1);
+    const [quantityProduct, setQuantityProduct] = useState<number>(1);
+    const [listCoupons, setListCoupons] = useState<Array<any>>([]);
 
     useEffect(() => {
         if (productDetail) document.title = productDetail.name
     }, [productDetail])
+
+    useEffect(() => {
+        const newListCoupons = coupons.listCoupons.slice(0, 3);
+        setListCoupons(newListCoupons);
+    }, [coupons]);
 
     const handleChangeQuantity = (e: any, action: any) => {
         e.preventDefault();
@@ -133,10 +141,16 @@ export default function ProductDetailComponent(props: any) {
                 <div className="col-lg-3">
                     <div className="coupon-container">
                         <div id="direction-coupon">
-                            <Link href="/coupon">Danh sách coupon</Link>
+                            <Link href="/coupons">Danh sách coupon</Link>
                         </div>
                         <div>
-
+                            {listCoupons && listCoupons.length > 0 &&
+                                listCoupons.map((item, index: number) => {
+                                    return (
+                                        <CouponItem key={`coupon-${index}`} item={item} />
+                                    )
+                                })
+                            }
                         </div>
                     </div>
                 </div>

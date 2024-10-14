@@ -17,7 +17,7 @@ export default function TableProductsComponent(props: any) {
 
     const [loadingApi, setLoadingApi] = useState(false);
     const [listProducts, setListProducts] = useState(dataProducts?.listProducts ?? []);
-    const [totalItems, setTotalItems] = useState(dataProducts?.totalItems ?? 1);
+    const [totalItems, setTotalItems] = useState(dataProducts?.totalItems ?? 0);
     const [page, setPage] = useState(current ?? 1);
     const [totalPages, setTotalPages] = useState(dataProducts?.totalPages ?? 1);
 
@@ -27,7 +27,11 @@ export default function TableProductsComponent(props: any) {
     const [isShowModalEditProduct, setIsShowModalEditProduct] = useState(false);
     const [productIdUpdate, setProductIdUpdate] = useState();
 
-    useEffect(() => { }, [listProducts, current]);
+    useEffect(() => {
+        setListProducts(dataProducts?.listProducts ?? []);
+        setPage(current ?? 1);
+        setTotalPages(dataProducts?.totalPages ?? 1);
+    }, [dataProducts]);
 
     const handleCloseModal = () => {
         setIsShowModalNewProduct(false);
@@ -80,7 +84,7 @@ export default function TableProductsComponent(props: any) {
                             </button>
                         </div>
                     </div>
-                    <div className="d-flex search-container mt-3">
+                    <div className="d-flex search-container mt-3 mb-3">
                         <input
                             className='search-form'
                             type="search"

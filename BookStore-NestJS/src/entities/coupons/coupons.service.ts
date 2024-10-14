@@ -44,6 +44,20 @@ export class CouponsService {
     if (!pageSize || current == 0) pageSize = 10;
 
     const [listCoupons, totalItems] = await this.couponRepository.findAndCount({
+      take: pageSize,
+      skip: (current - 1) * pageSize,
+    });
+
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    return { listCoupons, totalItems, totalPages };
+  };
+
+  async findAllCouponsValid(current: number, pageSize: number = 10) {
+    if (!current || current == 0) current = 1;
+    if (!pageSize || current == 0) pageSize = 10;
+
+    const [listCoupons, totalItems] = await this.couponRepository.findAndCount({
       where: {
         isAvailable: true,
         expiredDate: MoreThanOrEqual(moment.utc().toDate())
@@ -55,7 +69,7 @@ export class CouponsService {
     const totalPages = Math.ceil(totalItems / pageSize);
 
     return { listCoupons, totalItems, totalPages };
-  };
+  }
 
   async removeCoupon(idCoupon: number) {
     const coupon = await this.couponRepository.findOneBy({ id: idCoupon });
@@ -70,4 +84,11 @@ export class CouponsService {
       select: ['id', 'createdAt', 'nameCoupon', 'quantity', 'valueCoupon', 'descriptionCoupon', 'condition', 'expiredDate']
     })
   };
+
+  async findCouponByName(name: string) {
+    return await this.couponRepository.findOneOrFail({
+      where: { nameCoupon: name },
+      select: ['id', 'createdAt', 'nameCoupon', 'quantity', 'valueCoupon', 'descriptionCoupon', 'condition', 'expiredDate']
+    })
+  }
 }

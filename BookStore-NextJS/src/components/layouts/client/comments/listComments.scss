@@ -1,0 +1,59 @@
+.product-comment-container {
+    padding: 15px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+
+    .comment-item {
+        padding: 0 15px 10px;
+        border-bottom: 1px solid #ccc;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .comment-rating {
+            color: rgb(255, 187, 0);
+            font-size: .8rem;
+            flex-direction: row;
+        }
+    }
+
+    .product-comment-heading {
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        font-weight: bold;
+        font-size: 1.2rem;
+
+        .write-rating {
+            background-color: transparent;
+            color: orangered;
+            font-size: 1.5rem;
+            border: none;
+            outline: none;
+
+            &:hover {
+                color: red;
+            }
+        }
+
+        .user {
+            font-weight: bold;
+        }
+
+        .createdTime {
+            margin-left: 10px;
+            font-size: .85rem;
+            color: #6b6b6b;
+        }
+    }
+
+    .product-comment-body {
+        .comment-body {
+            margin-top: 5px;
+            font-size: .95rem;
+        }
+    }
+}

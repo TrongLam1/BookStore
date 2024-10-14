@@ -24,7 +24,11 @@ export default function TableOrdersComponent(props: any) {
 
     const [isShowModalOrderDetail, setIsShowModalOrderDetail] = useState<boolean>(false);
 
-    useEffect(() => { }, [listOrders, current]);
+    useEffect(() => {
+        setListOrders(data.listOrders ?? []);
+        setPage(current ?? 1);
+        setTotalPages(data.totalPages ?? 1);
+    }, [data]);
 
     const handleSearchOrder = async () => {
         const res = await AdminFindOrderById(search);
@@ -47,7 +51,7 @@ export default function TableOrdersComponent(props: any) {
         <>
             <div className="container-fluid">
                 <div className="container">
-                    <div className='d-flex justify-content-between mt-3'>
+                    <div className='d-flex justify-content-between mt-3 mb-3'>
                         <div className="d-flex search-container">
                             <input
                                 className='search-form'

@@ -24,10 +24,22 @@ export class CouponsController {
     return await this.couponsService.findAllCoupons(current);
   }
 
+  @Get('coupon-valid/:current')
+  @Public()
+  async getCouponsValid(@Param('current') current: number) {
+    return await this.couponsService.findAllCouponsValid(current);
+  }
+
   @Get('id/:id')
   @Public()
   async getOneCoupon(@Param('id') id: number) {
     return await this.couponsService.getOneCoupon(id);
+  }
+
+  @Get('name/:name')
+  @Public()
+  async getOneCouponByName(@Param('name') name: string) {
+    return await this.couponsService.findCouponByName(name);
   }
 
   @Put()
