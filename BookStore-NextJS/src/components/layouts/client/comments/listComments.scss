@@ -5,21 +5,6 @@
     border-radius: 4px;
     border: 1px solid #ccc;
 
-    .comment-item {
-        padding: 0 15px 10px;
-        border-bottom: 1px solid #ccc;
-
-        &:last-child {
-            border-bottom: none;
-        }
-
-        .comment-rating {
-            color: rgb(255, 187, 0);
-            font-size: .8rem;
-            flex-direction: row;
-        }
-    }
-
     .product-comment-heading {
         border-bottom: 1px solid #ccc;
         margin-bottom: 20px;
@@ -51,9 +36,36 @@
     }
 
     .product-comment-body {
-        .comment-body {
-            margin-top: 5px;
-            font-size: .95rem;
+        .comment-item {
+            padding: 0 15px 10px;
+            border-bottom: 1px solid #ccc;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .comment-heading {
+                .user {
+                    font-weight: bold;
+                }
+
+                .createdTime {
+                    margin-left: 10px;
+                    font-size: .85rem;
+                    color: #6b6b6b;
+                }
+
+                .comment-rating {
+                    color: rgb(255, 187, 0);
+                    font-size: .8rem;
+                    flex-direction: row;
+                }
+            }
+
+            .comment-body {
+                margin-top: 5px;
+                font-size: .95rem;
+            }
         }
     }
 }

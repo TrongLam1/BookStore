@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
+import { Public } from '@/decorator/decorator';
 
 @Controller('comments')
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {}
+  constructor(private readonly commentsService: CommentsService) { }
 
-  @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  @Post('post')
+  @UseGuards(JwtAuthGuard)
+  async postComment(@Req() req: any, @Body() createCommentDto: CreateCommentDto) {
+    return await this.commentsService.postComment(req, createCommentDto);
   }
 
   @Get()
-  findAll() {
-    return this.commentsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(+id, updateCommentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentsService.remove(+id);
+  @Public()
+  async getCommentsByProduct(
+    @Query('productId') productId: number,
+    @Query('current') current: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    return await this.commentsService.getCommentsByProduct(productId, current, pageSize);
   }
 }

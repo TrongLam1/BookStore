@@ -10,6 +10,9 @@ export class Comment {
     @Column()
     content: string;
 
+    @Column()
+    rating: number;
+
     @CreateDateColumn()
     createdAt: Date;
 

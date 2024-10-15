@@ -34,7 +34,7 @@ const CardProduct = (props: any) => {
     };
 
     return (
-        <div className={`${col} col-6 col-sm-4`}>
+        <div className={`${col} col-sm-4`}>
             <div className={styles.bookCardWrap}>
                 <div className={styles.bookCard}>
                     <Link className={styles.bookImg} href={`/book/${book?.id}`}>
