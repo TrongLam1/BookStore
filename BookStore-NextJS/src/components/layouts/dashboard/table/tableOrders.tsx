@@ -8,9 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleArrowRight, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import ModalOrderDetail from '../../modal/modalOrderDetail/modalOrderDetail';
 import { AdminFindOrderById, GetAllOrders } from '@/app/api/orderApi';
+import ReactPaginate from 'react-paginate';
+import { useRouter } from 'next/navigation';
 
 export default function TableOrdersComponent(props: any) {
-
+    const router = useRouter();
     const { data, current } = props;
     const [loadingApi, setLoadingApi] = useState<boolean>(false);
     const [listOrders, setListOrders] = useState<Array<any>>(data.listOrders ?? []);
@@ -45,6 +47,14 @@ export default function TableOrdersComponent(props: any) {
             setListOrders(res.data.listOrders);
             setTotalPages(res.data.totalPages);
         }
+    };
+
+    const handlePageClick = (event) => {
+        const pathName = window.location.pathname;
+        const index = pathName.lastIndexOf('/');
+        let url = pathName.slice(0, index);
+        url += `/${event.selected + 1}`;
+        router.push(url);
     };
 
     return (
@@ -113,6 +123,28 @@ export default function TableOrdersComponent(props: any) {
             </div>
             <ModalOrderDetail show={isShowModalOrderDetail} idOrderDetail={idOrderDetail}
                 handleClose={handleClose} />
+            <div className="d-flex justify-content-center mt-4">
+                <ReactPaginate
+                    breakLabel="..."
+                    nextLabel="Next >"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={1}
+                    pageCount={totalPages}
+                    initialPage={current - 1}
+                    previousLabel="< Previous"
+                    pageClassName='page-item'
+
+                    pageLinkClassName='page-link'
+                    previousClassName='page-item'
+                    previousLinkClassName='page-link'
+                    nextClassName='page-item'
+                    nextLinkClassName='page-link'
+                    breakClassName='page-item'
+                    breakLinkClassName='page-link'
+                    containerClassName='pagination'
+                    activeClassName='active'
+                />
+            </div>
         </>
     );
 };

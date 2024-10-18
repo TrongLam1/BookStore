@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function SidebarFilter(props: any) {
 
     const router = useRouter();
-    const { filters } = props;
+    const { filters, params } = props;
 
     const listBrands = filters.brands;
     const listTypes = filters.types;
@@ -50,22 +50,12 @@ export default function SidebarFilter(props: any) {
     }
 
     const updateUrlPath = (newParams: any) => {
-        let urlSearch = window.location.search;
-        let clear = null;
-        let stringSortParam = null;
-        if (urlSearch.includes('&sort')) {
-            clear = urlSearch.slice(urlSearch.indexOf('?category'), urlSearch.indexOf('&sort'));
-            stringSortParam = urlSearch.replace(clear, '');
-            urlSearch = '';
-        } else {
-            clear = urlSearch.slice(urlSearch.indexOf('?category'));
-            urlSearch = urlSearch.replace(clear, '');
-        }
-
-        urlSearch += `?category=${newParams.category}`;
+        let urlSearch = '';
+        urlSearch = `?category=${newParams.category}`;
         urlSearch += `&type=${newParams.type}`;
         urlSearch += `&brand=${newParams.brand}`;
-        urlSearch += stringSortParam ?? '';
+        urlSearch += `&sort=${params.sort ?? ''}&orderBy=${params.orderBy ?? ''}`;
+        urlSearch += `&page=${params.page ?? 1}`;
 
         router.push(urlSearch);
     }

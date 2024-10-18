@@ -7,31 +7,34 @@ import { Button } from "react-bootstrap";
 import UserItemComponent from "./tableItem/userItemComponent";
 import './table.scss';
 import { FindUsersByNameContaining } from "@/app/api/userApi";
+import ReactPaginate from "react-paginate";
+import { useRouter } from "next/navigation";
 
 export default function TableUsersComponent(props: any) {
-
+    const router = useRouter();
     const { data, current } = props;
 
     const [loadingApi, setLoadingApi] = useState(false);
     const [listUsers, setListUsers] = useState(data?.listUsers ?? []);
-    const [page, setPage] = useState(current ?? 1);
     const [totalPages, setTotalPages] = useState(data.totalPages ?? 1);
     const [search, setSearch] = useState('');
 
-    useEffect(() => { }, [listUsers, current]);
-
-    const handleGetUsersByRole = (role) => {
-        // setRole(role);
-        // getUsersByRole(role);
-        // setSearchParams({ role: role });
-    };
+    useEffect(() => { }, [listUsers]);
 
     const handleSearchByName = async () => {
-        const res = await FindUsersByNameContaining(page, 10, search);
+        const res = await FindUsersByNameContaining(current, 10, search);
         if (res.statusCode === 200) {
             setListUsers(res.data.result);
             setTotalPages(res.data.totalPages);
         }
+    };
+
+    const handlePageClick = (event) => {
+        const pathName = window.location.pathname;
+        const index = pathName.lastIndexOf('/');
+        let url = pathName.slice(0, index);
+        url += `/${event.selected + 1}`;
+        router.push(url);
     };
 
     return (
@@ -59,14 +62,6 @@ export default function TableUsersComponent(props: any) {
                                 data-bs-toggle="modal" data-bs-target="#ModalFormCreateAdmin">
                                 <FontAwesomeIcon icon={faPlus} />
                             </button>
-                            {/* <button className="btn-filter-status-order"
-                                type="button" onClick={() => handleGetUsersByRole("ADMIN")}>
-                                ADMIN
-                            </button>
-                            <button className="btn-filter-status-order"
-                                type="button" onClick={() => handleGetUsersByRole("USER")} >
-                                USER
-                            </button> */}
                         </div>
                     </div>
                     {loadingApi ? <div className='loader-container'><div className="loader"></div></div> :
@@ -91,6 +86,28 @@ export default function TableUsersComponent(props: any) {
                         </table>
                     }
                 </div>
+            </div>
+            <div className="d-flex justify-content-center mt-4">
+                <ReactPaginate
+                    breakLabel="..."
+                    nextLabel="Next >"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={1}
+                    pageCount={totalPages}
+                    initialPage={current - 1}
+                    previousLabel="< Previous"
+                    pageClassName='page-item'
+
+                    pageLinkClassName='page-link'
+                    previousClassName='page-item'
+                    previousLinkClassName='page-link'
+                    nextClassName='page-item'
+                    nextLinkClassName='page-link'
+                    breakClassName='page-item'
+                    breakLinkClassName='page-link'
+                    containerClassName='pagination'
+                    activeClassName='active'
+                />
             </div>
         </>
     );

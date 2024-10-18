@@ -9,12 +9,12 @@ export const metadata = {
     title: "Danh sách sản phẩm"
 }
 
-export default async function TableProductsPage({ params }: { params: { current: number } }) {
+export default async function TableProductsPage({ params }: { params: { page: number } }) {
 
     const session = await auth();
     const user = session?.user.user;
 
-    const dataProducts = await FindAllProducts();
+    const dataProducts = await FindAllProducts(params.page);
 
     const dataTypes = await FindAllTypes();
     const dataBrands = await FindAllBrands();
@@ -29,6 +29,6 @@ export default async function TableProductsPage({ params }: { params: { current:
     return (
         <TableProductsComponent dataProducts={dataProducts}
             dataSelect={dataSelect}
-            current={params.current} />
+            current={params.page} />
     )
 }

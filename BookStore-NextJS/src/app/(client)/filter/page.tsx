@@ -4,7 +4,7 @@ import { FindProductsByFilter } from "@/app/api/productsApi"
 import { FindAllTypes } from "@/app/api/typesApi"
 import SidebarFilter from "@/components/layouts/client/filter/sidebarFilter"
 import ListProductsFilter from "@/components/layouts/client/listProducts/filterPage/listProductsFilter"
-import '../../../components/layouts/client/filter/filterPage.scss'
+import '@/components/layouts/client/filter/filterPage.scss'
 
 export default async function FilterPage({ searchParams }: {
     searchParams: { [key: string]: string | string[] | undefined }
@@ -15,9 +15,9 @@ export default async function FilterPage({ searchParams }: {
     const categories = await FindAllCategories();
 
     const filters = {
-        types: types.data.types,
-        brands: brands.data.brands,
-        categories: categories.data.categories,
+        types: types.data,
+        brands: brands.data,
+        categories: categories.data,
     };
 
     const current: any = searchParams?.page ?? 1;
@@ -37,7 +37,7 @@ export default async function FilterPage({ searchParams }: {
     const brandsString: string = JSON.stringify(arrBrands);
     const categoriesString: string = JSON.stringify(arrCategories);
 
-    const res = await FindProductsByFilter(current, '10', sort, orderBy, typesString, brandsString, categoriesString);
+    const res = await FindProductsByFilter(current, '8', sort, orderBy, typesString, brandsString, categoriesString);
 
     const listProducts = res?.listProducts;
     const totalPages = res?.totalPages;
@@ -45,9 +45,9 @@ export default async function FilterPage({ searchParams }: {
     return (
         <>
             <div className='types-book-container row'>
-                <SidebarFilter filters={filters} searchParams={searchParams} />
+                <SidebarFilter filters={filters} params={searchParams} />
                 <ListProductsFilter listProducts={listProducts} totalPages={totalPages}
-                    searchParams={searchParams} />
+                    params={searchParams} />
             </div>
         </>
     )

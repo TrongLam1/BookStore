@@ -10,15 +10,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalNewProduct from "../../modal/modalProduct/modalNewProduct";
 import ModalUpdateProduct from "../../modal/modalProduct/modalUpdateProduct";
 import { CSpinner } from "@coreui/react";
+import ReactPaginate from "react-paginate";
+import { useRouter } from "next/navigation";
 
 export default function TableProductsComponent(props: any) {
-
+    const router = useRouter();
     const { dataProducts, current, dataSelect } = props;
 
     const [loadingApi, setLoadingApi] = useState(false);
     const [listProducts, setListProducts] = useState(dataProducts?.listProducts ?? []);
     const [totalItems, setTotalItems] = useState(dataProducts?.totalItems ?? 0);
-    const [page, setPage] = useState(current ?? 1);
     const [totalPages, setTotalPages] = useState(dataProducts?.totalPages ?? 1);
 
     const [search, setSearch] = useState();
@@ -29,7 +30,6 @@ export default function TableProductsComponent(props: any) {
 
     useEffect(() => {
         setListProducts(dataProducts?.listProducts ?? []);
-        setPage(current ?? 1);
         setTotalPages(dataProducts?.totalPages ?? 1);
     }, [dataProducts]);
 
@@ -51,6 +51,14 @@ export default function TableProductsComponent(props: any) {
             setTotalItems(0);
         }
         setLoadingApi(false);
+    };
+
+    const handlePageClick = (event) => {
+        const pathName = window.location.pathname;
+        const index = pathName.lastIndexOf('/');
+        let url = pathName.slice(0, index);
+        url += `/${event.selected + 1}`;
+        router.push(url);
     };
 
     return (
@@ -132,6 +140,28 @@ export default function TableProductsComponent(props: any) {
                 show={isShowModalNewProduct} dataSelect={dataSelect} />
             <ModalUpdateProduct handleClose={handleCloseModal}
                 show={isShowModalEditProduct} dataSelect={dataSelect} productId={productIdUpdate} />
+            <div className="d-flex justify-content-center mt-4">
+                <ReactPaginate
+                    breakLabel="..."
+                    nextLabel="Next >"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={1}
+                    pageCount={totalPages}
+                    initialPage={current - 1}
+                    previousLabel="< Previous"
+                    pageClassName='page-item'
+
+                    pageLinkClassName='page-link'
+                    previousClassName='page-item'
+                    previousLinkClassName='page-link'
+                    nextClassName='page-item'
+                    nextLinkClassName='page-link'
+                    breakClassName='page-item'
+                    breakLinkClassName='page-link'
+                    containerClassName='pagination'
+                    activeClassName='active'
+                />
+            </div>
         </>
     );
 };
