@@ -118,3 +118,24 @@ export async function PaymentBanking(orderId: number) {
         headers: { Authorization: `Bearer ${token}` },
     });
 }
+
+export async function GetAmountByYear(year: number) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/amount-by-year/${year}`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
+export async function GetAmountDateRange(start: Date, end: Date) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/amount-date-range`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+        queryParams: { start, end }
+    });
+}

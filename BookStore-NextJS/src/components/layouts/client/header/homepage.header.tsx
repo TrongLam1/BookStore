@@ -27,13 +27,6 @@ const HomePageHeader = (props: any) => {
     const { setShoppingCart } = useShoppingCart();
 
     useEffect(() => {
-        if (!user) return;
-        if (user.role.includes("ADMIN")) {
-            router.push("/dashboard");
-        }
-    })
-
-    useEffect(() => {
         setShoppingCart(dataShoppingCart);
     }, []);
 
@@ -110,6 +103,11 @@ const HomePageHeader = (props: any) => {
                                     </>}
                                 className={style.accountContainer}
                             >
+                                {user.role.includes("ADMIN") &&
+                                    <Link href="/dashboard" className='dropdown-item'>
+                                        Dashboard
+                                    </Link>
+                                }
                                 <Link href="/profile" className='dropdown-item'>
                                     Thông tin cá nhân
                                 </Link>

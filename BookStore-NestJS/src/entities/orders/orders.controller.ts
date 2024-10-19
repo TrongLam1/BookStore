@@ -91,4 +91,21 @@ export class OrdersController {
   async getStatisticOrders() {
     return await this.ordersService.statisticOrders();
   }
+
+  @Get('amount-by-year/:year')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
+  async getAmountByYear(@Param('year') year: number) {
+    return await this.ordersService.getAmountAllMonthsInYear(year);
+  }
+
+  @Get('amount-date-range')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
+  async getAmountDateRange(
+    @Query('start') start: Date,
+    @Query('end') end: Date
+  ) {
+    return await this.ordersService.getAmountByDayRange(start, end);
+  }
 }

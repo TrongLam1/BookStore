@@ -174,4 +174,30 @@ export class OrdersService {
       revenue: sum.total || 0
     }
   }
+
+  async getAmountAllMonthsInYear(year: number) {
+    const result = await this.orderRepository.createQueryBuilder('order')
+      .select('MONTH(order.createdAt)', 'month')  // MySQL MONTH() function
+      .addSelect('SUM(order.totalPriceOrder)', 'total')  // Sum of total prices
+      .where('YEAR(order.createdAt) = :year', { year })  // MySQL YEAR() function
+      .andWhere('order.orderStatus = :status', { status: OrderStatus.COMPLETED })  // Filter by status
+      .groupBy('MONTH(order.createdAt)')  // Group by month
+      .orderBy('MONTH(order.createdAt)', 'ASC')  // Order by month
+      .getRawMany();  // Retrieve the raw result
+
+    return result;
+  }
+
+  async getAmountByDayRange(start: Date, end: Date) {
+    const result = await this.orderRepository.createQueryBuilder('order')
+      .select("DATE_FORMAT(order.createdAt, '%Y-%m-%d')", 'date')  // Format date to 'YYYY-MM-DD'
+      .addSelect('SUM(order.totalPriceOrder)', 'total')  // Sum total prices
+      .where('order.createdAt BETWEEN :start AND :end', { start, end })  // Date range filter
+      .andWhere('order.orderStatus = :status', { status: OrderStatus.COMPLETED })  // Filter by status
+      .groupBy("DATE_FORMAT(order.createdAt, '%Y-%m-%d')")  // Group by date
+      .orderBy('order.createdAt', 'ASC')  // Order by created date
+      .getRawMany();  // Get raw results
+
+    return result;
+  }
 }
