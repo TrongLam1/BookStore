@@ -14,6 +14,9 @@ export class OrderRequestDto {
     @IsOptional()
     valueCoupon: number = 0;
 
+    @IsOptional()
+    nameCoupon: string;
+
     @IsNotEmpty({ message: "Nhập phương thức thanh toán." })
     paymentMethod: PaymentMethod;
 }

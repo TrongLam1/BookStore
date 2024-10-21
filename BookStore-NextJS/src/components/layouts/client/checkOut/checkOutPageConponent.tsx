@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import CartItemsReview from "../cartItem/cartItemReview";
 import './checkOutPage.scss';
 import CheckOutPageFooter from "./checkOutPageFooter";
+import { toast } from "react-toastify";
 
 export default function CheckOutPageComponent(props: any) {
     const router = useRouter();
@@ -33,10 +34,15 @@ export default function CheckOutPageComponent(props: any) {
             phone,
             address,
             paymentMethod: payment,
-            couponValue: +couponValue
+            nameCoupon: couponValue
         };
 
         const res = await PlaceOrder(form);
+        if (res.statusCode !== 201) {
+            toast.error(res.message);
+            return;
+        }
+
         if (payment === 'BANKING') {
             const resPayment = await PaymentBanking(res?.data.id);
             if (+resPayment.statusCode === 201) {

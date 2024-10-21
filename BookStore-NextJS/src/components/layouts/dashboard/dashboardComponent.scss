@@ -123,12 +123,11 @@
                                 text-decoration: none;
                                 color: black;
                                 font-size: 1.1rem;
-                                cursor: pointer;
 
-                                &:hover,
-                                &:hover>#quantity-new-orders {
-                                    text-decoration: underline;
-                                }
+                                // &:hover,
+                                // &:hover>#quantity-new-orders {
+                                //     text-decoration: underline;
+                                // }
 
                                 i {
                                     margin-right: 5px;

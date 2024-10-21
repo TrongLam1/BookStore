@@ -51,8 +51,7 @@ export class BrandService {
 
   async findAllBrands() {
     return await this.brandRepository.find({
-      where: { isAvailable: true },
-      select: ['brandName']
+      where: { isAvailable: true }
     });
   }
 

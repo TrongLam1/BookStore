@@ -18,8 +18,7 @@ export class CategoryService {
 
   async findAllCategories() {
     return await this.categoryRepository.find({
-      where: { isAvailable: true },
-      select: ['categoryName']
+      where: { isAvailable: true }
     });
   }
 

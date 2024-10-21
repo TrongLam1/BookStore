@@ -20,6 +20,7 @@ import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
 import { TransformInterceptor } from './interceptor/response';
 import { VnpayModule } from './entities/vnpay/vnpay.module';
+import { NotificationModule } from './entities/notification/notification.module';
 
 @Module({
   imports: [
@@ -53,7 +54,8 @@ import { VnpayModule } from './entities/vnpay/vnpay.module';
       }),
       inject: [ConfigService],
     }),
-    AuthModule
+    AuthModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [

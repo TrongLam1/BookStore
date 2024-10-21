@@ -43,10 +43,10 @@ export class ShoppingCartService {
     if (!book) throw new NotFoundException("No book");
     if (book.inventory < quantity) throw new NotEnoughBookException();
 
-    const shoppingCart = user.shoppingCart;
+    let shoppingCart = user.shoppingCart;
 
     if (shoppingCart === null) {
-      const shoppingCart = await this.shoppingCartRepository.save({});
+      shoppingCart = await this.shoppingCartRepository.save({});
       user = await this.userRepository.save({ ...user, shoppingCart });
     }
 

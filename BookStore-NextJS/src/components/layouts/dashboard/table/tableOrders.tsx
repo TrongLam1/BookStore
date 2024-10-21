@@ -16,7 +16,6 @@ export default function TableOrdersComponent(props: any) {
     const { data, current } = props;
     const [loadingApi, setLoadingApi] = useState<boolean>(false);
     const [listOrders, setListOrders] = useState<Array<any>>(data.listOrders ?? []);
-    const [page, setPage] = useState<number>(current ?? 1);
     const [totalPages, setTotalPages] = useState<number>(data.totalPages ?? 1);
     const [orderStatus, setOrderStatus] = useState<string>();
 
@@ -28,7 +27,6 @@ export default function TableOrdersComponent(props: any) {
 
     useEffect(() => {
         setListOrders(data.listOrders ?? []);
-        setPage(current ?? 1);
         setTotalPages(data.totalPages ?? 1);
     }, [data]);
 
@@ -42,7 +40,7 @@ export default function TableOrdersComponent(props: any) {
     };
 
     const handleGetOrdersByStatus = async () => {
-        const res = await GetAllOrders(page, 10, orderStatus);
+        const res = await GetAllOrders(current, 10, orderStatus);
         if (res.statusCode === 200) {
             setListOrders(res.data.listOrders);
             setTotalPages(res.data.totalPages);

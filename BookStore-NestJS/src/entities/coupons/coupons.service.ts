@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import moment from 'moment';
-import { LessThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateCouponDto } from './dto/create-coupon.dto';
-import { Coupon } from './entities/coupon.entity';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
+import { Coupon } from './entities/coupon.entity';
 
 @Injectable()
 export class CouponsService {
@@ -90,5 +90,30 @@ export class CouponsService {
       where: { nameCoupon: name },
       select: ['id', 'createdAt', 'nameCoupon', 'quantity', 'valueCoupon', 'descriptionCoupon', 'condition', 'expiredDate']
     })
+  };
+
+  async checkValidCouponApply(amountOrder: number, nameCoupon: string, couponsUser: string[]) {
+    const coupon = await this.couponRepository.findOne({
+      where: {
+        nameCoupon: nameCoupon,
+        isAvailable: true
+      }
+    });
+
+    if (!coupon) throw new BadRequestException("Không tìm thấy coupon.");
+
+    const now = new Date();
+    if (coupon.expiredDate < now) throw new BadRequestException("Coupon đã hết hạn.");
+
+    if (amountOrder < coupon.condition) throw new BadRequestException("Đơn hàng không đủ điều kiện.");
+
+    if (coupon.quantity <= 0) throw new BadRequestException("Số lượng coupon đã hết.");
+
+    if (couponsUser == null) return amountOrder - coupon.valueCoupon;
+
+    if (couponsUser.includes(coupon.nameCoupon))
+      throw new BadRequestException("Bạn đã sử dụng coupon này.");
+
+    return amountOrder - coupon.valueCoupon;
   }
 }

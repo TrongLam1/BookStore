@@ -96,6 +96,6 @@ declare global {
         phone: string;
         address: string;
         paymentMethod: string;
-        couponValue: number;
+        nameCoupon: string;
     }
 }

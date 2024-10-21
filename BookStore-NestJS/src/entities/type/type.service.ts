@@ -44,8 +44,7 @@ export class TypeService {
 
   async findAllTypes() {
     return await this.typeRepository.find({
-      where: { isAvailable: true },
-      select: ['typeName']
+      where: { isAvailable: true }
     });
   }
 }

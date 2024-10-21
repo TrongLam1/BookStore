@@ -9,5 +9,5 @@ export default async function TableOrdersPage({ params }: { params: { page: numb
 
     const res = await GetAllOrders(params.page, 10);
 
-    return (<TableOrdersComponent data={res.data} />);
+    return (<TableOrdersComponent current={params.page} data={res.data} />);
 };

@@ -4,7 +4,7 @@ import { CreateCouponDto } from './dto/create-coupon.dto';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Public, Roles } from '@/decorator/decorator';
-import { ADMIN } from '@/role.environment';
+import { ADMIN, USER } from '@/role.environment';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 
 @Controller('coupons')

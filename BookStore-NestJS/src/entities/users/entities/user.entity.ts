@@ -49,6 +49,9 @@ export class User {
     @OneToMany(() => Order, order => order.user)
     orders: Order[];
 
+    @Column('simple-array', { nullable: true })
+    couponsUsed: string[];
+
     @OneToMany(() => Comment, comment => comment.user)
     comments: Comment[];
 

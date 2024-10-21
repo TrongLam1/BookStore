@@ -6,13 +6,16 @@ import { User } from '../users/entities/user.entity';
 import { Order } from './entities/order.entity';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
+import { NotificationModule } from '../notification/notification.module';
+import { CouponsModule } from '../coupons/coupons.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order]),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Order, User]),
     OrderItemModule,
-    ShoppingCartModule
+    ShoppingCartModule,
+    NotificationModule,
+    CouponsModule
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

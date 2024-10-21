@@ -2,11 +2,31 @@
 
 import avatar from '@/assets/images/customer-support.jpg';
 import Image from "next/image";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3001');
 
 export default function NavDashboard() {
 
-    const [quantityNewOrder, setQuantityNewOrder] = useState(0);
+    const [quantityNewOrder, setQuantityNewOrder] = useState<number>(0);
+
+    useEffect(() => {
+        socket.emit('joinAdminRoom');
+
+        // Listen for the 'newOrder' event, which is sent to all admins
+        socket.on('newOrder', (orderDetails) => {
+            if (orderDetails.id) {
+                toast.success("Có đơn hàng mới.");
+                setQuantityNewOrder(quantityNewOrder + 1);
+            }
+        });
+
+        return () => {
+            socket.off('newOrder');
+        };
+    }, [quantityNewOrder]);
 
     const handleSidebar = () => {
         const sidebar = document.getElementById('sidebar');

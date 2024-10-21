@@ -54,6 +54,8 @@
 
                         .rating {
                             color: orange;
+                            flex-direction: row;
+                            justify-content: flex-start;
                         }
                     }
 

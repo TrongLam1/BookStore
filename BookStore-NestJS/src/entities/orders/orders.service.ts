@@ -6,6 +6,8 @@ import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
 import { User } from '../users/entities/user.entity';
 import { OrderRequestDto } from './dto/order-request.dto';
 import { Order, OrderStatus, PaymentStatus } from './entities/order.entity';
+import { NotificationGateway } from '../notification/notification.gateway';
+import { CouponsService } from '../coupons/coupons.service';
 
 @Injectable()
 export class OrdersService {
@@ -15,13 +17,17 @@ export class OrdersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly orderItemService: OrderItemService,
-    private readonly shoppingCartService: ShoppingCartService
+    private readonly shoppingCartService: ShoppingCartService,
+    private readonly couponService: CouponsService,
+    private readonly notificationGateway: NotificationGateway
   ) { }
 
   async placeOrder(req: any, placeOrderRequest: OrderRequestDto) {
     const user = await this.shoppingCartService.getShoppingCartFromUserInternal(req);
     const shoppingCart = user.shoppingCart;
     const cartItems = shoppingCart.cartItems;
+
+    const amountOrder = await this.couponService.checkValidCouponApply(shoppingCart.totalPrices, placeOrderRequest.nameCoupon, user.couponsUsed);
 
     let newOrder = new Order();
     newOrder.user = user;
@@ -30,13 +36,29 @@ export class OrdersService {
     newOrder.username = placeOrderRequest.username;
     newOrder.valueCoupon = placeOrderRequest.valueCoupon;
     newOrder.totalItemsOrder = shoppingCart.totalItems;
-    newOrder.totalPriceOrder = shoppingCart.totalPrices;
+    newOrder.totalPriceOrder = amountOrder;
     newOrder.paymentMethod = placeOrderRequest.paymentMethod;
     newOrder.paymentStatus = PaymentStatus.UNPAID;
     newOrder = await this.orderRepository.save(newOrder);
 
     await this.orderItemService.createNewOrderItems(cartItems, newOrder);
-    await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
+    // await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
+
+    if (placeOrderRequest.nameCoupon !== null) {
+      if (user.couponsUsed === null) {
+        const arrayCoupons = [placeOrderRequest.nameCoupon];
+        user.couponsUsed = arrayCoupons;
+        await this.userRepository.save(user);
+      } else {
+        user.couponsUsed = [...user.couponsUsed, placeOrderRequest.nameCoupon];
+        await this.userRepository.save(user);
+      }
+    }
+
+    this.notificationGateway.sendNewOrderNotification({
+      id: newOrder.id,
+      createdAt: newOrder.createdAt
+    });
 
     delete newOrder.user;
     return newOrder;
@@ -50,6 +72,7 @@ export class OrdersService {
       },
       relations: ['orderItems', 'orderItems.book']
     });
+
     if (!order) throw new NotFoundException("Not found order");
     return order;
   }
@@ -59,6 +82,7 @@ export class OrdersService {
       where: { id: orderId },
       relations: ['orderItems', 'orderItems.book']
     });
+
     if (!order) throw new NotFoundException("Not found order");
     return order;
   }

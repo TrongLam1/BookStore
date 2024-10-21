@@ -79,8 +79,8 @@ export default function ProductDetailComponent(props: any) {
         <>
             <div className="direction-page d-flex">
                 <Link href='/home'>Trang chủ</Link>/
-                <Link href={`/category/${category.categoryName}`}>
-                    {category.categoryName}
+                <Link href={`/category/${category?.categoryName}`}>
+                    {category?.categoryName}
                 </Link>/
                 <span>{productDetail.name}</span>
             </div>
