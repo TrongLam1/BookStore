@@ -1,5 +1,5 @@
 'use client'
-import { faFaceLaughWink, faFileLines, faList, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faFaceLaughWink, faFileLines, faList, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
@@ -8,7 +8,6 @@ import { Collapse } from "react-bootstrap";
 export default function SidebarDashboard() {
 
     const [openTable, setOpenTable] = useState(false);
-    const [openAuth, setOpenAuth] = useState(false);
 
     return (
         <aside id="sidebar" className="js-sidebar active">
@@ -80,48 +79,12 @@ export default function SidebarDashboard() {
                             </ul>
                         </Collapse>
                     </li>
-                    <li className="sidebar-item">
-                        <div
-                            onClick={() => setOpenAuth(!openAuth)}
-                            className="sidebar-link collapsed"
-                            aria-controls="auth-collapse"
-                            aria-expanded={openAuth}
-                            data-bs-toggle="collapse"
-                        >
-                            <FontAwesomeIcon icon={faUser} className="pe-2" />
-                            Xác thực
-                        </div>
-                        <Collapse in={openAuth}>
-                            <ul id="auth-collapse">
-                                <li className="sidebar-item">
-                                    <Link href={'/login'}
-                                        className="sidebar-link sidebar-link-custom"
-                                    >
-                                        <button className="btn-dashboard" type="button" data-bs-toggle="modal"
-                                            data-bs-target="#ModalFormSignIn">
-                                            Đăng nhập
-                                        </button>
-                                    </Link>
-                                </li>
-                                <li className="sidebar-item">
-                                    <a className="sidebar-link sidebar-link-custom">
-                                        <button className="btn-dashboard" type="button" data-bs-toggle="modal" data-bs-target="#ModalFormSignUp">
-                                            Đăng kí tài khoản thường
-                                        </button>
-                                    </a>
-                                </li>
-                            </ul>
-                        </Collapse>
-                    </li>
-                    <li className="sidebar-item">
-                        <Link href='/dashboard/chart/1'
-                            id="chart" className="sidebar-link collapsed"
-                        >
-                            <i className="fa-solid fa-chart-simple pe-2"></i>
-                            Biểu đồ thống kê doanh thu
-                        </Link>
-                    </li>
                 </ul>
+                <div className="logout">
+                    <button>
+                        <FontAwesomeIcon icon={faRightFromBracket} />
+                    </button>
+                </div>
             </div>
         </aside>
     );

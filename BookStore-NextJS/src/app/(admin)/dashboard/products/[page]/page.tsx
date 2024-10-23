@@ -29,6 +29,7 @@ export default async function TableProductsPage({ params }: { params: { page: nu
     return (
         <TableProductsComponent dataProducts={dataProducts}
             dataSelect={dataSelect}
-            current={params.page} />
+            current={params.page}
+            token={session?.user.token} />
     )
 }

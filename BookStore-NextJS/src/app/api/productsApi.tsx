@@ -15,6 +15,19 @@ export async function AddNewProduct(formData) {
     });
 }
 
+export async function UploadExcel(formData) {
+    const session = await auth();
+    const token = session?.user.token;
+    return await sendRequestFile<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/upload-excel`,
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        body: formData
+    });
+}
+
 export async function UpdateProduct(formData) {
     const session = await auth();
     const token = session?.user.token;

@@ -15,6 +15,7 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
 import { Book } from './entities/book.entity';
 import { NotFoundBookException } from './exception/CustomizeExceptionBook';
+import { Response } from 'express';
 
 const selectFields: any = ['id', 'createdAt', 'updatedAt', 'name', 'brand', 'type', 'category', 'price', 'currentPrice', 'sale', 'description', 'inventory', 'imageUrl'];
 
@@ -127,6 +128,11 @@ export class BooksService {
       name, price, currentPrice, type, brand, category,
       description, sale, inventory
     });
+  }
+
+  async exportFileBooks(res: Response) {
+    const data = await this.bookRepository.find({ relations: ['type', 'brand', 'category'] });
+    await this.excelService.exportDataToExcel(data, res);
   }
 
   async updateImageBook(updImgDto: UpdateImgBookDto, file: Express.Multer.File) {

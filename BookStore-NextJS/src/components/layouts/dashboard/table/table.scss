@@ -6,8 +6,38 @@
             border-radius: 8px;
             font-size: .85rem;
 
-            #import-excel {
-                margin-top: 5px;
+            .upload-excel {
+                margin-bottom: 1rem;
+
+                label {
+                    padding: 4px 8px;
+                    color: white;
+                    background-color: #009578;
+                    border-radius: 5px;
+                    cursor: pointer;
+
+                    svg {
+                        margin-right: 5px;
+                    }
+                }
+
+                input {
+                    display: none;
+                }
+
+                span {
+                    margin-left: 1rem;
+                }
+
+                .remove-file {
+                    cursor: pointer;
+
+                    svg {
+                        &:hover {
+                            color: red;
+                        }
+                    }
+                }
             }
 
             #btn-import-excel,
@@ -17,6 +47,23 @@
                 padding: 2px 4px;
                 border-radius: 6px;
                 margin-right: 5px;
+                color: orangered;
+
+                &:hover {
+                    background-color: orangered;
+                    color: white;
+                }
+            }
+
+            #btn-import-excel:disabled {
+                cursor: not-allowed;
+                border-color: grey;
+                color: grey;
+            }
+
+            #btn-import-excel:disabled:hover {
+                background-color: transparent;
+                color: grey;
             }
         }
 
@@ -168,5 +215,25 @@
                 }
             }
         }
+    }
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 2px solid indigo;
+    border-radius: 50%;
+    border-top-color: #0001;
+    display: inline-block;
+    animation: loadingspinner .7s linear infinite;
+}
+
+@keyframes loadingspinner {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(360deg)
     }
 }

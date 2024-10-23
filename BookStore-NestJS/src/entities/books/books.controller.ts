@@ -1,13 +1,14 @@
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Public, Roles } from '@/decorator/decorator';
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ADMIN } from '@/role.environment';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
-import { ADMIN } from '@/role.environment';
 
 @Controller('books')
 export class BooksController {
@@ -31,12 +32,18 @@ export class BooksController {
   }
 
   @Post('upload-excel')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(ADMIN)
-  @Public()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file) {
     return await this.booksService.uploadFileExcelBooks(file);
+  }
+
+  @Get('export-excel')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ADMIN)
+  async exportFile(@Res() res: Response) {
+    return await this.booksService.exportFileBooks(res);
   }
 
   @Put('update-img')

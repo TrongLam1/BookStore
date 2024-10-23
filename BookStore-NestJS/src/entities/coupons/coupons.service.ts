@@ -114,6 +114,8 @@ export class CouponsService {
     if (couponsUser.includes(coupon.nameCoupon))
       throw new BadRequestException("Bạn đã sử dụng coupon này.");
 
+    await this.couponRepository.save({ ...coupon, quantity: coupon.quantity - 1 });
+
     return amountOrder - coupon.valueCoupon;
   }
 }

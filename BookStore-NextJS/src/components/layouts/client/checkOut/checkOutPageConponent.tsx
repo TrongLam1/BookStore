@@ -5,10 +5,9 @@ import { PaymentBanking, PlaceOrder } from "@/app/api/orderApi";
 import { useShoppingCart } from "@/provider/shoppingCartProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import CartItemsReview from "../cartItem/cartItemReview";
 import './checkOutPage.scss';
-import CheckOutPageFooter from "./checkOutPageFooter";
-import { toast } from "react-toastify";
 
 export default function CheckOutPageComponent(props: any) {
     const router = useRouter();
@@ -188,10 +187,17 @@ export default function CheckOutPageComponent(props: any) {
                                         }
                                     </tbody>
                                     <tfoot>
-                                        <CheckOutPageFooter
-                                            totalPrices={shoppingCart?.totalPrices}
-                                            couponValue={couponValue}
-                                        />
+                                        <tr className="order-total">
+                                            <th>Thanh toán</th>
+                                            <td>
+                                                <strong>
+                                                    <span className="woocommerce-Price-amount amount">
+                                                        {shoppingCart?.totalPrices?.toLocaleString() ?? 0}
+                                                    </span>
+                                                    <span className="woocommerce-Price-currencySymbol">₫</span>
+                                                </strong>
+                                            </td>
+                                        </tr>
                                     </tfoot>
                                 </table>
                                 <div className="cart-payment-container">
@@ -203,9 +209,6 @@ export default function CheckOutPageComponent(props: any) {
                                                 value={couponValue}
                                                 onChange={(e) => setCouponValue(e.target.value)}
                                             />
-                                            <button className="btn-apply-coupon" type="button">
-                                                Áp dụng
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
