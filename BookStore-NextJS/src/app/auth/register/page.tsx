@@ -1,10 +1,11 @@
-import RegisterComponent from "@/components/layouts/client/auth/registerPage";
+import RegisterPage from "@/components/layouts/client/auth/registerPage"
+
 
 export const metadata = {
     title: 'Đăng ký'
 }
 
-export default function RegisterPage() {
+export default function Register() {
 
-    return (<RegisterComponent />)
+    return (<RegisterPage />)
 }

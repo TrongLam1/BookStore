@@ -39,9 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 if (+res.statusCode === 400) {
                     throw new InactiveAccountError();
-                } else {
-                    throw new Error("Internal server error");
-                }
+                } else { throw new Error("Internal server error"); }
             },
         }),
     ],

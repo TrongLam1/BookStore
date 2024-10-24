@@ -7,6 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { RoleService } from '../role/role.service';
 import { USER } from '@/role.environment';
+import { MailService } from '@/mail/mail.service';
 
 const selectField: any = ['id', 'username', 'email', 'phone', 'createdAt', 'updateAt', 'isActive'];
 
@@ -15,10 +16,11 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly roleService: RoleService
+    private readonly roleService: RoleService,
+    private readonly mailService: MailService
   ) { }
 
-  isEmailExist = async (email: string) => {
+  private isEmailExist = async (email: string) => {
     const existEmail = await this.usersRepository.findOneBy({ email });
     if (existEmail) return true;
     return false;
@@ -31,12 +33,45 @@ export class UsersService {
     if (checkEmail) throw new BadRequestException(`Email ${email} đã được sử dụng.`);
 
     const roleUser = await this.roleService.findRoleByName(USER);
+    const code = Math.floor(Math.random() * 899999 + 100000);
+
+    const codeExpired = new Date();
+    codeExpired.setMinutes(codeExpired.getMinutes() + 5);
 
     const hashPassword = await hashPasswordHelper(password);
-    return await this.usersRepository.save({
+    const user = await this.usersRepository.save({
       username, email, password: hashPassword,
-      isActive: false, roles: [roleUser]
+      code, codeExpired, isActive: false, roles: [roleUser]
     });
+
+    this.mailService.mailActivationAccount(user);
+
+    return { id: user.id, email: user.email, username: user.username };
+  }
+
+  async activeAccount(email: string, code: number) {
+    const user = await this.usersRepository.findOneBy({ email });
+    const now = new Date();
+    if (user.code !== +code) throw new BadRequestException("Mã kích hoạt không đúng.");
+    if (user.codeExpired < now) throw new BadRequestException("Mã kích hoạt đã hết hạn.");
+
+    await this.usersRepository.save({ ...user, code: null, codeExpired: null, isActive: true });
+
+    return "Active account successfully.";
+  }
+
+  async reactiveCode(email: string) {
+    let user = await this.usersRepository.findOneBy({ email });
+
+    const code = Math.floor(Math.random() * 899999 + 100000);
+    const codeExpired = new Date();
+    codeExpired.setMinutes(codeExpired.getMinutes() + 5);
+
+    user = await this.usersRepository.save({ ...user, code, codeExpired });
+
+    this.mailService.mailActivationAccount(user);
+
+    return "Send code active.";
   }
 
   async resetPassword(user: User, newPassword: string) {

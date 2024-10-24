@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
-import { Roles } from '@/decorator/decorator';
+import { Public, Roles } from '@/decorator/decorator';
 import { Body, Controller, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
@@ -12,8 +12,24 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
   @Post()
+  @Public()
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.register(createUserDto);
+  }
+
+  @Get('active')
+  @Public()
+  async activeAccount(
+    @Query('email') email: string,
+    @Query('code') code: number
+  ) {
+    return await this.usersService.activeAccount(email, code);
+  }
+
+  @Get('reactive')
+  @Public()
+  async reactiveCode(@Query('email') email: string) {
+    return await this.usersService.reactiveCode(email);
   }
 
   @Get('find/email/:email')

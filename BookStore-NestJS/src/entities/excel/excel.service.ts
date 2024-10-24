@@ -6,7 +6,6 @@ import { Book } from '../books/entities/book.entity';
 import { Workbook } from 'exceljs';
 import { Response } from 'express';
 import moment from 'moment';
-import axios from 'axios';
 
 @Injectable()
 export class ExcelService {
@@ -131,8 +130,11 @@ export class ExcelService {
 
   private async getImageBuffer(imageUrl: string): Promise<Buffer | null> {
     try {
-      const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-      return Buffer.from(response.data, 'binary');
+      // const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+      // return Buffer.from(response.data, 'binary');
+      const response = await fetch(imageUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer);
     } catch (error) {
       console.error(`Failed to download image from URL: ${imageUrl}`, error);
       return null;

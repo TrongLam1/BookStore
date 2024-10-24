@@ -1,12 +1,12 @@
+import { UsersModule } from '@/entities/users/users.module';
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersModule } from '@/entities/users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './guard/local.strategy';
 import { JwtStrategy } from './guard/jwt.strategy';
+import { LocalStrategy } from './guard/local.strategy';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { JwtStrategy } from './guard/jwt.strategy';
         },
       }),
       inject: [ConfigService],
-    }),
+    })
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy],

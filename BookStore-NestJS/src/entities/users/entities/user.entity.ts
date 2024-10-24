@@ -34,7 +34,7 @@ export class User {
     isActive: boolean;
 
     @Column({ nullable: true })
-    code: string;
+    code: number;
 
     @Column({ nullable: true })
     codeExpired: Date;

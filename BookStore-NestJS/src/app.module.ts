@@ -21,6 +21,8 @@ import { RolesGuard } from './auth/guard/roles.guard';
 import { TransformInterceptor } from './interceptor/response';
 import { VnpayModule } from './entities/vnpay/vnpay.module';
 import { NotificationModule } from './entities/notification/notification.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -55,7 +57,35 @@ import { NotificationModule } from './entities/notification/notification.module'
       inject: [ConfigService],
     }),
     AuthModule,
-    NotificationModule
+    NotificationModule,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          // ignoreTLS: true,
+          // secure: false,
+          auth: {
+            user: configService.get<string>('MAILDEV_INCOMING_USER'),
+            pass: configService.get<string>('MAILDEV_INCOMING_PASS'),
+          },
+        },
+        defaults: {
+          from: '"No Reply" <no-reply@localhost>',
+        },
+        // preview: true,
+        template: {
+          dir: process.cwd() + '/src/mail/templates/',
+          adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+          options: {
+            strict: true,
+          },
+        },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [
