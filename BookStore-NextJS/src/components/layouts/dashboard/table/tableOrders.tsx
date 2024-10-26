@@ -40,6 +40,7 @@ export default function TableOrdersComponent(props: any) {
     };
 
     const handleGetOrdersByStatus = async () => {
+        console.log(orderStatus);
         const res = await GetAllOrders(current, 10, orderStatus);
         if (res.statusCode === 200) {
             setListOrders(res.data.listOrders);
@@ -59,7 +60,7 @@ export default function TableOrdersComponent(props: any) {
         <>
             <div className="container-fluid">
                 <div className="container">
-                    <div className='d-flex justify-content-between mt-3 mb-3'>
+                    <div className='d-flex justify-content-between align-content-center mt-3 mb-3'>
                         <div className="d-flex search-container">
                             <input
                                 className='search-form'
@@ -81,11 +82,11 @@ export default function TableOrdersComponent(props: any) {
                                 value={orderStatus}
                                 onChange={(e) => setOrderStatus(e.target.value)}
                             >
-                                <option>---Options---</option>
-                                <option value="Đã hủy">Đã hủy</option>
-                                <option value="Đang xử lí">Đang xử lí</option>
-                                <option value="Đang giao hàng">Đang giao hàng</option>
-                                <option value="Đã hoàn thành">Đã hoàn thành</option>
+                                <option value="">--Toàn bộ--</option>
+                                <option value="Đã hủy">--Đã hủy--</option>
+                                <option value="Đang xử lí">--Đang xử lí--</option>
+                                <option value="Đang giao hàng">--Đang giao hàng--</option>
+                                <option value="Đã hoàn thành">--Đã hoàn thành--</option>
                             </Form.Select>
                             <button className="btn-filter-status-order"
                                 onClick={handleGetOrdersByStatus}>

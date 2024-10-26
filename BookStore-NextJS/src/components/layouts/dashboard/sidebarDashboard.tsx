@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
 import { Collapse } from "react-bootstrap";
+import { signOut } from 'next-auth/react';
 
 export default function SidebarDashboard() {
 
@@ -80,12 +81,13 @@ export default function SidebarDashboard() {
                         </Collapse>
                     </li>
                 </ul>
-                <div className="logout">
+                <div className="logout"
+                    onClick={() => signOut({ callbackUrl: '/home' })} >
                     <button>
                         <FontAwesomeIcon icon={faRightFromBracket} />
                     </button>
                 </div>
             </div>
-        </aside>
-    );
+        </aside >
+    )
 }

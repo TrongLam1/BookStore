@@ -9,8 +9,10 @@ import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('books')
+@UseInterceptors(CacheInterceptor)
 export class BooksController {
   constructor(
     private readonly booksService: BooksService

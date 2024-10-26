@@ -1,7 +1,10 @@
 'use client'
 
 import avatar from '@/assets/images/customer-support.jpg';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from "next/image";
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import io from 'socket.io-client';
@@ -45,14 +48,16 @@ export default function NavDashboard() {
             <div className="navbar-collapse navbar">
                 <ul className="navbar-nav">
                     <li className="nav-item dropdown noti-new-orders">
-                        <div className="redirect-table-orders">
-                            <i className="fa-solid fa-bell"></i>
-                            Bạn có <input type="number"
-                                id="quantity-new-orders"
-                                value={quantityNewOrder}
-                                readOnly
-                            /> đơn hàng mới.
-                        </div>
+                        <Link href='/dashboard/orders/1'>
+                            <div className="redirect-table-orders">
+                                <FontAwesomeIcon icon={faBell} />
+                                Bạn có <input type="number"
+                                    id="quantity-new-orders"
+                                    value={quantityNewOrder}
+                                    readOnly
+                                /> đơn hàng mới.
+                            </div>
+                        </Link>
                     </li>
                     <li className="nav-item dropdown">
                         <a data-bs-toggle="dropdown" className="nav-icon pe-md-0">

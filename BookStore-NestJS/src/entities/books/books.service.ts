@@ -1,6 +1,7 @@
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
 import { Like, MoreThan, Repository } from 'typeorm';
 import { BrandService } from '../brand/brand.service';
 import { Brand } from '../brand/entities/brand.entity';
@@ -15,7 +16,6 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
 import { Book } from './entities/book.entity';
 import { NotFoundBookException } from './exception/CustomizeExceptionBook';
-import { Response } from 'express';
 
 const selectFields: any = ['id', 'createdAt', 'updatedAt', 'name', 'brand', 'type', 'category', 'price', 'currentPrice', 'sale', 'description', 'inventory', 'imageUrl'];
 
@@ -28,17 +28,17 @@ export class BooksService {
     private readonly brandService: BrandService,
     private readonly categoryService: CategoryService,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly excelService: ExcelService
+    private readonly excelService: ExcelService,
   ) { }
 
-  validateExcelBook(excelBook: ExcelBookDto) {
+  private validateExcelBook(excelBook: ExcelBookDto) {
     if (isNaN(excelBook.price) || excelBook.price < 0) excelBook.price = 0;
     if (isNaN(excelBook.sale) || excelBook.sale < 0) excelBook.sale = 0;
     if (isNaN(excelBook.inventory) || excelBook.inventory < 0) excelBook.inventory = 0;
     return excelBook;
   }
 
-  async convertExcelBookToBookEntity(
+  private async convertExcelBookToBookEntity(
     excelBooks: ExcelBookDto[],
     types: Type[],
     brands: Brand[],

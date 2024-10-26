@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderItemService } from '../order-item/order-item.service';
@@ -8,6 +8,8 @@ import { OrderRequestDto } from './dto/order-request.dto';
 import { Order, OrderStatus, PaymentStatus } from './entities/order.entity';
 import { NotificationGateway } from '../notification/notification.gateway';
 import { CouponsService } from '../coupons/coupons.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class OrdersService {
@@ -19,7 +21,9 @@ export class OrdersService {
     private readonly orderItemService: OrderItemService,
     private readonly shoppingCartService: ShoppingCartService,
     private readonly couponService: CouponsService,
-    private readonly notificationGateway: NotificationGateway
+    private readonly notificationGateway: NotificationGateway,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache
   ) { }
 
   async placeOrder(req: any, placeOrderRequest: OrderRequestDto) {

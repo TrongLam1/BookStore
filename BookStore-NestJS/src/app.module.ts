@@ -23,6 +23,8 @@ import { VnpayModule } from './entities/vnpay/vnpay.module';
 import { NotificationModule } from './entities/notification/notification.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { RedisOptions } from '@/redis/redisOptions';
 
 @Module({
   imports: [
@@ -38,6 +40,9 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     ShoppingCartModule,
     TypeModule,
     VnpayModule,
+    AuthModule,
+    NotificationModule,
+    CacheModule.registerAsync(RedisOptions),
     ConfigModule.forRoot({
       isGlobal: true
     }),
@@ -56,8 +61,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       }),
       inject: [ConfigService],
     }),
-    AuthModule,
-    NotificationModule,
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -78,7 +81,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         // preview: true,
         template: {
           dir: process.cwd() + '/src/mail/templates/',
-          adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+          adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
           },
@@ -101,6 +104,10 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
     },
   ],
 })

@@ -113,7 +113,7 @@ const HomePageHeader = (props: any) => {
                                 </Link>
                                 <Link href="/"
                                     className='dropdown-item'
-                                    onClick={() => signOut()}
+                                    onClick={() => signOut({ callbackUrl: '/home' })}
                                 >
                                     Đăng xuất
                                 </Link>
