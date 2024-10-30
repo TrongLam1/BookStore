@@ -118,15 +118,13 @@ export async function FindProductsByFilter(
 }
 
 export async function FindProductById(id: string) {
-    const res = await sendRequest<IBackendRes<any>>({
+    return await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/books/find-one/${id}`,
         method: 'GET',
         nextOption: {
             next: { tags: [`book-${id}`] }
         }
     });
-
-    return res;
 }
 
 export async function GetRandomProducts() {

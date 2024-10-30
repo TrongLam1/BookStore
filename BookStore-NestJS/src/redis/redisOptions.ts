@@ -10,11 +10,10 @@ export const RedisOptions: CacheModuleAsyncOptions = {
             socket: {
                 host: configService.get<string>('REDIS_HOST'),
                 port: parseInt(configService.get<string>('REDIS_PORT')!),
-            },
+            }
         });
         return {
-            store: () => store,
-            ttl: 1 * 60000, // 3 minutes (milliseconds)
+            store: () => store
         };
     },
     inject: [ConfigService],

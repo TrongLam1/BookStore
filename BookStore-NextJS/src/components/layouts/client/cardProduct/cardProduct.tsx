@@ -1,32 +1,45 @@
 /* eslint-disable @next/next/no-async-client-component */
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { AddProductToCart, GetShoppingCart } from "@/app/api/shoppingCartApi";
+import { AddProductToCartSession } from "@/app/api/shoppingCartApi";
 import { useShoppingCart } from "@/provider/shoppingCartProvider";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import styles from './cardProduct.module.scss';
+import Cookies from 'js-cookie';
+import { useSession } from "next-auth/react";
 
 const CardProduct = (props: any) => {
-
+    const { data: session } = useSession();
     const { book, col } = props;
     const { setShoppingCart } = useShoppingCart();
 
     const handleAddProductToCart = async (productId: number) => {
-        const res = await AddProductToCart({
+        // const res = await AddProductToCart({
+        //     bookId: productId,
+        //     quantity: 1
+        // });
+
+        const sessionId = Cookies.get('sessionId');
+
+        const res = await AddProductToCartSession({
             bookId: productId,
-            quantity: 1
+            quantity: 1,
+            sessionId: sessionId === undefined ? null : sessionId
         });
+
+        if (!sessionId) {
+            Cookies.set('sessionId', res.data.sessionId, { expires: 7 });
+        }
 
         if (+res.statusCode === 201) {
             toast.success("Thêm sản phẩm thành công.");
-
             setShoppingCart({
-                totalItems: res.data.totalItems,
-                totalPrices: res.data.totalPrices,
-                cartItems: res.data.cartItems
+                totalItems: res.data.shoppingCart.totalItems,
+                totalPrices: res.data.shoppingCart.totalPrices,
+                cartItems: res.data.shoppingCart.cartItems
             })
         } else {
             toast.error("Thêm sản phẩm thất bại.");

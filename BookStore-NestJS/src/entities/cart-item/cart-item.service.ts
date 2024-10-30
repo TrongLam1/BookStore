@@ -65,12 +65,17 @@ export class CartItemService {
     await this.cartItemRepository.remove(items);
   }
 
-  async addCartItemSession(quantity: number, book: Book, session) {
-    const shoppingCart = session.shoppingCart;
+  async addCartItemSession(quantity: number, book: Book, shoppingCart) {
     const cartItems = shoppingCart.cartItems;
+
+    const maxId = cartItems.length > 0
+      ? Math.max(...cartItems.map(item => item.id || 0))
+      : 0;
+
     let cartItem = cartItems.find(item => item.book.id === book.id);
     if (!cartItem) {
       cartItem = new CartItem();
+      cartItem.id = maxId + 1;
       cartItem.book = book;
       cartItem.shoppingCart = shoppingCart;
       cartItem.totalPrice = book.currentPrice * quantity;
@@ -88,24 +93,35 @@ export class CartItemService {
       ...shoppingCart,
       cartItems: shoppingCart.cartItems.map(item => ({
         ...item,
-        shoppingCart: undefined // Remove circular reference
+        shoppingCart: undefined
       }))
     };
 
-    // Save the non-circular cart to the session
-    session.shoppingCart = cartForSession;
-    return session.shoppingCart;
+    return cartForSession;
   }
 
-  async updateQuantityCartItemSession(quantityAdd: number, cartItem: CartItem, book: Book) {
-    const add = quantityAdd - cartItem.quantity;
-    if (add === 1) {
-      quantityAdd++;
+  updateQuantityCartItemSession(quantityAdd: number, cartItemId: number, cartItems) {
+    const index = cartItems.findIndex((item: CartItem) => item.id === cartItemId);
+
+    if (index !== -1) {
+      cartItems[index] = {
+        ...cartItems[index],
+        quantity: quantityAdd,
+        totalPrice: cartItems[index].book.currentPrice * quantityAdd
+      };
     }
-    return {
-      ...cartItem,
-      quantity: quantityAdd,
-      totalPrice: book.currentPrice * cartItem.quantity
-    };
+
+    return cartItems;
+  }
+
+  removeCartItemSession(cartItems: CartItem[], cartItemId: number) {
+    return cartItems.filter((item: CartItem) => item.id !== cartItemId);
+  }
+
+  async convertCartItemsSession(cartItems: CartItem[], shoppingCart: ShoppingCart) {
+    cartItems.map(async (item: CartItem) => {
+      const book = item.book;
+      await this.addCartItem(item.quantity, book, shoppingCart);
+    });
   }
 }

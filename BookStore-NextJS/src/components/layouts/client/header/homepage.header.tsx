@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 'use client'
+import { ConvertShoppingCartFromSession, GetShoppingCart, GetShoppingCartSession } from '@/app/api/shoppingCartApi';
 import logo from '@/assets/images/logo.png';
 import { useShoppingCart } from '@/provider/shoppingCartProvider';
 import { faMagnifyingGlass, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { signOut } from 'next-auth/react';
+import Cookies from 'js-cookie';
+import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -17,18 +19,66 @@ import {
 } from 'react-bootstrap';
 import ShoppingCartDropdown from '../shoppingCartDropdown/shoppingCartDropdown';
 import style from './homepage.header.module.scss';
+import { toast } from 'react-toastify';
 
 const HomePageHeader = (props: any) => {
     const router = useRouter();
 
-    const { user, dataShoppingCart } = props;
+    const { user, token } = props;
     const [search, setSearch] = useState('');
 
     const { setShoppingCart } = useShoppingCart();
 
     useEffect(() => {
-        setShoppingCart(dataShoppingCart);
+        const sessionId = Cookies.get('sessionId');
+        if (sessionId !== undefined) {
+            handleMoveShoppingCartFromSession(sessionId);
+            getShoppingCart();
+            Cookies.remove('sessionId');
+        } else {
+            getShoppingCart();
+        }
     }, []);
+
+    const getShoppingCart = async () => {
+        let shoppingCart = null;
+
+        if (user) {
+            const res = await GetShoppingCart();
+            if (res.statusCode === 200) {
+                if (typeof res?.data === 'string') {
+                    shoppingCart = JSON.parse(res?.data);
+                } else {
+                    shoppingCart = res?.data;
+                }
+            }
+        } else {
+            const sessionId = Cookies.get('sessionId');
+            const res = await GetShoppingCartSession(sessionId);
+            if (res.statusCode === 200) {
+                if (typeof res.data === 'string') {
+                    shoppingCart = JSON.parse(res.data);
+                } else {
+                    shoppingCart = {
+                        totalItems: res.data.shoppingCart.totalItems,
+                        totalPrices: res.data.shoppingCart.totalPrices,
+                        cartItems: res.data.shoppingCart.cartItems,
+                    }
+                }
+            }
+        }
+
+        setShoppingCart(shoppingCart);
+    };
+
+    const handleMoveShoppingCartFromSession = async (sessionId: string) => {
+        if (user && sessionId) {
+            const res = await ConvertShoppingCartFromSession(sessionId, token);
+            if (res.statusCode === 201) {
+                toast.success("Thêm sản phẩm thành công.");
+            }
+        }
+    };
 
     const handleSearch = () => {
         router.push(`/search?keyword=${search}`);
@@ -64,7 +114,6 @@ const HomePageHeader = (props: any) => {
                                 placeholder="Tìm kiếm sản phẩm ..."
                                 aria-label="Search"
                                 onChange={(e) => {
-                                    console.log(e.target.value);
                                     setSearch(e.target.value)
                                 }}
                                 value={search}
@@ -121,7 +170,7 @@ const HomePageHeader = (props: any) => {
                         }
                     </Nav>
                     <Nav>
-                        <ShoppingCartDropdown />
+                        <ShoppingCartDropdown user={user} token={token} />
                     </Nav>
                 </Navbar.Collapse>
             </Container>

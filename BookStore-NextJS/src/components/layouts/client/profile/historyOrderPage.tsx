@@ -6,8 +6,6 @@ export default function HistoryOrdersPageComponent(props: any) {
 
     const { listOrders, totalPages } = props;
 
-    console.log(listOrders);
-
     return (
         <>
             <div className="profile-content-header">

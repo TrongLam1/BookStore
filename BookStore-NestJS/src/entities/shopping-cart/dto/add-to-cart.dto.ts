@@ -6,4 +6,7 @@ export class AddToCartDto {
 
     @IsOptional()
     quantity: number = 1;
+
+    @IsOptional()
+    sessionId: string = null;
 }

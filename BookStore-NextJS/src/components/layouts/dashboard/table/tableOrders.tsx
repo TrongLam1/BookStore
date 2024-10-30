@@ -40,7 +40,6 @@ export default function TableOrdersComponent(props: any) {
     };
 
     const handleGetOrdersByStatus = async () => {
-        console.log(orderStatus);
         const res = await GetAllOrders(current, 10, orderStatus);
         if (res.statusCode === 200) {
             setListOrders(res.data.listOrders);

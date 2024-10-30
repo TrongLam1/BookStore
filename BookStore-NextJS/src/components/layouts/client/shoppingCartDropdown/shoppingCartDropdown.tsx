@@ -10,8 +10,8 @@ import { NavDropdown } from 'react-bootstrap';
 import CartItemHeaderComponent from '../cartItem/cartItemHeader';
 import './shoppingCartDropdown.scss';
 
-const ShoppingCartDropdown = () => {
-
+const ShoppingCartDropdown = (props: any) => {
+    const { user, token } = props;
     const { shoppingCart } = useShoppingCart();
 
     useEffect(() => { }, [shoppingCart]);
@@ -41,6 +41,7 @@ const ShoppingCartDropdown = () => {
                                 (shoppingCart.cartItems.map((item, index: number) => {
                                     return (
                                         <CartItemHeaderComponent
+                                            user={user} token={token}
                                             key={index}
                                             cartItem={item}
                                         />

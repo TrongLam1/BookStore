@@ -2,6 +2,7 @@ import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Public, Roles } from '@/decorator/decorator';
 import { ADMIN } from '@/role.environment';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -9,7 +10,6 @@ import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
-import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('books')
 @UseInterceptors(CacheInterceptor)

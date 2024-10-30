@@ -71,7 +71,6 @@ export default function ProfileInfoComponent(props: any) {
     }
 
     const handleUpdateInfo = async () => {
-        console.log("update info");
         handleActiveUpdateInfo();
     }
 

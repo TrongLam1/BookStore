@@ -1,16 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import './cartItemHeader.scss';
-import { faRectangleXmark } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { RemoveProductFromCart, RemoveProductFromCartSession, UpdateQuantityProductCart, UpdateQuantityProductCartSession } from '@/app/api/shoppingCartApi';
 import { useShoppingCart } from '@/provider/shoppingCartProvider';
-import { RemoveProductFromCart, UpdateQuantityProductCart } from '@/app/api/shoppingCartApi';
+import { faRectangleXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Cookies from 'js-cookie';
+import { useState } from 'react';
 import ModalConfirm from '../../modal/modalConfirm/modalConfirm';
+import './cartItemHeader.scss';
 
 export default function CartItemHeaderComponent(props: any) {
-
-    const { cartItem } = props;
+    const { cartItem, user, token } = props;
     const { setShoppingCart } = useShoppingCart();
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -19,30 +19,47 @@ export default function CartItemHeaderComponent(props: any) {
     const product: IBook = cartItem?.book;
 
     const handleRemoveProduct = async (cartItemId: number) => {
-        const res = await RemoveProductFromCart(cartItemId);
-        if (+res.statusCode === 200) {
-            setShoppingCart({
-                totalItems: res.data.totalItems,
-                totalPrices: res.data.totalPrices,
-                cartItems: res.data.cartItems
-            })
+        if (user) {
+            const res = await RemoveProductFromCart(cartItemId);
+            if (+res.statusCode === 200) {
+                setShoppingCart({
+                    totalItems: res.data.totalItems,
+                    totalPrices: res.data.totalPrices,
+                    cartItems: res.data.cartItems
+                })
+            }
+        } else {
+            const sessionId = Cookies.get('sessionId');
+            const res = await RemoveProductFromCartSession(sessionId, +cartItemId);
+            if (res.statusCode === 200) {
+                setShoppingCart(res.data.shoppingCart);
+            }
         }
         setIsOpen(false);
     }
 
     const handleUpdateQuantity = async (cartItemId: number, quantity: string) => {
         setQuantity(+quantity);
-        const res = await UpdateQuantityProductCart({
-            cartItemId: cartItemId,
-            quantity: +quantity
-        });
+        if (user) {
+            const res = await UpdateQuantityProductCart({
+                cartItemId: cartItemId,
+                quantity: +quantity
+            });
 
-        if (+res.statusCode === 200) {
-            setShoppingCart({
-                totalItems: res.data.totalItems,
-                totalPrices: res.data.totalPrices,
-                cartItems: res.data.cartItems
-            })
+            if (+res.statusCode === 200) {
+                setShoppingCart({
+                    totalItems: res.data.totalItems,
+                    totalPrices: res.data.totalPrices,
+                    cartItems: res.data.cartItems
+                })
+            }
+        } else {
+            const sessionId = Cookies.get('sessionId');
+            const res = await UpdateQuantityProductCartSession(sessionId, {
+                cartItemId: cartItemId,
+                quantity: +quantity
+            });
+            setShoppingCart(res.data.shoppingCart);
         }
     }
 

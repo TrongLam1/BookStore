@@ -35,7 +35,7 @@ export default function ShoppingCartComponent(props: any) {
                     {shoppingCart?.cartItems && shoppingCart?.cartItems.length > 0 ? (
                         shoppingCart?.cartItems.map((item, index: any) => {
                             return (
-                                <CartItemComponent key={`cart-item-${index}`} item={item} />
+                                <CartItemComponent key={`cart-item-${index}`} user={user} item={item} />
                             )
                         })
                     ) : (

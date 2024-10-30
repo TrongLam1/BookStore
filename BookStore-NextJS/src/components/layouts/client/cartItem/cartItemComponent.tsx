@@ -1,16 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { RemoveProductFromCart, UpdateQuantityProductCart } from '@/app/api/shoppingCartApi';
+import { RemoveProductFromCart, UpdateQuantityProductCart, UpdateQuantityProductCartSession } from '@/app/api/shoppingCartApi';
 import { useShoppingCart } from '@/provider/shoppingCartProvider';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import ModalConfirm from '../../modal/modalConfirm/modalConfirm';
 import './cartItemComponent.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export default function CartItemComponent(props: any) {
-
-    const { item } = props;
+    const { item, user } = props;
 
     const { setShoppingCart } = useShoppingCart();
     const [quantity, setQuantity] = useState<number>();
@@ -34,17 +34,26 @@ export default function CartItemComponent(props: any) {
 
     const handleUpdateQuantity = async (cartItemId: number, quantity: string) => {
         setQuantity(+quantity);
-        const res = await UpdateQuantityProductCart({
-            cartItemId: cartItemId,
-            quantity: +quantity
-        });
+        if (user) {
+            const res = await UpdateQuantityProductCart({
+                cartItemId: cartItemId,
+                quantity: +quantity
+            });
 
-        if (+res?.statusCode === 200) {
-            setShoppingCart({
-                totalItems: res?.data.totalItems,
-                totalPrices: res?.data.totalPrices,
-                cartItems: res?.data.cartItems
-            })
+            if (+res?.statusCode === 200) {
+                setShoppingCart({
+                    totalItems: res?.data.totalItems,
+                    totalPrices: res?.data.totalPrices,
+                    cartItems: res?.data.cartItems
+                })
+            }
+        } else {
+            const sessionId = Cookies.get('sessionId');
+            const res = await UpdateQuantityProductCartSession(sessionId, {
+                cartItemId: cartItemId,
+                quantity: +quantity
+            });
+            console.log(res);
         }
     }
 
