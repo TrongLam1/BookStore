@@ -6,8 +6,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { RoleService } from '../role/role.service';
-import { USER } from '@/role.environment';
-import { MailService } from '@/mail/mail.service';
+import { USER } from 'src/role.environment';
+import { MailService } from 'src/mail/mail.service';
 
 const selectField: any = ['id', 'username', 'email', 'phone', 'createdAt', 'updateAt', 'isActive'];
 
@@ -63,6 +63,8 @@ export class UsersService {
   async reactiveCode(email: string) {
     let user = await this.usersRepository.findOneBy({ email });
 
+    if (!user) throw new NotFoundException("Không tìm thấy thông tin tài khoản.");
+
     const code = Math.floor(Math.random() * 899999 + 100000);
     const codeExpired = new Date();
     codeExpired.setMinutes(codeExpired.getMinutes() + 5);
@@ -104,7 +106,7 @@ export class UsersService {
     );
   }
 
-  async generateRefreshToken(user: User, refreshToken: string) {
+  async saveRefreshToken(user: User, refreshToken: string) {
     user = await this.usersRepository.save({
       ...user,
       refreshToken: refreshToken

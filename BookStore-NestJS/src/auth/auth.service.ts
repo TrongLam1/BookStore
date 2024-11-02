@@ -32,7 +32,7 @@ export class AuthService {
         secret: process.env.REFRESH_JWT_SECRET_KEY,
         expiresIn: '30d'
       })
-    await this.usersService.generateRefreshToken(user, refreshToken);
+    await this.usersService.saveRefreshToken(user, refreshToken);
 
     return {
       user: {

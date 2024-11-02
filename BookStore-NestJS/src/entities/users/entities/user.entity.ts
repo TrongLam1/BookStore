@@ -1,4 +1,4 @@
-import { Role } from '@/entities/role/entities/role.entity';
+import { Role } from 'src/entities/role/entities/role.entity';
 import { Comment } from 'src/entities/comments/entities/comment.entity';
 import { Order } from 'src/entities/orders/entities/order.entity';
 import { ShoppingCart } from 'src/entities/shopping-cart/entities/shopping-cart.entity';
