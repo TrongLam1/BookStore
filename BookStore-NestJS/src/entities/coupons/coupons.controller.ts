@@ -1,13 +1,15 @@
-import { Body, Controller, Get, Post, Put, Delete, UseGuards, Param } from '@nestjs/common';
-import { CouponsService } from './coupons.service';
-import { CreateCouponDto } from './dto/create-coupon.dto';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Public, Roles } from '@/decorator/decorator';
-import { ADMIN, USER } from '@/role.environment';
+import { ADMIN } from '@/role.environment';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
+import { CouponsService } from './coupons.service';
+import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('coupons')
+@UseInterceptors(CacheInterceptor)
 export class CouponsController {
   constructor(private readonly couponsService: CouponsService) { }
 

@@ -119,6 +119,7 @@ export class ShoppingCartService {
       where: { id: req.user.userId },
       relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
     });
+
     return user.shoppingCart;
   }
 

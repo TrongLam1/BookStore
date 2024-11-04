@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Req, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Req, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { OrderRequestDto } from './dto/order-request.dto';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
@@ -7,8 +7,10 @@ import { Roles } from '@/decorator/decorator';
 import { ADMIN, USER } from '@/role.environment';
 import { OrderStatus } from './entities/order.entity';
 import { UpdateStatusOrderRequest } from './dto/update-status-order.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('orders')
+@UseInterceptors(CacheInterceptor)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
 
@@ -22,11 +24,12 @@ export class OrdersController {
     return await this.ordersService.placeOrder(request, placeOrderRequest);
   }
 
-  @Get('history-orders')
+  @Get('history-orders/:userId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
   async getHistoryOrdersFromUser(
     @Request() req: any,
+    @Param() userId: number,
     @Query('current') current: string,
     @Query('pageSize') pageSize: string
   ) {

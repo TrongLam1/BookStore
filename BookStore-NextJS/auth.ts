@@ -11,6 +11,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 password: {},
             },
             authorize: async (credentials) => {
+                if (credentials && !credentials.password) {
+                    const userData = JSON.parse(credentials.email);
+                    return {
+                        user: {
+                            id: userData.user.id,
+                            email: userData.user.email,
+                            username: userData.user.username,
+                            role: userData.user.roles,
+                        },
+                        token: userData.access_token,
+                        refresh_token: userData.refresh_token
+                    }
+                }
+
                 const res = await sendRequest<IBackendRes<any>>({
                     method: 'POST',
                     url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,

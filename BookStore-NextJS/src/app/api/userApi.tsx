@@ -2,6 +2,10 @@
 import { sendRequest } from "@/utils/api";
 import { auth } from "../../../auth";
 
+export async function LoginWithGoogle() {
+    return `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google/login`;
+}
+
 export async function ResetPasswordApi(body: any) {
     const session = await auth();
     const token = session?.user?.token;

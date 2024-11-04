@@ -2,11 +2,13 @@ import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Public, Roles } from '@/decorator/decorator';
 import { ADMIN } from '@/role.environment';
-import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { BrandDto } from './dto/brand.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('brand')
+@UseInterceptors(CacheInterceptor)
 export class BrandController {
   constructor(private readonly brandService: BrandService) { }
 

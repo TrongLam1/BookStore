@@ -17,9 +17,9 @@ export default function ProfileInfoComponent(props: any) {
     useEffect(() => {
         if (!user) router.push("/auth/login");
 
-        const email = user?.email !== null ? maskEmail(user?.email) : '';
-        const phone = user?.phone !== null ? maskPhoneNumber(user?.phone) : '';
-        const address = user?.address !== null ? maskPhoneNumber(user?.address) : '';
+        const email = !!user?.email === true ? maskEmail(user?.email) : '';
+        const phone = !!user?.phone === true ? maskPhoneNumber(user?.phone) : '';
+        const address = !!user?.address === true ? maskPhoneNumber(user?.address) : '';
         setEmail(email);
         setPhone(phone);
         setAddress(address);

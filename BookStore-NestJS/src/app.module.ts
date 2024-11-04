@@ -24,7 +24,7 @@ import { NotificationModule } from './entities/notification/notification.module'
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
-import { RedisOptions } from '@/redis/redisOptions';
+import { CustomCacheInterceptor, RedisOptions } from '@/redis/redisOptions';
 
 @Module({
   imports: [
@@ -105,10 +105,11 @@ import { RedisOptions } from '@/redis/redisOptions';
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
+    // Auto add CacheInterceptor in controller without decorate
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CacheInterceptor,
+    // },
   ],
 })
 export class AppModule { }

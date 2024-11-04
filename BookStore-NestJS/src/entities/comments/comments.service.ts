@@ -1,10 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { Book } from '../books/entities/book.entity';
 import { User } from '../users/entities/user.entity';
+import { clearCacheWithPrefix } from '@/redis/redisOptions';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+
+const prefix = 'api/v1/comments';
 
 @Injectable()
 export class CommentsService {
@@ -14,7 +19,9 @@ export class CommentsService {
     @InjectRepository(Book)
     private bookRepository: Repository<Book>,
     @InjectRepository(User)
-    private userRepository: Repository<User>
+    private userRepository: Repository<User>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache
   ) { }
   async postComment(req: any, createCommentDto: CreateCommentDto) {
     const { content, rating, bookId } = createCommentDto;
@@ -26,6 +33,7 @@ export class CommentsService {
       content, rating, user, book
     });
 
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return {
       createdAt: comments.createdAt,
       content: comments.content,

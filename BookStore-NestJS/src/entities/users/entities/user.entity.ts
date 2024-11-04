@@ -34,6 +34,9 @@ export class User {
     isActive: boolean;
 
     @Column({ nullable: true })
+    provider: string;
+
+    @Column({ nullable: true })
     code: number;
 
     @Column({ nullable: true })

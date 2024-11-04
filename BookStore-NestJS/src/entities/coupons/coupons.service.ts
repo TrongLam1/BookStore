@@ -1,16 +1,23 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import moment from 'moment';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 import { Coupon } from './entities/coupon.entity';
+import { clearCacheWithPrefix } from '@/redis/redisOptions';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+
+const prefix = 'api/v1/coupons';
 
 @Injectable()
 export class CouponsService {
   constructor(
     @InjectRepository(Coupon)
-    private couponRepository: Repository<Coupon>
+    private couponRepository: Repository<Coupon>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache
   ) { }
 
   async createNewCoupon(createCouponDto: CreateCouponDto) {
@@ -20,6 +27,7 @@ export class CouponsService {
 
     if (expiredDate < new Date()) throw new BadRequestException("Expired date is not valid.");
 
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.couponRepository.save({
       nameCoupon, valueCoupon, condition, descriptionCoupon, quantity, expiredDate
     });
@@ -34,6 +42,7 @@ export class CouponsService {
 
     const descriptionCoupon = `Áp dụng cho đơn hàng có giá trị từ ${condition} VNĐ.`;
 
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.couponRepository.save({
       ...coupon, condition, valueCoupon, descriptionCoupon, quantity, expiredDate
     })
@@ -73,6 +82,7 @@ export class CouponsService {
 
   async removeCoupon(idCoupon: number) {
     const coupon = await this.couponRepository.findOneBy({ id: idCoupon });
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.couponRepository.save({
       ...coupon, isAvailable: false
     })

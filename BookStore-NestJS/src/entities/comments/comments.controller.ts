@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { Public } from '@/decorator/decorator';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('comments')
+@UseInterceptors(CacheInterceptor)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) { }
 

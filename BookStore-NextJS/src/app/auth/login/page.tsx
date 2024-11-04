@@ -6,10 +6,12 @@ export const metadata = {
     title: 'Đăng nhập'
 }
 
-const LoginPage = () => {
+const LoginPage = ({ searchParams }: {
+    searchParams: { [key: string]: string | string[] | undefined }
+}) => {
 
     return (
-        <LoginComponent />
+        <LoginComponent userString={searchParams.response} />
     )
 };
 

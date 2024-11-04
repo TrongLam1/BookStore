@@ -1,5 +1,6 @@
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { clearCacheWithPrefix } from '@/redis/redisOptions';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import { Like, MoreThan, Repository } from 'typeorm';
@@ -16,8 +17,11 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
 import { Book } from './entities/book.entity';
 import { NotFoundBookException } from './exception/CustomizeExceptionBook';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 const selectFields: any = ['id', 'createdAt', 'updatedAt', 'name', 'brand', 'type', 'category', 'price', 'currentPrice', 'sale', 'description', 'inventory', 'imageUrl'];
+const prefix = 'api/v1/books';
 
 @Injectable()
 export class BooksService {
@@ -29,6 +33,8 @@ export class BooksService {
     private readonly categoryService: CategoryService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly excelService: ExcelService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache
   ) { }
 
   private validateExcelBook(excelBook: ExcelBookDto) {
@@ -89,6 +95,8 @@ export class BooksService {
 
     const currentPrice = +price - (+price * +sale / 100);
 
+    await clearCacheWithPrefix(this.cacheManager, prefix);
+
     return await this.bookRepository.save({
       name, price: +price, currentPrice: currentPrice,
       type, brand, category,
@@ -106,6 +114,7 @@ export class BooksService {
 
     const listBooks = await this.convertExcelBookToBookEntity(excelBooks, types, brands, categories);
 
+    clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.bookRepository.save(listBooks);
   }
 
@@ -123,6 +132,7 @@ export class BooksService {
       await this.categoryService.findByName(categoryName) :
       oldBook.category;
 
+    clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.bookRepository.save({
       id: oldBook.id,
       name, price, currentPrice, type, brand, category,
@@ -138,15 +148,17 @@ export class BooksService {
   async updateImageBook(updImgDto: UpdateImgBookDto, file: Express.Multer.File) {
     const book = await this.bookRepository.findOneBy({ id: updImgDto.id });
 
-    await this.cloudinaryService.deleteFile(book.imageId);
+    this.cloudinaryService.deleteFile(book.imageId);
     const files = await this.cloudinaryService.uploadFile(file);
 
+    clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.bookRepository.save({
       ...book, imageId: files.public_id, imageUrl: files.url
     });
   }
 
   async updateListBooks(listBooks: Book[]) {
+    clearCacheWithPrefix(this.cacheManager, prefix);
     await this.bookRepository.save(listBooks);
   }
 
@@ -295,6 +307,7 @@ export class BooksService {
     book = await this.bookRepository.save({
       ...book, isAvailable: false
     });
+    clearCacheWithPrefix(this.cacheManager, prefix);
     return {
       id: book.id,
       name: book.name,

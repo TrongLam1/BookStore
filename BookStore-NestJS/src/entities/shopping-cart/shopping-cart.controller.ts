@@ -2,12 +2,14 @@ import { JwtAuthGuard } from '@/auth/guard/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guard/roles.guard';
 import { Public, ResponseMessage, Roles } from '@/decorator/decorator';
 import { USER } from '@/role.environment';
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItem } from './dto/update-cart.dto';
 import { ShoppingCartService } from './shopping-cart.service';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('shopping-cart')
+@UseInterceptors(CacheInterceptor)
 export class ShoppingCartController {
   constructor(private readonly shoppingCartService: ShoppingCartService) { }
 
@@ -16,7 +18,7 @@ export class ShoppingCartController {
   @Roles(USER)
   @ResponseMessage("Add product to cart")
   async addProductToCart(
-    @Request() req,
+    @Req() req,
     @Body() addToCartDto: AddToCartDto
   ) {
     return await this.shoppingCartService
@@ -28,7 +30,7 @@ export class ShoppingCartController {
   @Roles(USER)
   @ResponseMessage("Update quantity's product cart")
   async updateQuantityProductCart(
-    @Request() req,
+    @Req() req,
     @Body() updateCartItem: UpdateCartItem
   ) {
     return await this.shoppingCartService
@@ -40,7 +42,7 @@ export class ShoppingCartController {
   @Roles(USER)
   @ResponseMessage("Remove product from cart")
   async removeProductFromCart(
-    @Request() req,
+    @Req() req,
     @Param('cartItemId') cartItemId: number
   ) {
     return await this.shoppingCartService
@@ -51,7 +53,7 @@ export class ShoppingCartController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(USER)
   @ResponseMessage("Get shopping cart")
-  async getShoppingCart(@Request() req, @Param('userId') userId: number) {
+  async getShoppingCart(@Req() req, @Param('userId') userId: number) {
     return await this.shoppingCartService.getShoppingCartFromUser(req);
   }
 

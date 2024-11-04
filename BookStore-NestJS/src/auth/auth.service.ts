@@ -1,3 +1,4 @@
+import { CreateUserDto } from '@/entities/users/dto/create-user.dto';
 import { User } from '@/entities/users/entities/user.entity';
 import { UsersService } from '@/entities/users/users.service';
 import { comparePasswordHelper } from '@/helpers/utils';
@@ -19,6 +20,12 @@ export class AuthService {
     if (!validPassword) return null;
 
     return user;
+  }
+
+  async validateGoogleUser(googleUser: CreateUserDto) {
+    const user = await this.usersService.findOneByEmail(googleUser.email);
+    if (user) return user;
+    return await this.usersService.register(googleUser);
   }
 
   async signIn(user: User): Promise<any> {

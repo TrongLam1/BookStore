@@ -1,23 +1,29 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { clearCacheWithPrefix } from '@/redis/redisOptions';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashPasswordHelper } from 'src/helpers/utils';
+import { MailService } from 'src/mail/mail.service';
+import { USER } from 'src/role.environment';
 import { Like, Repository } from 'typeorm';
+import { RoleService } from '../role/role.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { RoleService } from '../role/role.service';
-import { USER } from 'src/role.environment';
-import { MailService } from 'src/mail/mail.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 const selectField: any = ['id', 'username', 'email', 'phone', 'createdAt', 'updateAt', 'isActive'];
+const prefix = 'api/v1/users';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
     private readonly roleService: RoleService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache
   ) { }
 
   private isEmailExist = async (email: string) => {
@@ -27,30 +33,47 @@ export class UsersService {
   }
 
   async register(createUserDto: CreateUserDto) {
-    const { username, email, password } = createUserDto;
+    const { username, email, password, provider } = createUserDto;
 
     const checkEmail = await this.isEmailExist(email);
     if (checkEmail) throw new BadRequestException(`Email ${email} đã được sử dụng.`);
 
     const roleUser = await this.roleService.findRoleByName(USER);
-    const code = Math.floor(Math.random() * 899999 + 100000);
-
-    const codeExpired = new Date();
-    codeExpired.setMinutes(codeExpired.getMinutes() + 5);
-
     const hashPassword = await hashPasswordHelper(password);
-    const user = await this.usersRepository.save({
-      username, email, password: hashPassword,
-      code, codeExpired, isActive: false, roles: [roleUser]
-    });
 
-    this.mailService.mailActivationAccount(user);
+    let user;
 
-    return { id: user.id, email: user.email, username: user.username };
+    if (provider === null) {
+      const code = Math.floor(Math.random() * 899999 + 100000);
+
+      const codeExpired = new Date();
+      codeExpired.setMinutes(codeExpired.getMinutes() + 5);
+
+      user = await this.usersRepository.save({
+        username, email, password: hashPassword,
+        code, codeExpired, isActive: false, roles: [roleUser]
+      });
+
+      this.mailService.mailActivationAccount(user);
+    } else {
+      user = await this.usersRepository.save({
+        username, email, password: hashPassword,
+        provider, isActive: true, roles: [roleUser]
+      });
+    }
+
+    await clearCacheWithPrefix(this.cacheManager, prefix);
+
+    return {
+      id: user.id, email: user.email, username: user.username,
+      roles: user.roles
+    };
   }
 
   async activeAccount(email: string, code: number) {
     const user = await this.usersRepository.findOneBy({ email });
+    if (user.provider !== null) return "Active account successfully.";
+
     const now = new Date();
     if (user.code !== +code) throw new BadRequestException("Mã kích hoạt không đúng.");
     if (user.codeExpired < now) throw new BadRequestException("Mã kích hoạt đã hết hạn.");
@@ -65,6 +88,8 @@ export class UsersService {
 
     if (!user) throw new NotFoundException("Không tìm thấy thông tin tài khoản.");
 
+    if (user.provider !== null) return;
+
     const code = Math.floor(Math.random() * 899999 + 100000);
     const codeExpired = new Date();
     codeExpired.setMinutes(codeExpired.getMinutes() + 5);
@@ -77,6 +102,8 @@ export class UsersService {
   }
 
   async resetPassword(user: User, newPassword: string) {
+    if (user.provider !== null) return `Tài khoản ${user.provider} không thể đổi mật khẩu.`;
+
     const newPasswordHash = await hashPasswordHelper(newPassword);
     await this.usersRepository.save({ ...user, password: newPasswordHash });
 
@@ -160,7 +187,7 @@ export class UsersService {
     if (!user) { throw new NotFoundException("Not found user") };
 
     let newPassword = null;
-    if (updateUserDTO.password) {
+    if (updateUserDTO.password && user.provider === null) {
       newPassword = await hashPasswordHelper(updateUserDTO?.password);
     }
 
@@ -168,10 +195,11 @@ export class UsersService {
       ...user,
       username: updateUserDTO.username ? updateUserDTO.username : user.username,
       phone: updateUserDTO.phone ? updateUserDTO.phone : user.phone,
-      password: updateUserDTO.password ? newPassword : user.password
+      password: updateUserDTO.password && user.provider === null ? newPassword : user.password
     };
 
     user = await this.usersRepository.save(user);
+    await clearCacheWithPrefix(this.cacheManager, prefix);
 
     return {
       id: user.id,

@@ -1,25 +1,43 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { ActiveAccount, ReactiveCode } from '@/app/api/userApi';
+import { ActiveAccount, LoginWithGoogle, ReactiveCode } from '@/app/api/userApi';
 import logo from '@/assets/images/logo.png';
+import google from '@/assets/images/google.png';
+import style from './loginPage.module.scss';
 import authenticate from "@/utils/actions";
 import { CSpinner } from '@coreui/react';
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
-export default function LoginComponent() {
+export default function LoginComponent(props: any) {
     const router = useRouter();
 
+    const { userString } = props;
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [loadingApi, setLoadingApi] = useState<boolean>(false);
 
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [activeCode, setActiveCode] = useState<number>();
+
+
+    useEffect(() => {
+        if (userString !== undefined) handleLoginGoogle();
+    }, []);
+
+    const redirectLoginGoogle = async () => {
+        const url = await LoginWithGoogle();
+        router.push(url);
+    };
+
+    const handleLoginGoogle = async () => {
+        await authenticate(userString, "");
+        router.push("/home");
+    };
 
     const handleLogin = async (event: any) => {
         event.preventDefault();
@@ -34,6 +52,8 @@ export default function LoginComponent() {
                     toast.success("Kiểm tra email và kích hoạt tài khoản.");
                     setOpenModal(true);
                 }
+            } else {
+                toast.error(res.error);
             }
         } else {
             router.push("/home");
@@ -105,6 +125,17 @@ export default function LoginComponent() {
                                                             <CSpinner color="light" size="sm" className='me-3' style={{ width: '1.3rem', height: '1.3rem' }} />}
                                                         Đăng nhập
                                                     </button>
+                                                </div>
+                                            </div>
+                                            <div className={style.gSignInButton}
+                                                onClick={redirectLoginGoogle}>
+                                                <div className={style.contentWrapper}>
+                                                    <div className={style.logoWrapper}>
+                                                        <Image src={google} alt='google' />
+                                                    </div>
+                                                    <span className={style.textContainer}>
+                                                        <span>Đăng nhập với Google</span>
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div className="col-12">

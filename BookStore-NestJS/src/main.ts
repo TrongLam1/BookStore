@@ -1,10 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import session from 'express-session';
 import { AppModule } from './app.module';
 import { TypeOrmExceptionFilter } from './exceptions/typeorm-exception.filter';
-import session from 'express-session';
-import { createClient } from 'redis';
-import RedisStore from 'connect-redis';
 
 declare const module: any;
 
