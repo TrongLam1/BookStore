@@ -2,6 +2,12 @@
 import { sendRequest } from "@/utils/api";
 import { auth } from "../../../auth";
 
+interface IUpdateInfo {
+    username: string;
+    phone: string;
+    address: string;
+}
+
 export async function LoginWithGoogle() {
     return `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google/login`;
 }
@@ -60,5 +66,27 @@ export async function FindUsersByNameContaining(current: number, pageSize: numbe
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
         queryParams: { current, pageSize, username }
+    });
+}
+
+export async function GetProfileUser() {
+    const session = await auth();
+    const token = session?.user?.token;
+    const userId = session?.user?.user.userId;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/profile/${userId}`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+    });
+}
+
+export async function UpdateProfileUser(body: IUpdateInfo) {
+    const session = await auth();
+    const token = session?.user?.token;
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/update`,
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body
     });
 }

@@ -13,5 +13,5 @@ export class CreateUserDto {
     password: string;
 
     @IsOptional()
-    provider: string;
+    provider: string = null;
 }

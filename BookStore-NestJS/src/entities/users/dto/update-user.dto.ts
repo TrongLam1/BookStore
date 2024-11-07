@@ -9,4 +9,7 @@ export class UpdateUserDto {
 
     @IsOptional()
     phone: string;
+
+    @IsOptional()
+    address: string;
 }

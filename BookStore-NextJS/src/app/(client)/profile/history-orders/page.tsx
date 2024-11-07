@@ -11,7 +11,7 @@ export default async function HistoryOrdersPage() {
 
     return (
         <HistoryOrdersPageComponent
-            listOrders={res.data.listOrders}
-            totalPages={res.data.totalPages} />
+            listOrders={res.data?.listOrders}
+            totalPages={res.data?.totalPages} />
     );
 };

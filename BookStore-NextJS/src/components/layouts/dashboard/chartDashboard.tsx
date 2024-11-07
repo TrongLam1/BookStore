@@ -2,7 +2,7 @@
 
 import { GetAmountByYear, GetAmountDateRange } from "@/app/api/orderApi";
 import { useEffect, useState } from "react";
-import { Chart } from "chart.js";
+import { Chart, registerables } from "chart.js";
 
 export default function ChartDashboard(props: any) {
 
@@ -30,6 +30,7 @@ export default function ChartDashboard(props: any) {
             result.push(matchingMonth ? matchingMonth.total : 0);
         }
 
+        Chart.register(...registerables);
         const existingChart = Chart.getChart("myChart");
         if (existingChart) {
             existingChart.destroy();
@@ -54,8 +55,6 @@ export default function ChartDashboard(props: any) {
                 }
             }
         });
-
-        setDataChart(dataChart);
     };
 
     const renderChartDateRange = async (startDate: Date, endDate: Date) => {
@@ -75,6 +74,8 @@ export default function ChartDashboard(props: any) {
                 result[dateIndex] += item.total;
             }
         });
+
+        Chart.register(...registerables);
 
         const existingChart = Chart.getChart("myChart");
         if (existingChart) {
@@ -100,27 +101,6 @@ export default function ChartDashboard(props: any) {
                 }
             }
         });
-
-        const dataChart = {
-            type: 'bar',
-            data: {
-                labels: arrayDate,
-                datasets: [{
-                    label: `# doanh thu từ ${startDate} đến ${endDate}`,
-                    data: result,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-
-        setDataChart(dataChart);
     };
 
     const createDateRangeArray = (startDate: Date, endDate: Date) => {

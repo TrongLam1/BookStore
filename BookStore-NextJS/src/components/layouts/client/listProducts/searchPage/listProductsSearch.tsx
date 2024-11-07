@@ -5,7 +5,7 @@ import './listProductsSearch.scss';
 
 const ListProductsSearch = (props: any) => {
 
-    const { listBooks, totalItems } = props;
+    const { listBooks, totalItems, user } = props;
 
     return (
         <div className='search-page-container'>
@@ -23,6 +23,7 @@ const ListProductsSearch = (props: any) => {
                                 return <CardProduct
                                     key={index}
                                     book={item} col={'col-20'}
+                                    user={user}
                                 />
                             }) : (<div>Không có sản phẩm</div>)
                         }

@@ -25,9 +25,9 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
 
     return (
         <div className='product-detail-page'>
-            <ProductDetailComponent productDetail={product} coupons={coupons} random={productRandom} />
+            <ProductDetailComponent productDetail={product} coupons={coupons} random={productRandom} user={session?.user.user} />
             <ListComments data={resComments?.data} bookId={+params.id} token={token} />
-            <ListProductsRandom listProducts={productRandom} />
+            <ListProductsRandom listProducts={productRandom} user={session?.user.user} />
         </div>
     );
 };

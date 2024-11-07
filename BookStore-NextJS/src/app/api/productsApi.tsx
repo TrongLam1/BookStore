@@ -81,7 +81,7 @@ export async function FindAllProducts(
         method: 'GET',
         queryParams: { current, pageSize, sort, orderBy },
         nextOption: {
-            next: { tags: [`all-products-page-${current}`] }
+            cache: 'no-store'
         }
     });
 

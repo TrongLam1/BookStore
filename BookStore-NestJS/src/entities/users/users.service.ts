@@ -12,8 +12,8 @@ import { User } from './entities/user.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
-const selectField: any = ['id', 'username', 'email', 'phone', 'createdAt', 'updateAt', 'isActive'];
-const prefix = 'api/v1/users';
+const selectField: any = ['id', 'username', 'email', 'phone', 'address', 'createdAt', 'updateAt', 'isActive'];
+const prefix = '/api/v1/users';
 
 @Injectable()
 export class UsersService {
@@ -43,7 +43,12 @@ export class UsersService {
 
     let user;
 
-    if (provider === null) {
+    if (provider !== null) {
+      user = await this.usersRepository.save({
+        username, email, password: hashPassword,
+        provider, isActive: true, roles: [roleUser]
+      });
+    } else {
       const code = Math.floor(Math.random() * 899999 + 100000);
 
       const codeExpired = new Date();
@@ -55,18 +60,13 @@ export class UsersService {
       });
 
       this.mailService.mailActivationAccount(user);
-    } else {
-      user = await this.usersRepository.save({
-        username, email, password: hashPassword,
-        provider, isActive: true, roles: [roleUser]
-      });
     }
 
     await clearCacheWithPrefix(this.cacheManager, prefix);
 
     return {
       id: user.id, email: user.email, username: user.username,
-      roles: user.roles
+      roles: user.roles, address: user.address
     };
   }
 

@@ -8,21 +8,36 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import CartItemsReview from "../cartItem/cartItemReview";
 import './checkOutPage.scss';
+import { GetProfileUser } from "@/app/api/userApi";
+import { GetShoppingCart } from "@/app/api/shoppingCartApi";
 
 export default function CheckOutPageComponent(props: any) {
     const router = useRouter();
 
     const { user } = props;
-    const { shoppingCart } = useShoppingCart();
-    const [userName, setUsername] = useState(user.username);
-    const [phone, setPhone] = useState(user.phone);
+    const { shoppingCart, setShoppingCart } = useShoppingCart();
+    const [userName, setUsername] = useState('');
+    const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [payment, setPayment] = useState('');
     const [couponValue, setCouponValue] = useState('');
 
     useEffect(() => {
         if (!user) router.push("/auth/login");
+        getProfileUser();
     }, [router]);
+
+    const getProfileUser = async () => {
+        const res = await GetProfileUser();
+        if (res.statusCode === 200) {
+            const userName = res.data[0].email !== null ? res.data[0].username : '';
+            const phone = res.data[0].phone !== null ? res.data[0].phone : '';
+            const address = res.data[0].address !== null ? res.data[0].address : '';
+            setUsername(userName);
+            setPhone(phone);
+            setAddress(address);
+        }
+    };
 
     const handlePlaceOrder = async () => {
         const validForm = checkValidForm();
@@ -47,6 +62,16 @@ export default function CheckOutPageComponent(props: any) {
             if (+resPayment.statusCode === 201) {
                 router.push(resPayment?.data);
             }
+        } else {
+            const res = await GetShoppingCart();
+            if (res.statusCode === 200) {
+                if (typeof res?.data === 'string') {
+                    setShoppingCart(JSON.parse(res?.data));
+                } else {
+                    setShoppingCart(res?.data);
+                }
+            }
+            router.push('/home');
         }
     };
 

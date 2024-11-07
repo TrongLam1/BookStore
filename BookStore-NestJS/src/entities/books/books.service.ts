@@ -21,7 +21,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
 const selectFields: any = ['id', 'createdAt', 'updatedAt', 'name', 'brand', 'type', 'category', 'price', 'currentPrice', 'sale', 'description', 'inventory', 'imageUrl'];
-const prefix = 'api/v1/books';
+const prefix = '/api/v1/books';
 
 @Injectable()
 export class BooksService {
@@ -114,7 +114,7 @@ export class BooksService {
 
     const listBooks = await this.convertExcelBookToBookEntity(excelBooks, types, brands, categories);
 
-    clearCacheWithPrefix(this.cacheManager, prefix);
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.bookRepository.save(listBooks);
   }
 
@@ -132,7 +132,7 @@ export class BooksService {
       await this.categoryService.findByName(categoryName) :
       oldBook.category;
 
-    clearCacheWithPrefix(this.cacheManager, prefix);
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.bookRepository.save({
       id: oldBook.id,
       name, price, currentPrice, type, brand, category,
@@ -151,14 +151,14 @@ export class BooksService {
     this.cloudinaryService.deleteFile(book.imageId);
     const files = await this.cloudinaryService.uploadFile(file);
 
-    clearCacheWithPrefix(this.cacheManager, prefix);
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.bookRepository.save({
       ...book, imageId: files.public_id, imageUrl: files.url
     });
   }
 
   async updateListBooks(listBooks: Book[]) {
-    clearCacheWithPrefix(this.cacheManager, prefix);
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     await this.bookRepository.save(listBooks);
   }
 
@@ -245,7 +245,7 @@ export class BooksService {
     if (!current || current == 0) current = 1;
     if (!pageSize || current == 0) pageSize = 10;
 
-    orderBy = orderBy ?? 'id';
+    orderBy = orderBy === "" ? 'id' : orderBy;
     const sortOrder: 'ASC' | 'DESC' = sort === 'DESC' ? 'DESC' : 'ASC';
 
     const listTypes = typesString !== '' ? JSON.parse(typesString) : null;
@@ -263,15 +263,15 @@ export class BooksService {
 
     const relations: string[] = [];
 
-    if (types !== null) {
+    if (types) {
       whereConditions.type = types;
       relations.push('type');
     };
-    if (brands !== null) {
+    if (brands) {
       whereConditions.brand = brands;
       relations.push('brand');
     }
-    if (categories !== null) {
+    if (categories) {
       whereConditions.category = categories;
       relations.push('category');
     }
@@ -307,7 +307,7 @@ export class BooksService {
     book = await this.bookRepository.save({
       ...book, isAvailable: false
     });
-    clearCacheWithPrefix(this.cacheManager, prefix);
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return {
       id: book.id,
       name: book.name,

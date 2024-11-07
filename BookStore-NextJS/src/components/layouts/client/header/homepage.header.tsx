@@ -31,7 +31,7 @@ const HomePageHeader = (props: any) => {
 
     useEffect(() => {
         const sessionId = Cookies.get('sessionId');
-        if (sessionId !== undefined) {
+        if (user) {
             handleMoveShoppingCartFromSession(sessionId);
             getShoppingCart();
             Cookies.remove('sessionId');
@@ -77,6 +77,7 @@ const HomePageHeader = (props: any) => {
             if (res.statusCode === 201) {
                 toast.success("Thêm sản phẩm thành công.");
             }
+            console.log(res);
         }
     };
 

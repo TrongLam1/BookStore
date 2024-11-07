@@ -9,7 +9,7 @@ import { clearCacheWithPrefix } from '@/redis/redisOptions';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
-const prefix = 'api/v1/coupons';
+const prefix = '/api/v1/coupons';
 
 @Injectable()
 export class CouponsService {

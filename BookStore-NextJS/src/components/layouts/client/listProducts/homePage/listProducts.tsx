@@ -5,7 +5,7 @@ import './listProducts.scss';
 
 const ListProducts = (props: any) => {
 
-    const { listBooks } = props;
+    const { listBooks, user } = props;
 
     return (
         <section className="section-book-tag">
@@ -22,7 +22,7 @@ const ListProducts = (props: any) => {
                 <div className="container-book-cards row mx-sm-0">
                     {listBooks && listBooks.length > 0 ?
                         listBooks.map((item: IBook, index: number) => {
-                            return <CardProduct key={index} book={item} col={'col-20'} />
+                            return <CardProduct key={index} book={item} col={'col-20'} user={user} />
                         }) : (<div>Không có sản phẩm</div>)
                     }
                 </div>

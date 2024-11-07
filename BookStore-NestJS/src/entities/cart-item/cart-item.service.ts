@@ -26,9 +26,9 @@ export class CartItemService {
       cartItem.shoppingCart = shoppingCart;
       cartItem.totalPrice = book.currentPrice * quantity;
       cartItem.quantity = quantity;
-      return await this.cartItemRepository.save(cartItem);
+      await this.cartItemRepository.save(cartItem);
     } else {
-      return await this.cartItemRepository.save({
+      await this.cartItemRepository.save({
         ...cartItem,
         quantity: quantity === 1 ? ++cartItem.quantity : quantity,
         totalPrice: book.currentPrice * cartItem.quantity

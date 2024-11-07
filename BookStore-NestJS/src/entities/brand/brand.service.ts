@@ -8,7 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
 const selectFields: any = ['id', 'brandName'];
-const prefix = 'api/v1/brand';
+const prefix = '/api/v1/brand';
 
 @Injectable()
 export class BrandService {

@@ -7,16 +7,21 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import './productDetailComponent.scss';
 import CouponItem from "../coupon/couponItem";
+import { AddProductToCart, AddProductToCartSession } from "@/app/api/shoppingCartApi";
+import Cookies from 'js-cookie';
+import { toast } from "react-toastify";
+import { useShoppingCart } from "@/provider/shoppingCartProvider";
 
 export default function ProductDetailComponent(props: any) {
 
-    const { productDetail, coupons, random } = props;
+    const { productDetail, coupons, random, user } = props;
 
     const category = productDetail.category;
     const brand = productDetail.brand;
 
     const [quantityProduct, setQuantityProduct] = useState<number>(1);
     const [listCoupons, setListCoupons] = useState<Array<any>>([]);
+    const { setShoppingCart } = useShoppingCart();
 
     useEffect(() => {
         if (productDetail) document.title = productDetail.name
@@ -65,7 +70,7 @@ export default function ProductDetailComponent(props: any) {
 
     const elementBtnAdd = (item: any) => {
         if (item && item.inventory > 0) {
-            return (<button type="button" data-id={item.id} className="btn btn_add_cart btn-cart add_to_cart">
+            return (<button type="button" className="btn btn_add_cart btn-cart add_to_cart" onClick={() => { handleAddProductToCart(item.id) }}>
                 Thêm vào giỏ hàng
             </button>)
         } else {
@@ -74,6 +79,39 @@ export default function ProductDetailComponent(props: any) {
             </button>)
         }
     }
+
+    const handleAddProductToCart = async (productId: number) => {
+        let res;
+        if (user) {
+            res = await AddProductToCart({
+                bookId: productId,
+                quantity: 1
+            });
+        } else {
+            const sessionId = Cookies.get('sessionId');
+
+            res = await AddProductToCartSession({
+                bookId: productId,
+                quantity: 1,
+                sessionId: sessionId === undefined ? null : sessionId
+            });
+
+            if (!sessionId) {
+                Cookies.set('sessionId', res.data.sessionId, { expires: 7 });
+            }
+        }
+
+        if (+res.statusCode === 201) {
+            toast.success("Thêm sản phẩm thành công.");
+            setShoppingCart({
+                totalItems: res.data.shoppingCart.totalItems,
+                totalPrices: res.data.shoppingCart.totalPrices,
+                cartItems: res.data.shoppingCart.cartItems
+            })
+        } else {
+            toast.error("Thêm sản phẩm thất bại.");
+        }
+    };
 
     return (
         <>

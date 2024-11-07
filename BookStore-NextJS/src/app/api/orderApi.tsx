@@ -48,7 +48,7 @@ export async function AdminFindOrderById(orderId: number) {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
         nextOption: {
-            next: { tags: [`order-detail-${orderId}`] }
+            cache: 'no-store'
         }
     });
 }
@@ -56,12 +56,13 @@ export async function AdminFindOrderById(orderId: number) {
 export async function GetAllOrdersByUser() {
     const session = await auth();
     const token = session?.user?.token;
+    const userId = session?.user?.user?.userId;
     return await sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/history-orders`,
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/history-orders/${userId}`,
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
         nextOption: {
-            next: { tags: [`list-orders-${session?.user?.user?.userId}`] },
+            next: { tags: [`list-orders-${userId}`] },
         }
     });
 }

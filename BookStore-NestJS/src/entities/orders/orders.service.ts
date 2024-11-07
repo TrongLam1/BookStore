@@ -10,6 +10,9 @@ import { NotificationGateway } from '../notification/notification.gateway';
 import { CouponsService } from '../coupons/coupons.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { clearCacheWithPrefix } from '@/redis/redisOptions';
+
+const prefix = '/api/v1/orders';
 
 @Injectable()
 export class OrdersService {
@@ -31,7 +34,13 @@ export class OrdersService {
     const shoppingCart = user.shoppingCart;
     const cartItems = shoppingCart.cartItems;
 
-    const amountOrder = await this.couponService.checkValidCouponApply(shoppingCart.totalPrices, placeOrderRequest.nameCoupon, user.couponsUsed);
+    let amountOrder;
+
+    if (placeOrderRequest.nameCoupon !== '') {
+      amountOrder = await this.couponService.checkValidCouponApply(shoppingCart.totalPrices, placeOrderRequest.nameCoupon, user.couponsUsed);
+    } else {
+      amountOrder = shoppingCart.totalPrices;
+    }
 
     let newOrder = new Order();
     newOrder.user = user;
@@ -46,9 +55,9 @@ export class OrdersService {
     newOrder = await this.orderRepository.save(newOrder);
 
     await this.orderItemService.createNewOrderItems(cartItems, newOrder);
-    // await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
+    await this.shoppingCartService.clearShoppingCart(cartItems, shoppingCart);
 
-    if (placeOrderRequest.nameCoupon !== null) {
+    if (placeOrderRequest.nameCoupon !== '') {
       if (user.couponsUsed === null) {
         const arrayCoupons = [placeOrderRequest.nameCoupon];
         user.couponsUsed = arrayCoupons;
@@ -63,6 +72,9 @@ export class OrdersService {
       id: newOrder.id,
       createdAt: newOrder.createdAt
     });
+
+    await clearCacheWithPrefix(this.cacheManager, prefix);
+    await clearCacheWithPrefix(this.cacheManager, '/api/v1/shopping-cart');
 
     delete newOrder.user;
     return newOrder;
@@ -142,10 +154,12 @@ export class OrdersService {
       throw new BadRequestException("Không thể hủy đơn hàng.");
     }
 
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.orderRepository.save({ ...order, orderStatus: orderStatus });
   };
 
   async updateOrderPayment(order: Order, paymentStatus: PaymentStatus, codeBill: string) {
+    await clearCacheWithPrefix(this.cacheManager, prefix);
     return await this.orderRepository.save({
       ...order, paymentStatus, codeBill
     });

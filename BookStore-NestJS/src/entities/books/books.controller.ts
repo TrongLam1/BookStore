@@ -12,7 +12,6 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { UpdateImgBookDto } from './dto/update-img-book.dto';
 
 @Controller('books')
-@UseInterceptors(CacheInterceptor)
 export class BooksController {
   constructor(
     private readonly booksService: BooksService
@@ -79,6 +78,7 @@ export class BooksController {
 
   @Get('all')
   @Public()
+  @UseInterceptors(CacheInterceptor)
   async findAllBooks(
     @Query('current') current: string,
     @Query('pageSize') pageSize: string,
@@ -90,6 +90,7 @@ export class BooksController {
 
   @Get('find/name')
   @Public()
+  @UseInterceptors(CacheInterceptor)
   async findBooksByName(
     @Query('current') current: string,
     @Query('pageSize') pageSize: string,
@@ -101,6 +102,7 @@ export class BooksController {
 
   @Get('find/filter')
   @Public()
+  @UseInterceptors(CacheInterceptor)
   async findBooksByFilter(
     @Query('current') current: string,
     @Query('pageSize') pageSize: string,
@@ -116,12 +118,14 @@ export class BooksController {
 
   @Get('/random')
   @Public()
+  @UseInterceptors(CacheInterceptor)
   async getRandomBooks() {
     return await this.booksService.findRandomBooks();
   }
 
   @Get('find-one/:id')
   @Public()
+  @UseInterceptors(CacheInterceptor)
   async findBookById(@Param('id') id: string) {
     return await this.booksService.findDetailById(+id);
   }

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 export default function ListProductsFilter(props: any) {
 
     const router = useRouter();
-    const { listProducts, totalPages, params } = props;
+    const { listProducts, totalPages, params, user } = props;
 
     const [page, setPage] = useState<number>(params.page ?? 1);
 
@@ -83,7 +83,8 @@ export default function ListProductsFilter(props: any) {
                     <div className="container-book-cards row mx-sm-0">
                         {listProducts && listProducts.length > 0 ?
                             listProducts.map((item: IBook, index: number) => {
-                                return <CardProduct key={index} book={item} col={'col-lg-3'} />
+                                return <CardProduct key={index} book={item} col={'col-lg-3'}
+                                    user={user} />
                             }) : (<div>Không có sản phẩm</div>)
                         }
                     </div>

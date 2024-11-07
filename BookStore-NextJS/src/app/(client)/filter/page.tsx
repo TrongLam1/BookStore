@@ -5,6 +5,7 @@ import { FindAllTypes } from "@/app/api/typesApi"
 import SidebarFilter from "@/components/layouts/client/filter/sidebarFilter"
 import ListProductsFilter from "@/components/layouts/client/listProducts/filterPage/listProductsFilter"
 import '@/components/layouts/client/filter/filterPage.scss'
+import { auth } from "../../../../auth"
 
 export default async function FilterPage({ searchParams }: {
     searchParams: { [key: string]: string | string[] | undefined }
@@ -42,12 +43,15 @@ export default async function FilterPage({ searchParams }: {
     const listProducts = res?.listProducts;
     const totalPages = res?.totalPages;
 
+    const session = await auth();
+    const user = session?.user.user;
+
     return (
         <>
             <div className='types-book-container row'>
                 <SidebarFilter filters={filters} params={searchParams} />
                 <ListProductsFilter listProducts={listProducts} totalPages={totalPages}
-                    params={searchParams} />
+                    params={searchParams} user={user} />
             </div>
         </>
     )

@@ -26,6 +26,8 @@ export default function TableCouponsComponent(props: any) {
     const [isShowModalEditCoupon, setIsShowModalEditCoupon] = useState<boolean>(false);
     const [idCouponUpdate, setIdCouponUpdate] = useState<number>();
 
+    console.log(data);
+
     useEffect(() => {
         setListCoupons(data.listCoupons ?? []);
         setPage(current ?? 1);

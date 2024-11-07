@@ -4,7 +4,7 @@ import CardProduct from "../../cardProduct/cardProduct";
 
 export default function ListProductsRandom(props: any) {
 
-    const { listProducts } = props;
+    const { listProducts, user } = props;
 
     return (
         <section className="section-book-tag-random">
@@ -17,7 +17,8 @@ export default function ListProductsRandom(props: any) {
                 <div className="container-book-cards row mx-sm-0">
                     {listProducts && listProducts.length > 0 &&
                         listProducts.map((item, index: number) => {
-                            return (<CardProduct key={`random-${index}`} book={item} col={'col-20'} />)
+                            return (<CardProduct key={`random-${index}`} book={item} col={'col-20'}
+                                user={user} />)
                         })}
                 </div>
             </div>

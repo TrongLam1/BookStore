@@ -7,19 +7,19 @@ import './listProducts.scss';
 
 const ListProductsType = (props: any) => {
 
-    const { imgBanner, listBooks } = props;
+    const { imgBanner, listBooks, link, user } = props;
 
     return (
         <>
             <section className="section-book-tag-type">
                 <div className="container container-custom">
-                    <Link href="/category/dictionary" className="banner-tag-img">
+                    <Link href={link} className="banner-tag-img">
                         <Image src={imgBanner} alt="Banner" />
                     </Link>
                     <div className="container-book-cards row mx-sm-0">
                         {listBooks && listBooks.length > 0 ?
                             listBooks.map((item: IBook, index: number) => {
-                                return <CardProduct key={index} book={item} col={'col-20'} />
+                                return <CardProduct key={index} book={item} col={'col-20'} user={user} />
                             }) : (<div>Không có sản phẩm</div>)
                         }
                     </div>

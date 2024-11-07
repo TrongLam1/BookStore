@@ -28,7 +28,7 @@ export default function ActiveAccountComponent(props: any) {
     };
 
     return (
-        <section className="bg-light py-3 py-md-5">
+        <section className="bg-light py-3 py-md-5" style={{ minHeight: '40.625rem' }}>
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">

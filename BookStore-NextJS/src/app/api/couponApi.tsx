@@ -40,7 +40,7 @@ export async function GetAllCoupons(current: number) {
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/coupons/${current}`,
         method: 'GET',
         nextOption: {
-            next: { tags: [`list-coupons-${current}`] }
+            cache: 'no-store'
         }
     });
 };

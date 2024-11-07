@@ -1,5 +1,6 @@
 'use client'
 
+import { GetProfileUser, UpdateProfileUser } from "@/app/api/userApi";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,14 +17,22 @@ export default function ProfileInfoComponent(props: any) {
 
     useEffect(() => {
         if (!user) router.push("/auth/login");
-
-        const email = !!user?.email === true ? maskEmail(user?.email) : '';
-        const phone = !!user?.phone === true ? maskPhoneNumber(user?.phone) : '';
-        const address = !!user?.address === true ? maskPhoneNumber(user?.address) : '';
-        setEmail(email);
-        setPhone(phone);
-        setAddress(address);
+        getProfileUser();
     }, []);
+
+    const getProfileUser = async () => {
+        const res = await GetProfileUser();
+        if (res.statusCode === 200) {
+            const userName = res.data[0].email !== null ? res.data[0].username : '';
+            const email = res.data[0].email !== null ? maskEmail(res.data[0].email) : '';
+            const phone = res.data[0].phone !== null ? maskPhoneNumber(res.data[0].phone) : '';
+            const address = res.data[0].address !== null ? res.data[0].address : '';
+            setUsername(userName);
+            setEmail(email);
+            setPhone(phone);
+            setAddress(address);
+        }
+    };
 
     const maskPhoneNumber = (phoneNumber: string) => {
         if (phoneNumber !== '' || phoneNumber !== undefined) {
@@ -71,7 +80,12 @@ export default function ProfileInfoComponent(props: any) {
     }
 
     const handleUpdateInfo = async () => {
+        const res = await UpdateProfileUser({
+            username: userName,
+            phone, address
+        });
         handleActiveUpdateInfo();
+        if (res.statusCode === 201) router.refresh();
     }
 
     return (
@@ -138,7 +152,7 @@ export default function ProfileInfoComponent(props: any) {
                                 type="button" className="btn btn-primary"
                                 onClick={() => handleUpdateInfo()}
                             >
-                                Cập nhật thông tin
+                                Lưu
                             </button>
                         </div>)
                     }

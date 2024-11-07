@@ -10,7 +10,6 @@ export class NotificationGateway {
   @SubscribeMessage('joinAdminRoom')
   handleJoinAdminRoom(@ConnectedSocket() client: Socket) {
     client.join('admin');
-    console.log('Admin user joined the admin room');
   }
 
   sendNewOrderNotification(orderDetails: any) {

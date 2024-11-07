@@ -88,7 +88,7 @@ export class ShoppingCartService {
     this.updateCartTotal(shoppingCart, cartItems);
 
     const key = `/api/v1/shopping-cart/user/${req.user.userId}`;
-    await this.cacheManager.set(key, JSON.stringify(shoppingCart));
+    await this.cacheManager.del(key);
 
     shoppingCart = await this.shoppingCartRepository.save(shoppingCart);
     return shoppingCart;
@@ -115,10 +115,15 @@ export class ShoppingCartService {
   }
 
   async getShoppingCartFromUser(req) {
-    const user = await this.userRepository.findOneOrFail({
+    let user = await this.userRepository.findOneOrFail({
       where: { id: req.user.userId },
       relations: ['shoppingCart', 'shoppingCart.cartItems', 'shoppingCart.cartItems.book']
     });
+
+    if (user.shoppingCart === null) {
+      user.shoppingCart = await this.shoppingCartRepository.save({});
+      user = await this.userRepository.save({ ...user, shoppingCart: user.shoppingCart });
+    }
 
     return user.shoppingCart;
   }
@@ -154,7 +159,7 @@ export class ShoppingCartService {
     await this.cacheManager.del(sessionId);
     await this.cacheManager.del(key);
 
-    await this.updateShoppingCart(req);
+    return await this.updateShoppingCart(req);
   }
 
   // --------------------------- Session ------------------------------
